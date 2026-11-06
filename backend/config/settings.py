@@ -183,7 +183,7 @@ USE_SUPABASE_STORAGE = env("USE_SUPABASE_STORAGE")
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        "BACKEND": "apps.core.storage.ForgivingManifestStaticFilesStorage"
     },
 }
 
@@ -281,7 +281,11 @@ CSRF_TRUSTED_ORIGINS = [
 # ---------------------------------------------------------------------------
 
 if not DEBUG:
-    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+    # Defaults to off, not on. A clone without a .env file runs with DEBUG
+    # off, and redirecting every request to https there produced a 301 loop
+    # on localhost with no clue as to why. Production turns it on explicitly
+    # in render.yaml, which is the only place it is actually needed.
+    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
