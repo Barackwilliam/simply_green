@@ -23,6 +23,14 @@ const nextConfig: NextConfig = {
   compress: true,
 
   images: {
+    // Next refuses to optimise images served from a private IP, which is the
+    // right default: it stops the optimiser being used to probe internal
+    // hosts. Local development runs Django on 127.0.0.1, so the check has to
+    // be lifted there — behind an explicit opt-in that is never set on
+    // Render, where media comes from Supabase Storage over the public
+    // internet.
+    dangerouslyAllowLocalIP: process.env.ALLOW_LOCAL_IMAGE_HOSTS === "true",
+
     remotePatterns: [
       ...remoteImageHosts.map((hostname) => ({
         protocol: "https" as const,

@@ -1,0 +1,153 @@
+# Render Blueprint for the Simply Green Organization website.
+#
+# Two services in Frankfurt, close to the Supabase project in eu-central-1 —
+# the Django-to-database round trip is what dominates response time, so they
+# are kept in the same region.
+#
+# Every secret is `sync: false`, which means Render asks for it at deploy time
+# and stores it on the service. Nothing sensitive lives in this file.
+
+services:
+  # ---------------------------------------------------------------------
+  # Django: REST API and the admin the organisation's staff use
+  # ---------------------------------------------------------------------
+  - type: web
+    name: simply-green-api
+    runtime: python
+    region: frankfurt
+    plan: starter
+    rootDir: backend
+    buildCommand: >-
+      pip install --no-cache-dir -r requirements.txt &&
+      python manage.py collectstatic --noinput &&
+      python manage.py migrate --noinput
+    startCommand: >-
+      gunicorn config.wsgi:application
+      --bind 0.0.0.0:$PORT
+      --workers 3
+      --timeout 60
+      --access-logfile -
+      --error-logfile -
+    healthCheckPath: /healthz/
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.0"
+      - key: DJANGO_ENV
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        # Render injects the service's own hostname here.
+        fromService:
+          type: web
+          name: simply-green-api
+          property: host
+      - key: LOG_LEVEL
+        value: INFO
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+
+      # --- Supabase Postgres -------------------------------------------
+      # Project Settings -> Database -> Connection string -> Session pooler
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_SSL_REQUIRE
+        value: "True"
+
+      # --- Supabase Storage --------------------------------------------
+      # Project Settings -> Storage -> S3 access keys
+      - key: USE_SUPABASE_STORAGE
+        value: "True"
+      - key: SUPABASE_PROJECT_REF
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: media
+      - key: SUPABASE_S3_REGION
+        value: eu-central-1
+      - key: SUPABASE_S3_ACCESS_KEY_ID
+        sync: false
+      - key: SUPABASE_S3_SECRET_ACCESS_KEY
+        sync: false
+
+      # --- Frontend ----------------------------------------------------
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: simply-green-web
+          property: host
+      - key: CORS_ALLOWED_ORIGINS
+        fromService:
+          type: web
+          name: simply-green-web
+          property: host
+      - key: CSRF_TRUSTED_ORIGINS
+        fromService:
+          type: web
+          name: simply-green-web
+          property: host
+      # Shared with the frontend so Django can invalidate its cache.
+      - key: REVALIDATE_SECRET
+        sync: false
+
+      # --- Email notifications -----------------------------------------
+      - key: EMAIL_BACKEND
+        value: django.core.mail.backends.smtp.EmailBackend
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_USE_TLS
+        value: "True"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: NOTIFICATION_RECIPIENTS
+        sync: false
+
+  # ---------------------------------------------------------------------
+  # Next.js: the public website
+  # ---------------------------------------------------------------------
+  - type: web
+    name: simply-green-web
+    runtime: node
+    region: frankfurt
+    plan: starter
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npx next start -p $PORT
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22.11.0"
+      - key: NODE_ENV
+        value: production
+
+      # Read at build time (server side) and from the browser.
+      - key: API_URL
+        fromService:
+          type: web
+          name: simply-green-api
+          property: host
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: simply-green-api
+          property: host
+
+      # The public address of the site. Set this to the real domain once it
+      # is connected — canonical URLs, Open Graph and the sitemap all use it.
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+
+      - key: SUPABASE_PROJECT_REF
+        sync: false
+
+      # Must match the API service's value exactly.
+      - key: REVALIDATE_SECRET
+        sync: false

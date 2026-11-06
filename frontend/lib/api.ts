@@ -374,3 +374,47 @@ export async function getDonationMethods(): Promise<DonationMethod[]> {
   cacheTag("donation-methods");
   return safe<DonationMethod[]>("/engage/donation-methods/", []);
 }
+
+/* ------------------------------------------------------------------ */
+/* Slug lists, used by generateStaticParams                            */
+/* ------------------------------------------------------------------ */
+
+export async function getProgrammeSlugs(): Promise<string[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("programmes");
+  const data = await safe("/programmes/?page_size=200", EMPTY<Programme>());
+  return data.results.map((item) => item.slug);
+}
+
+export async function getFocusAreaSlugs(): Promise<string[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("focus-areas");
+  const areas = await safe<FocusArea[]>("/programmes/focus-areas/", []);
+  return areas.map((item) => item.slug);
+}
+
+export async function getPostSlugs(): Promise<string[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("posts");
+  const data = await safe("/news/posts/?page_size=200", EMPTY<Post>());
+  return data.results.map((item) => item.slug);
+}
+
+export async function getEventSlugs(): Promise<string[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("events");
+  const data = await safe("/news/events/?page_size=200", EMPTY<SiteEvent>());
+  return data.results.map((item) => item.slug);
+}
+
+export async function getAlbumSlugs(): Promise<string[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("gallery");
+  const data = await safe("/gallery/albums/?page_size=200", EMPTY<Album>());
+  return data.results.map((item) => item.slug);
+}

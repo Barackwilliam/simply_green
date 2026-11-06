@@ -110,7 +110,7 @@ export function SiteHeader({
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-1 rounded-full px-3 py-2",
+                      "flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-2",
                       "text-[0.8125rem] font-semibold transition-colors",
                       scrolled
                         ? isActive(item.href)
