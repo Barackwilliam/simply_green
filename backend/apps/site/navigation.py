@@ -34,7 +34,7 @@ def build_nav(path: str):
         },
         {"label": "Resources", "url": reverse("site:resources"), "children": []},
         {
-            "label": "News & Events",
+            "label": "News",
             "url": reverse("site:news"),
             "children": [
                 {"label": "News & Stories", "url": reverse("site:news")},

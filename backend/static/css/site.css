@@ -167,6 +167,10 @@ img { max-width: 100%; height: auto; display: block; }
 .topbar__socials { display: flex; gap: 14px; align-items: center; }
 .topbar__socials svg { width: 16px; height: 16px; fill: currentColor; }
 
+/* The nav row needs more room than the body text column: nine items plus a
+   logo and a button measure ~1230px, against the 1180px content width. */
+.header .wrap { max-width: 1320px; }
+
 .header {
   position: sticky;
   top: 0;
@@ -187,15 +191,21 @@ img { max-width: 100%; height: auto; display: block; }
 .brand img { height: 52px; width: auto; max-width: none; }
 .brand__text { font-weight: 800; font-size: 1.1rem; color: var(--green-ink); line-height: 1.1; }
 
-.nav { display: flex; align-items: stretch; min-width: 0; }
+/* flex: none, like the logo and the button. Letting this shrink is what
+   clipped the last menu item instead of making the row honest about the
+   space it needs. */
+.nav { display: flex; align-items: stretch; flex: none; }
 .nav__list { display: flex; align-items: stretch; list-style: none; margin: 0; padding: 0; }
 .nav__item { position: relative; display: flex; align-items: stretch; }
 .nav__link {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 0 14px;
-  font-size: .8rem;
+  gap: 4px;
+  /* Nine items plus the logo and the Donate button have to share one row.
+     At 14px of padding each they overflowed and the button landed on top of
+     the last link. */
+  padding: 0 9px;
+  font-size: .78rem;
   font-weight: 800;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -251,7 +261,9 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .burger svg { width: 26px; height: 26px; fill: currentColor; }
 
-@media (max-width: 1100px) {
+/* Below this the row cannot hold the full menu, so the drawer takes over
+   rather than letting items collide or be clipped. */
+@media (max-width: 1279px) {
   .nav { display: none; }
   .burger { display: inline-flex; }
 }
