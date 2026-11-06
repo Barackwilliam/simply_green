@@ -1,0 +1,83 @@
+{% load static %}
+<div class="topbar">
+  <div class="wrap">
+    {% if site.email %}<a href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
+    {% if site.phone %}<a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a>{% endif %}
+    {% if social_links %}
+      <span class="topbar__socials">
+        {% for s in social_links %}
+          <a href="{{ s.url }}" target="_blank" rel="noreferrer noopener" aria-label="{{ s.get_platform_display }}">
+            {% include "partials/icon.html" with name=s.platform %}
+          </a>
+        {% endfor %}
+      </span>
+    {% endif %}
+  </div>
+</div>
+
+<header class="header">
+  <div class="wrap">
+    <div class="header__inner">
+      <a class="brand" href="{% url 'site:home' %}" aria-label="{{ site.organisation_name }} — home">
+        {% if site.logo %}
+          <img src="{{ site.logo.url }}" alt="{{ site.organisation_name }}" width="200" height="64">
+        {% else %}
+          <span class="brand__text">Simply Green<br>Organization</span>
+        {% endif %}
+      </a>
+
+      <nav class="nav" aria-label="Main">
+        <ul class="nav__list">
+          {% for item in nav %}
+            <li class="nav__item{% if item.active %} nav__item--active{% endif %}">
+              <a class="nav__link" href="{{ item.url }}">
+                {{ item.label }}
+                {% if item.children %}{% include "partials/icon.html" with name="chevron" class="nav__caret" %}{% endif %}
+              </a>
+              {% if item.children %}
+                <ul class="nav__sub">
+                  {% for child in item.children %}
+                    <li><a href="{{ child.url }}">{{ child.label }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      <div class="header__cta">
+        {% if site.donate_enabled %}
+          <a class="btn btn--green" href="{% url 'site:donate' %}">
+            {% include "partials/icon.html" with name="heart" class="btn__i" %} Donate
+          </a>
+        {% endif %}
+        <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu" data-burger>
+          {% include "partials/icon.html" with name="menu" %}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-nav" data-open="false" aria-label="Mobile">
+    <ul>
+      {% for item in nav %}
+        <li>
+          <div class="mobile-nav__row">
+            <a href="{{ item.url }}">{{ item.label }}</a>
+            {% if item.children %}
+              <button class="mobile-nav__toggle" type="button" aria-expanded="false" aria-label="Show {{ item.label }} links" data-subtoggle>
+                {% include "partials/icon.html" with name="chevron" %}
+              </button>
+            {% endif %}
+          </div>
+          {% if item.children %}
+            <div class="mobile-nav__sub" data-open="false">
+              {% for child in item.children %}<a href="{{ child.url }}">{{ child.label }}</a>{% endfor %}
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+</header>

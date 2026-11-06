@@ -1,6 +1,7 @@
 """Photo albums and videos."""
 
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 from apps.core.models import PublishableModel
@@ -48,6 +49,9 @@ class Album(PublishableModel):
     @property
     def photo_count(self):
         return self.photos.count()
+
+    def get_absolute_url(self):
+        return reverse("site:album_detail", kwargs={"slug": self.slug})
 
 
 class Photo(models.Model):

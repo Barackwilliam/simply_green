@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Videos — {{ site.organisation_name }}{% endblock %}
+{% block description %}Film from {{ site.organisation_name }}'s environmental work across Tanzania.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:gallery' %}">Gallery</a> / Videos</p>
+    <h1>Videos</h1>
+    <p>Film from the field.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    {% if videos %}
+      <div class="grid grid-3">
+        {% for v in videos %}
+          <article class="card">
+            <a href="{{ v.video_url|default:v.video_file.url }}" target="_blank" rel="noreferrer noopener" class="card__media" style="position:relative;display:block;background:#16211c">
+              {% if v.thumbnail %}<img src="{{ v.thumbnail.url }}" alt="{{ v.title }}" loading="lazy" style="opacity:.82">{% endif %}
+              <span style="position:absolute;inset:0;display:grid;place-items:center">
+                <span style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center">
+                  {% include "partials/icon.html" with name="play" %}
+                </span>
+              </span>
+              {% if v.duration_label %}<span class="tag tag--onimg" style="position:absolute;right:12px;bottom:12px">{{ v.duration_label }}</span>{% endif %}
+            </a>
+            <div class="card__body">
+              <h3>{{ v.title }}</h3>
+              {% if v.description %}<p>{{ v.description|truncatewords:20 }}</p>{% endif %}
+              <div class="card__meta"><span>{{ v.get_source_display }}{% if v.date %} · {{ v.date|date:"j F Y" }}{% endif %}</span></div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty"><strong>No videos yet</strong>Videos added in the admin will appear here.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

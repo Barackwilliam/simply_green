@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Resource Centre — {{ site.organisation_name }}{% endblock %}
+{% block description %}Annual reports, financial reports, project reports, strategic plans and research published by {{ site.organisation_name }}.{% endblock %}
+
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Resource Centre</p>
+    <h1>Publications and reports</h1>
+    <p>Our reporting, research and the documents that hold us to account.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="filters">
+      <a class="chip" href="{% url 'site:resources' %}" {% if not kind %}aria-current="true"{% endif %}>All</a>
+      {% for value, label in kinds %}
+        <a class="chip" href="?kind={{ value }}" {% if kind == value %}aria-current="true"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </div>
+
+    {% if publications %}
+      <div class="grid grid-3">
+        {% for p in publications %}
+          <article class="card">
+            <div class="card__body">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                <span class="tag tag--gold">{{ p.get_kind_display }}</span>
+                {% if p.year %}<strong style="color:var(--muted);font-size:.9rem">{{ p.year }}</strong>{% endif %}
+              </div>
+              <div class="tile__icon">{% include "partials/icon.html" with name="file" %}</div>
+              <h3>{{ p.title }}</h3>
+              {% if p.summary %}<p>{{ p.summary|truncatewords:22 }}</p>{% endif %}
+              <div class="card__meta" style="flex-direction:row;justify-content:space-between;align-items:center">
+                <span>{{ p.file_size_label }}{% if p.page_count %} · {{ p.page_count }} pages{% endif %}</span>
+                {% if p.download_url %}
+                  <a class="btn btn--green btn--sm" href="{% url 'site:publication_download' p.slug %}">
+                    {% include "partials/icon.html" with name="download" %} Download
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty"><strong>No documents published yet</strong>Reports and research uploaded in the admin will appear here.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

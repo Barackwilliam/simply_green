@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Partner With Us — {{ site.organisation_name }}{% endblock %}
+{% block description %}Partner with {{ site.organisation_name }} — funding, technical support, joint implementation and research collaboration.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:get_involved' %}">Get Involved</a> / Partner</p>
+    <h1>Partner with us</h1>
+    <p>We work at the frontline, and we account for every shilling that gets us there.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <div class="grid" style="grid-template-columns:3fr 2fr;gap:48px;align-items:start">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% include "partials/form.html" %}
+        <button class="btn btn--blue" type="submit">Send enquiry</button>
+      </form>
+      <aside style="display:grid;gap:14px">
+        {% for r in reasons %}
+          <div class="tile" style="padding:20px">
+            <div style="display:flex;gap:14px">
+              <div class="tile__icon" style="flex:none;margin:0;background:#ddf1fa">
+                {% include "partials/icon.html" with name=r.icon %}
+              </div>
+              <div>
+                <h3 style="font-size:.98rem;margin-bottom:5px">{{ r.title }}</h3>
+                <p style="font-size:.9rem;margin:0">{{ r.description|truncatewords:28 }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Get Involved — {{ site.organisation_name }}{% endblock %}
+{% block description %}Volunteer, partner with us, or support our work.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Get Involved</p>
+    <h1>There is a way in for everyone</h1>
+    <p>Whether you have an afternoon, a skill or a budget — the work needs you.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <div class="pillars__grid">
+      <article class="pillar pillar--green">
+        {% include "partials/icon.html" with name="users" class="pillar__icon" %}
+        <h3>Become a volunteer</h3>
+        <p>Join clean-ups, restoration days and school sessions. Whether you have one afternoon or every weekend, there is work for you.</p>
+        <a class="btn btn--light btn--sm" href="{% url 'site:volunteer' %}">Apply to volunteer</a>
+      </article>
+      <article class="pillar pillar--blue">
+        {% include "partials/icon.html" with name="handshake" class="pillar__icon" %}
+        <h3>Partner with us</h3>
+        <p>Fund a programme, bring technical expertise, or deliver work together. We report transparently and align with national frameworks and the SDGs.</p>
+        <a class="btn btn--light btn--sm" href="{% url 'site:partner' %}">Start a conversation</a>
+      </article>
+      <article class="pillar pillar--gold">
+        {% include "partials/icon.html" with name="heart" class="pillar__icon" %}
+        <h3>Support our work</h3>
+        <p>A donation puts tools, training and trees into the hands of the communities doing the work.</p>
+        <a class="btn btn--light btn--sm" href="{% url 'site:donate' %}">Make a donation</a>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}

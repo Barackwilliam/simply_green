@@ -1,0 +1,225 @@
+{% extends "base.html" %}{% load static %}
+
+{% block title %}{{ site.organisation_name }} — Environmental action across Tanzania{% endblock %}
+{% block description %}{{ site.default_meta_description }}{% endblock %}
+{% block og_title %}{{ site.organisation_name }}{% endblock %}
+
+{% block content %}
+
+{# ---------------------------------------------------------------- hero #}
+<section class="hero">
+  <div class="hero__media">
+    <img src="{% static 'img/hero.jpg' %}" width="1920" height="840" fetchpriority="high"
+         alt="Simply Green Organization staff standing with sacks of waste collected at a coastal clean-up in Dar es Salaam">
+    <div class="hero__overlay">
+      <div class="wrap">
+        <div class="hero__text">
+          <span class="hero__badge">Registered NGO · Tanzania</span>
+          <h1>{% if site.tagline %}{{ site.tagline }}{% else %}A greener, more resilient Tanzania{% endif %}</h1>
+          <p>{{ site.mission }}</p>
+          <div class="hero__actions">
+            <a class="btn btn--green" href="{% url 'site:programmes' %}">See our programmes</a>
+            <a class="btn btn--outline" href="{% url 'site:get_involved' %}">Get involved</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ------------------------------------------------- three pillar cards #}
+{% if pillars %}
+<div class="pillars">
+  <div class="wrap">
+    <div class="pillars__grid">
+      {% for area in pillars %}
+        <article class="pillar pillar--{% cycle 'blue' 'green' 'gold' %}">
+          {% include "partials/icon.html" with name=area.icon class="pillar__icon" %}
+          <h3>{{ area.title }}</h3>
+          <p>{{ area.summary|truncatewords:34 }}</p>
+          <a class="btn btn--light btn--sm" href="{{ area.get_absolute_url }}">Learn more</a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# ------------------------------------------------------ impact stats #}
+{% if stats %}
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="stats">
+      {% for s in stats %}
+        <div>
+          <div class="n">{{ s.value }}{{ s.suffix }}</div>
+          <div class="l">{{ s.label }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# --------------------------------------------------------- who we are #}
+<section class="section" id="who-we-are">
+  <div class="wrap">
+    <div class="grid grid-2" style="align-items:center;gap:48px">
+      <div>
+        <img src="{% static 'img/about.jpg' %}" width="1000" height="1250" loading="lazy"
+             style="border-radius:var(--radius)"
+             alt="Simply Green Organization team clearing plastic waste from a shoreline">
+      </div>
+      <div>
+        <span class="eyebrow">Who we are</span>
+        <h2>Communities protecting their own environment</h2>
+        <div class="prose">{{ site.who_we_are|safe }}</div>
+        <a class="btn btn--green" href="{% url 'site:about' %}" style="margin-top:12px">More about us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ------------------------------------------------------- focus areas #}
+{% if focus_areas %}
+<section class="section section--wash">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:40px">
+      <span class="eyebrow">What we work on</span>
+      <h2>Seven focus areas, one goal</h2>
+      <p class="lead">Our work spans conservation, climate and livelihoods — because environmental problems in Tanzania do not arrive one at a time.</p>
+    </div>
+    <div class="grid grid-3">
+      {% for area in focus_areas %}
+        <a class="card" href="{{ area.get_absolute_url }}">
+          <div class="card__body">
+            <div class="tile__icon">{% include "partials/icon.html" with name=area.icon %}</div>
+            <h3>{{ area.title }}</h3>
+            <p>{{ area.summary|truncatewords:28 }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------- photo band + green value panel #}
+{% if values %}
+<section class="band">
+  <div class="band__photo">
+    <img src="{% static 'img/band.jpg' %}" width="1800" height="771" loading="lazy"
+         alt="Community clean-up in progress on the Dar es Salaam coast">
+  </div>
+  <div class="wrap">
+    <div class="band__panel">
+      <div class="grid grid-3">
+        {% for v in values|slice:":3" %}
+          <div class="band__col">
+            {% include "partials/icon.html" with name=v.icon %}
+            <h3>{{ v.title }}</h3>
+            <p>{{ v.description|truncatewords:28 }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# --------------------------------------------------------- programmes #}
+{% if programmes %}
+<section class="section">
+  <div class="wrap">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:36px">
+      <div>
+        <span class="eyebrow">On the ground</span>
+        <h2 style="margin:0">Programmes running now</h2>
+      </div>
+      <a class="btn btn--blue btn--sm" href="{% url 'site:programmes' %}">All programmes</a>
+    </div>
+    <div class="grid grid-3">
+      {% for p in programmes %}{% include "partials/programme_card.html" with programme=p %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------- why partner #}
+{% if reasons %}
+<section class="section section--deep">
+  <div class="wrap">
+    <div class="grid grid-2" style="gap:48px;align-items:center">
+      <div>
+        <span class="eyebrow">For funders and partners</span>
+        <h2>Why organisations choose to work with us</h2>
+        <p class="lead">We work at the frontline, and we account for every shilling that gets us there.</p>
+        <a class="btn btn--green" href="{% url 'site:partner' %}" style="margin-top:12px">Partner with us</a>
+      </div>
+      <div class="grid" style="gap:14px">
+        {% for r in reasons %}
+          <div style="display:flex;gap:16px;padding:20px;border:1px solid rgba(255,255,255,.14);border-radius:var(--radius)">
+            <div class="tile__icon" style="background:rgba(153,190,61,.18);flex:none;margin:0">
+              {% include "partials/icon.html" with name=r.icon %}
+            </div>
+            <div>
+              <h3 style="font-size:1rem;margin-bottom:6px">{{ r.title }}</h3>
+              <p style="margin:0;font-size:.9rem;color:#cdd9c6">{{ r.description|truncatewords:26 }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------- news #}
+{% if posts %}
+<section class="section section--wash">
+  <div class="wrap">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:36px">
+      <div>
+        <span class="eyebrow">Latest</span>
+        <h2 style="margin:0">News and stories</h2>
+      </div>
+      <a class="btn btn--blue btn--sm" href="{% url 'site:news' %}">All news</a>
+    </div>
+    <div class="grid grid-3">
+      {% for post in posts %}{% include "partials/post_card.html" %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# --------------------------------------------------------- partners #}
+{% if partners %}
+<section class="section section--tight">
+  <div class="wrap center">
+    <span class="eyebrow">Working alongside</span>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:center;justify-content:center;margin-top:24px">
+      {% for p in partners %}
+        {% if p.website %}<a href="{{ p.website }}" target="_blank" rel="noreferrer noopener" title="{{ p.name }}">{% endif %}
+          <img src="{{ p.logo.url }}" alt="{{ p.name }}" height="44" loading="lazy"
+               style="height:44px;width:auto;max-width:150px;object-fit:contain;filter:grayscale(1);opacity:.65">
+        {% if p.website %}</a>{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------ get involved #}
+<section class="section section--deep">
+  <div class="wrap center">
+    <h2>There is a way in for everyone</h2>
+    <p class="lead">Whether you have an afternoon, a skill or a budget — the work needs you.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px">
+      <a class="btn btn--green" href="{% url 'site:volunteer' %}">Become a volunteer</a>
+      <a class="btn btn--outline" href="{% url 'site:partner' %}">Partner with us</a>
+      <a class="btn btn--outline" href="{% url 'site:donate' %}">Support our work</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

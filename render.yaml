@@ -1,29 +1,29 @@
 # Render Blueprint for the Simply Green Organization website.
 #
-# Two services in Frankfurt, close to the Supabase project in eu-central-1 —
-# the Django-to-database round trip is what dominates response time, so they
-# are kept in the same region.
+# One service. Django renders the public site, serves the admin the
+# organisation's staff use, and exposes a JSON API for anything that needs it
+# later. There is no separate frontend to build, deploy or keep in step.
 #
-# Every secret is `sync: false`, which means Render asks for it at deploy time
-# and stores it on the service. Nothing sensitive lives in this file.
+# Frankfurt, beside the Supabase project in eu-central-1: the database round
+# trip is what dominates response time.
 #
-# Both services run on the free plan. Free instances sleep after about fifteen
-# minutes without traffic and take roughly a minute to wake, and they are
-# capped at 512 MB of memory — hence two Gunicorn workers rather than three.
-# Moving either service to a paid plan is a one-line change here.
+# Every secret is `sync: false`, so Render asks for it and stores it on the
+# service. Nothing sensitive lives in this file.
+#
+# The free plan sleeps after about fifteen minutes without traffic and takes
+# roughly a minute to wake, and is capped at 512 MB — hence two Gunicorn
+# workers. Moving to a paid plan is a one-line change below.
 
 services:
-  # ---------------------------------------------------------------------
-  # Django: REST API and the admin the organisation's staff use
-  # ---------------------------------------------------------------------
   - type: web
-    name: simply-green-api
+    name: simply-green
     runtime: python
     region: frankfurt
     plan: free
     rootDir: backend
+
     # The free plan has no shell, so the first admin account and the content
-    # draft have to be created during the build. Both steps are idempotent:
+    # draft are created during the build. Both steps are idempotent:
     # `ensure_superuser` never touches an account that already exists, and
     # `seed_content` only fills in what is missing unless passed --force.
     buildCommand: >-
@@ -41,6 +41,7 @@ services:
       --error-logfile -
     healthCheckPath: /healthz/
     autoDeploy: true
+
     envVars:
       - key: PYTHON_VERSION
         value: "3.13.0"
@@ -50,20 +51,22 @@ services:
         value: "False"
       - key: SECRET_KEY
         generateValue: true
-      # A leading dot matches every subdomain, which covers this service's
-      # own onrender.com address without hard-coding the random suffix Render
-      # appends. Add the custom domain here once it is connected.
-      - key: ALLOWED_HOSTS
-        value: ".onrender.com"
       - key: LOG_LEVEL
         value: INFO
       - key: SECURE_SSL_REDIRECT
         value: "True"
 
+      # A leading dot matches every subdomain, which covers this service's own
+      # onrender.com address. Add the custom domain here once it is connected.
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+
       # --- First admin account -----------------------------------------
       # Created during the build because the free plan has no shell. Change
-      # the password in the admin afterwards; this command never overwrites
-      # an existing account, so the change sticks.
+      # the password in the admin afterwards; the command never overwrites an
+      # existing account, so the change sticks.
       - key: DJANGO_SUPERUSER_USERNAME
         sync: false
       - key: DJANGO_SUPERUSER_EMAIL
@@ -93,20 +96,6 @@ services:
       - key: SUPABASE_S3_SECRET_ACCESS_KEY
         sync: false
 
-      # --- Frontend ----------------------------------------------------
-      # `fromService` resolves to the bare service name rather than a full
-      # host, which Django rejects as an origin. These are set explicitly to
-      # the frontend's full https:// address instead.
-      - key: FRONTEND_URL
-        sync: false
-      - key: CORS_ALLOWED_ORIGINS
-        sync: false
-      - key: CSRF_TRUSTED_ORIGINS
-        sync: false
-      # Shared with the frontend so Django can invalidate its cache.
-      - key: REVALIDATE_SECRET
-        sync: false
-
       # --- Email notifications -----------------------------------------
       - key: EMAIL_BACKEND
         value: django.core.mail.backends.smtp.EmailBackend
@@ -123,50 +112,4 @@ services:
       - key: DEFAULT_FROM_EMAIL
         sync: false
       - key: NOTIFICATION_RECIPIENTS
-        sync: false
-
-  # ---------------------------------------------------------------------
-  # Next.js: the public website
-  # ---------------------------------------------------------------------
-  - type: web
-    name: simply-green-web
-    runtime: node
-    region: frankfurt
-    plan: free
-    rootDir: frontend
-    # NODE_ENV=production makes `npm ci` skip devDependencies, but Tailwind
-    # and @tailwindcss/turbopack are build-time tools that live there. Without
-    # --include=dev the CSS pipeline has no loader and the build fails.
-    # They are not needed at runtime, so they stay in devDependencies.
-    buildCommand: npm ci --include=dev && npm run build
-    startCommand: npx next start -p $PORT
-    autoDeploy: true
-    envVars:
-      # Must be >= 22.12. Tailwind's Turbopack loader require()s magic-string,
-      # which ships as ESM, and require(esm) only works from 22.12 onwards.
-      # On 22.11 the CSS build fails with "require() of ES Module ... not
-      # supported".
-      - key: NODE_VERSION
-        value: "22.23.4"
-      - key: NODE_ENV
-        value: production
-
-      # Read at build time (server side) and from the browser.
-      # Full https:// address of the API service, for the same reason as the
-      # origins above.
-      - key: API_URL
-        sync: false
-      - key: NEXT_PUBLIC_API_URL
-        sync: false
-
-      # The public address of the site. Set this to the real domain once it
-      # is connected — canonical URLs, Open Graph and the sitemap all use it.
-      - key: NEXT_PUBLIC_SITE_URL
-        sync: false
-
-      - key: SUPABASE_PROJECT_REF
-        sync: false
-
-      # Must match the API service's value exactly.
-      - key: REVALIDATE_SECRET
         sync: false

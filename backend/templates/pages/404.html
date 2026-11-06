@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Page not found — {{ site.organisation_name }}{% endblock %}
+{% block robots %}<meta name="robots" content="noindex,follow">{% endblock %}
+{% block content %}
+<section class="section section--deep" style="padding:110px 0">
+  <div class="wrap center">
+    <p style="font-size:4rem;font-weight:800;color:var(--green);margin:0;line-height:1">404</p>
+    <h1 style="margin-top:14px">We could not find that page</h1>
+    <p class="lead" style="margin-inline:auto">The link may be out of date, or the page may have moved.</p>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+      <a class="btn btn--green" href="{% url 'site:home' %}">Back to home</a>
+      <a class="btn btn--outline" href="{% url 'site:contact' %}">Contact us</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

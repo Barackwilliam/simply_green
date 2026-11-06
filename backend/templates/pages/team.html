@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Our Team — {{ site.organisation_name }}{% endblock %}
+{% block description %}The people behind {{ site.organisation_name }}'s environmental work in Tanzania.{% endblock %}
+
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / <a href="{% url 'site:about' %}">About Us</a> / Our Team</p>
+    <h1>Our team</h1>
+    <p>The people who turn plans into work on the ground.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    {% if not groups %}
+      <div class="empty"><strong>Team members have not been added yet</strong>Once staff and board members are added in the admin, they will appear here.</div>
+    {% endif %}
+    {% for g in groups %}
+      <h2 style="margin-bottom:24px">{{ g.label }}</h2>
+      <div class="grid grid-4" style="margin-bottom:48px">
+        {% for m in g.people %}
+          <article class="card">
+            <div class="card__media" style="aspect-ratio:4/5">
+              {% if m.photo %}<img src="{{ m.photo.url }}" alt="{{ m.full_name }}" loading="lazy">
+              {% else %}<div style="height:100%;display:grid;place-items:center;background:#e9f3d6;color:var(--green-ink);font-size:2rem;font-weight:800">{{ m.full_name|slice:":1" }}</div>{% endif %}
+            </div>
+            <div class="card__body">
+              <h3 style="margin-bottom:4px">{{ m.full_name }}</h3>
+              <p style="color:var(--green-ink);font-weight:700;font-size:.9rem;margin-bottom:8px">{{ m.role }}</p>
+              {% if m.short_bio %}<p>{{ m.short_bio }}</p>{% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

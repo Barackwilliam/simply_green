@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}News &amp; Stories — {{ site.organisation_name }}{% endblock %}
+{% block description %}News, announcements, impact stories and podcasts from {{ site.organisation_name }}.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / News</p>
+    <h1>News and stories</h1>
+    <p>What we are learning, publishing and seeing change.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <div class="filters">
+      <a class="chip" href="{% url 'site:news' %}" {% if not kind and not category %}aria-current="true"{% endif %}>All</a>
+      {% for value, label in kinds %}<a class="chip" href="?kind={{ value }}" {% if kind == value %}aria-current="true"{% endif %}>{{ label }}</a>{% endfor %}
+    </div>
+    {% if categories %}
+      <div class="filters">
+        {% for c in categories %}<a class="chip" href="?category={{ c.slug }}" {% if category == c.slug %}aria-current="true"{% endif %}>{{ c.name }}</a>{% endfor %}
+      </div>
+    {% endif %}
+    {% if posts %}
+      <div class="grid grid-3">{% for post in posts %}{% include "partials/post_card.html" %}{% endfor %}</div>
+    {% else %}
+      <div class="empty"><strong>Nothing published yet</strong>Articles written in the admin will appear here.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

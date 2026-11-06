@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Contact Us — {{ site.organisation_name }}{% endblock %}
+{% block description %}Get in touch with {{ site.organisation_name }} in {{ site.city }}, {{ site.country }}.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Contact</p>
+    <h1>Contact us</h1>
+    <p>Questions, proposals, press enquiries — we read everything that comes in.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <div class="grid" style="grid-template-columns:3fr 2fr;gap:48px;align-items:start">
+      <div>
+        <h2>Send us a message</h2>
+        <form method="post" novalidate style="margin-top:20px">
+          {% csrf_token %}
+          {% include "partials/form.html" %}
+          <button class="btn btn--green" type="submit">Send message</button>
+        </form>
+      </div>
+      <aside style="display:grid;gap:14px">
+        {% if site.address %}
+          <div class="tile" style="display:flex;gap:14px"><div class="tile__icon" style="flex:none;margin:0">{% include "partials/icon.html" with name="pin" %}</div>
+            <div><strong style="font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Office</strong><p style="margin:4px 0 0">{{ site.address|linebreaksbr }}</p></div></div>
+        {% endif %}
+        {% if site.phone %}
+          <div class="tile" style="display:flex;gap:14px"><div class="tile__icon" style="flex:none;margin:0">{% include "partials/icon.html" with name="phone" %}</div>
+            <div><strong style="font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Phone</strong><p style="margin:4px 0 0"><a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></p></div></div>
+        {% endif %}
+        {% if site.email %}
+          <div class="tile" style="display:flex;gap:14px"><div class="tile__icon" style="flex:none;margin:0">{% include "partials/icon.html" with name="mail" %}</div>
+            <div><strong style="font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Email</strong><p style="margin:4px 0 0"><a href="mailto:{{ site.email }}">{{ site.email }}</a></p></div></div>
+        {% endif %}
+        {% if not site.address and not site.phone and not site.email %}
+          <div class="empty"><strong>Contact details not added yet</strong>They can be set in the admin under Site settings.</div>
+        {% endif %}
+        {% if site.map_embed_url %}
+          <iframe src="{{ site.map_embed_url }}" title="Map showing the {{ site.organisation_name }} office" loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  style="width:100%;height:300px;border:1px solid var(--line);border-radius:var(--radius)"></iframe>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

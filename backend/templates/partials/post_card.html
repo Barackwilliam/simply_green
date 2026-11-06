@@ -1,0 +1,21 @@
+{% load static %}
+<a class="card" href="{{ post.get_absolute_url }}">
+  <div class="card__media">
+    {% if post.featured_image %}
+      <img src="{{ post.featured_image.url }}" alt="{{ post.featured_image_alt|default:post.title }}" loading="lazy">
+    {% else %}
+      <img src="{% static 'img/planning.jpg' %}" alt="" loading="lazy">
+    {% endif %}
+  </div>
+  <div class="card__body">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag--blue">{{ post.get_kind_display }}</span>
+      {% if post.category %}<span class="tag tag--grey">{{ post.category.name }}</span>{% endif %}
+    </div>
+    <h3>{{ post.title }}</h3>
+    <p>{{ post.excerpt|default:post.body|striptags|truncatewords:22 }}</p>
+    <div class="card__meta">
+      <span>{% include "partials/icon.html" with name="calendar" %}{{ post.published_at|date:"j F Y" }}{% if post.reading_minutes %} · {{ post.reading_minutes }} min read{% endif %}</span>
+    </div>
+  </div>
+</a>

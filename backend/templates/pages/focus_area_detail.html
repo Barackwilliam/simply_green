@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ area.meta_title|default:area.title }} — {{ site.organisation_name }}{% endblock %}
+{% block description %}{{ area.meta_description|default:area.summary|truncatechars:158 }}{% endblock %}
+{% block og_title %}{{ area.title }}{% endblock %}
+{% block robots %}{% if area.noindex %}<meta name="robots" content="noindex,follow">{% endif %}{% endblock %}
+
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / <a href="{% url 'site:focus_areas' %}">Focus Areas</a> / {{ area.title }}</p>
+    <h1>{{ area.title }}</h1>
+    <p>{{ area.summary }}</p>
+  </div>
+</section>
+
+{% if area.body %}
+<section class="section">
+  <div class="wrap" style="max-width:820px"><div class="prose">{{ area.body|safe }}</div></div>
+</section>
+{% endif %}
+
+{% if programmes %}
+<section class="section section--wash">
+  <div class="wrap">
+    <span class="eyebrow">In practice</span>
+    <h2 style="margin-bottom:32px">Programmes under {{ area.title }}</h2>
+    <div class="grid grid-3">
+      {% for p in programmes %}{% include "partials/programme_card.html" with programme=p %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

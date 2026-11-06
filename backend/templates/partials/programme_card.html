@@ -1,0 +1,19 @@
+{% load static %}
+<a class="card" href="{{ programme.get_absolute_url }}">
+  <div class="card__media">
+    {% if programme.featured_image %}
+      <img src="{{ programme.featured_image.url }}" alt="{{ programme.title }}" loading="lazy">
+    {% else %}
+      <img src="{% static 'img/sacks.jpg' %}" alt="" loading="lazy">
+    {% endif %}
+  </div>
+  <div class="card__body">
+    <span class="tag tag--{% if programme.status == 'ongoing' %}green{% else %}grey{% endif %}" style="align-self:flex-start;margin-bottom:10px">{{ programme.get_status_display }}</span>
+    <h3>{{ programme.title }}</h3>
+    <p>{{ programme.summary|truncatewords:24 }}</p>
+    <div class="card__meta">
+      {% if programme.location %}<span>{% include "partials/icon.html" with name="pin" %}{{ programme.location }}</span>{% endif %}
+      {% if programme.beneficiaries %}<span>{% include "partials/icon.html" with name="users" %}{{ programme.beneficiaries }}</span>{% endif %}
+    </div>
+  </div>
+</a>

@@ -1,0 +1,82 @@
+{% if site.newsletter_enabled %}
+<section class="newsletter">
+  <div class="wrap">
+    <div>
+      <h2>Stay with the work</h2>
+      <p>Updates on our programmes, research and events across Tanzania.</p>
+    </div>
+    <form method="post" action="{% url 'site:newsletter' %}">
+      {% csrf_token %}
+      <div class="honey"><label for="nl_website">Leave empty</label><input id="nl_website" type="text" name="website_url" tabindex="-1" autocomplete="off"></div>
+      <label class="sr-only" for="nl_email" style="position:absolute;left:-9999px">Email address</label>
+      <input id="nl_email" type="email" name="email" required placeholder="your.name@example.com" autocomplete="email">
+      <button class="btn btn--green" type="submit">Subscribe</button>
+    </form>
+  </div>
+</section>
+{% endif %}
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="grid grid-4">
+      <div class="footer__brand">
+        {% if site.logo %}<img src="{{ site.logo.url }}" alt="{{ site.organisation_name }}">{% endif %}
+        {% if site.tagline %}<p>{{ site.tagline }}</p>{% endif %}
+        {% if site.registration_number %}
+          <p class="footer__reg">
+            Registered in Tanzania under the Non-Governmental Organizations Act No.&nbsp;24 of 2002<br>
+            Registration No. {{ site.registration_number }}
+          </p>
+        {% endif %}
+        {% if social_links %}
+          <div class="footer__socials">
+            {% for s in social_links %}
+              <a href="{{ s.url }}" target="_blank" rel="noreferrer noopener" aria-label="{{ s.get_platform_display }}">
+                {% include "partials/icon.html" with name=s.platform %}
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="{% url 'site:about' %}">About Us</a></li>
+          <li><a href="{% url 'site:focus_areas' %}">Focus Areas</a></li>
+          <li><a href="{% url 'site:programmes' %}">Programmes</a></li>
+          <li><a href="{% url 'site:resources' %}">Resource Centre</a></li>
+          <li><a href="{% url 'site:news' %}">News &amp; Stories</a></li>
+          <li><a href="{% url 'site:events' %}">Events</a></li>
+          <li><a href="{% url 'site:gallery' %}">Gallery</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get Involved</h3>
+        <ul>
+          <li><a href="{% url 'site:volunteer' %}">Become a Volunteer</a></li>
+          <li><a href="{% url 'site:partner' %}">Partner With Us</a></li>
+          <li><a href="{% url 'site:donate' %}">Support Our Work</a></li>
+          <li><a href="{% url 'site:team' %}">Our Team</a></li>
+          <li><a href="{% url 'site:contact' %}">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Reach Us</h3>
+        <ul>
+          {% if site.address %}<li>{{ site.address|linebreaksbr }}</li>{% endif %}
+          {% if site.phone %}<li><a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></li>{% endif %}
+          {% if site.email %}<li><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>{% endif %}
+          {% if site.postal_address %}<li>{{ site.postal_address }}</li>{% endif %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; {{ current_year }} {{ site.organisation_name }}. All rights reserved.</span>
+      <span><a href="{% url 'site:privacy' %}">Privacy Policy</a></span>
+    </div>
+  </div>
+</footer>

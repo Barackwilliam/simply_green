@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Focus Areas — {{ site.organisation_name }}{% endblock %}
+{% block description %}Environmental conservation, climate action, waste management, community empowerment, sustainable livelihoods, research and green innovation.{% endblock %}
+
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Focus Areas</p>
+    <h1>Focus areas</h1>
+    <p>Our work spans conservation, climate and livelihoods — because environmental problems in Tanzania do not arrive one at a time.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    {% if areas %}
+      <div class="grid grid-3">
+        {% for a in areas %}
+          <a class="card" href="{{ a.get_absolute_url }}">
+            <div class="card__body">
+              <div class="tile__icon">{% include "partials/icon.html" with name=a.icon %}</div>
+              <h3>{{ a.title }}</h3>
+              <p>{{ a.summary }}</p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty"><strong>No focus areas yet</strong>Add them in the admin and they will appear here.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Events — {{ site.organisation_name }}{% endblock %}
+{% block description %}Clean-ups, trainings, restoration days and community sessions run by {{ site.organisation_name }}.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Events</p>
+    <h1>Events</h1>
+    <p>Clean-ups, trainings and community sessions — come and take part.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    {% if not upcoming and not past %}
+      <div class="empty"><strong>No events scheduled yet</strong>Events added in the admin will appear here, with optional online registration.</div>
+    {% endif %}
+    {% if upcoming %}
+      <span class="eyebrow">Coming up</span><h2 style="margin-bottom:28px">Upcoming events</h2>
+      <div class="grid grid-3" style="margin-bottom:56px">{% for e in upcoming %}{% include "partials/event_card.html" with event=e %}{% endfor %}</div>
+    {% endif %}
+    {% if past %}
+      <span class="eyebrow">Archive</span><h2 style="margin-bottom:28px">Past events</h2>
+      <div class="grid grid-3">{% for e in past %}{% include "partials/event_card.html" with event=e %}{% endfor %}</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

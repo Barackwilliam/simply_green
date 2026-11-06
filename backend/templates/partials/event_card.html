@@ -1,0 +1,16 @@
+{% load static %}
+<a class="card" href="{{ event.get_absolute_url }}">
+  <div class="card__media">
+    {% if event.featured_image %}<img src="{{ event.featured_image.url }}" alt="{{ event.title }}" loading="lazy">
+    {% else %}<img src="{% static 'img/band.jpg' %}" alt="" loading="lazy">{% endif %}
+  </div>
+  <div class="card__body">
+    <span class="tag tag--{% if event.status == 'upcoming' %}green{% else %}grey{% endif %}" style="align-self:flex-start;margin-bottom:10px">{{ event.get_status_display }}</span>
+    <h3>{{ event.title }}</h3>
+    {% if event.summary %}<p>{{ event.summary|truncatewords:20 }}</p>{% endif %}
+    <div class="card__meta">
+      <span>{% include "partials/icon.html" with name="calendar" %}{{ event.start_datetime|date:"j F Y, H:i" }}</span>
+      {% if event.venue %}<span>{% include "partials/icon.html" with name="pin" %}{% if event.is_online %}Online{% else %}{{ event.venue }}{% endif %}</span>{% endif %}
+    </div>
+  </div>
+</a>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Become a Volunteer — {{ site.organisation_name }}{% endblock %}
+{% block description %}Volunteer with {{ site.organisation_name }} — clean-ups, restoration days, school sessions and community trainings.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:get_involved' %}">Get Involved</a> / Volunteer</p>
+    <h1>Become a volunteer</h1>
+    <p>Give the time you have. We will find work that fits it.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <div class="grid" style="grid-template-columns:3fr 2fr;gap:48px;align-items:start">
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% include "partials/form.html" %}
+        <button class="btn btn--green" type="submit">Submit application</button>
+      </form>
+      <aside>
+        <img src="{% static 'img/about.jpg' %}" alt="Volunteers clearing waste from a shoreline" loading="lazy" style="border-radius:var(--radius);margin-bottom:18px">
+        <div class="tile">
+          <h3>What volunteering looks like</h3>
+          <ul style="padding-left:1.1em;margin:0;color:var(--ink-soft);font-size:.93rem">
+            <li>Coastal and market clean-ups in Dar es Salaam</li>
+            <li>Mangrove nursery and planting days</li>
+            <li>School sessions on waste separation and reuse</li>
+            <li>Community trainings and awareness events</li>
+            <li>Data collection, documentation and photography</li>
+          </ul>
+          <p class="hint" style="margin-top:14px">We will only use your details to contact you about volunteering. We never share them.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

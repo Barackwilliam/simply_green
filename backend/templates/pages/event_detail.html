@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{ event.meta_title|default:event.title }} — {{ site.organisation_name }}{% endblock %}
+{% block description %}{{ event.meta_description|default:event.summary|truncatechars:158 }}{% endblock %}
+{% block og_title %}{{ event.title }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block extra_head %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Event",
+ "name":"{{ event.title|escapejs }}",
+ "startDate":"{{ event.start_datetime|date:'c' }}",
+ {% if event.end_datetime %}"endDate":"{{ event.end_datetime|date:'c' }}",{% endif %}
+ "eventAttendanceMode":"https://schema.org/{% if event.is_online %}Online{% else %}Offline{% endif %}EventAttendanceMode",
+ "location":{% if event.is_online %}{"@type":"VirtualLocation","url":"{{ event.online_url|default:canonical_url }}"}{% else %}{"@type":"Place","name":"{{ event.venue|escapejs }}","address":"{{ event.address|escapejs|default:event.venue|escapejs }}"}{% endif %},
+ "organizer":{"@type":"NGO","name":"{{ site.organisation_name|escapejs }}","url":"{{ site_base_url }}"}}
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:events' %}">&larr; All events</a></p>
+    <span class="tag tag--green">{{ event.get_status_display }}</span>
+    <h1 style="margin-top:14px">{{ event.title }}</h1>
+    <p>
+      {{ event.start_datetime|date:"l, j F Y · H:i" }}
+      {% if event.venue or event.is_online %} — {% if event.is_online %}Online{% else %}{{ event.venue }}{% endif %}{% endif %}
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="grid" style="grid-template-columns:3fr 2fr;gap:48px;align-items:start">
+      <div>
+        {% if event.summary %}<p class="lead" style="color:var(--ink);font-size:1.15rem">{{ event.summary }}</p>{% endif %}
+        {% if event.body %}<div class="prose">{{ event.body|safe }}</div>{% endif %}
+        {% if event.address %}
+          <div class="tile" style="margin-top:28px">
+            <h3 style="font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Address</h3>
+            <p style="margin:0">{{ event.address|linebreaksbr }}</p>
+          </div>
+        {% endif %}
+        {% if event.map_embed_url %}
+          <iframe src="{{ event.map_embed_url }}" title="Map showing {{ event.venue|default:event.title }}"
+                  loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                  style="width:100%;height:320px;border:1px solid var(--line);border-radius:var(--radius);margin-top:18px"></iframe>
+        {% endif %}
+      </div>
+
+      <aside>
+        {% if event.registration_enabled and event.registration_open %}
+          <div class="tile">
+            <h3>Register to attend</h3>
+            <p style="font-size:.92rem">Reserve your place. We will email you the details.</p>
+            <form method="post" novalidate style="margin-top:16px">
+              {% csrf_token %}
+              {% include "partials/form.html" %}
+              <button class="btn btn--green" type="submit" style="width:100%">Register</button>
+            </form>
+          </div>
+        {% elif event.registration_enabled %}
+          <div class="tile">
+            <h3>Registration is closed</h3>
+            <p style="margin:0">This event is full, past, or the deadline has passed. Get in touch if you would still like to take part.</p>
+          </div>
+        {% endif %}
+        {% if event.is_online and event.online_url %}
+          <div class="tile" style="background:var(--green-deep);border:0;margin-top:18px">
+            <h3 style="color:#fff">Join online</h3>
+            <a class="btn btn--green btn--sm" href="{{ event.online_url }}" target="_blank" rel="noreferrer noopener">Open the link</a>
+          </div>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

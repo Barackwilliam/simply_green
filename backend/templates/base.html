@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{% block title %}{{ site.organisation_name }}{% endblock %}</title>
+<meta name="description" content="{% block description %}{{ site.default_meta_description }}{% endblock %}">
+<link rel="canonical" href="{{ canonical_url }}">
+{% block robots %}{% endblock %}
+
+{% if site.favicon %}<link rel="icon" href="{{ site.favicon.url }}">{% endif %}
+
+<meta property="og:type" content="{% block og_type %}website{% endblock %}">
+<meta property="og:site_name" content="{{ site.organisation_name }}">
+<meta property="og:title" content="{% block og_title %}{{ site.organisation_name }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{{ site.default_meta_description }}{% endblock %}">
+<meta property="og:url" content="{{ canonical_url }}">
+{% block og_image %}{% if site.default_og_image %}<meta property="og:image" content="{{ site.default_og_image.url }}">{% endif %}{% endblock %}
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/site.css' %}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "name": "{{ site.organisation_name|escapejs }}",
+  "url": "{{ site_base_url }}",
+  {% if site.logo %}"logo": "{{ site_base_url }}{{ site.logo.url }}",{% endif %}
+  "description": "{{ site.default_meta_description|escapejs }}",
+  {% if site.email %}"email": "{{ site.email|escapejs }}",{% endif %}
+  {% if site.phone %}"telephone": "{{ site.phone|escapejs }}",{% endif %}
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ site.address|escapejs }}",
+    "addressLocality": "{{ site.city|escapejs }}",
+    "addressCountry": "{{ site.country|escapejs }}"
+  }
+}
+</script>
+{% block extra_head %}{% endblock %}
+</head>
+
+<body>
+<a class="skip" href="#main">Skip to content</a>
+{% include "partials/header.html" %}
+
+<main id="main">
+  {% if messages %}
+    <div class="wrap" style="padding-top:20px">
+      {% for message in messages %}
+        <div class="alert alert--{% if message.tags == 'error' %}err{% else %}ok{% endif %}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+{% include "partials/footer.html" %}
+<script src="{% static 'js/site.js' %}" defer></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

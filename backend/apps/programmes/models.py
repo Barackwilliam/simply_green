@@ -1,6 +1,7 @@
 """Focus areas and the programmes delivered under them."""
 
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
 
@@ -41,6 +42,9 @@ class FocusArea(PublishableModel, SEOModel):
         if not self.slug:
             self.slug = slugify(self.title)[:200]
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("site:focus_area_detail", kwargs={"slug": self.slug})
 
 
 class Programme(PublishableModel, SEOModel):
@@ -110,6 +114,9 @@ class Programme(PublishableModel, SEOModel):
         if not self.slug:
             self.slug = slugify(self.title)[:280]
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("site:programme_detail", kwargs={"slug": self.slug})
 
 
 class ProgrammeOutcome(models.Model):

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Programmes — {{ site.organisation_name }}{% endblock %}
+{% block description %}Community-led environmental programmes in schools, markets and coastal villages across Dar es Salaam.{% endblock %}
+
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Programmes</p>
+    <h1>Programmes</h1>
+    <p>What we are running now, and what we have delivered.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="filters">
+      <a class="chip" href="{% url 'site:programmes' %}" {% if not status and not area %}aria-current="true"{% endif %}>All</a>
+      {% for value, label in statuses %}
+        <a class="chip" href="?status={{ value }}" {% if status == value %}aria-current="true"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </div>
+    {% if areas %}
+      <div class="filters">
+        {% for a in areas %}
+          <a class="chip" href="?area={{ a.slug }}" {% if area == a.slug %}aria-current="true"{% endif %}>{{ a.title }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if programmes %}
+      <div class="grid grid-3">
+        {% for p in programmes %}{% include "partials/programme_card.html" with programme=p %}{% endfor %}
+      </div>
+    {% else %}
+      <div class="empty"><strong>No programmes match</strong>Try a different filter, or view all programmes.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

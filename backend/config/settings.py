@@ -16,7 +16,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, ["*"]),
-    CORS_ALLOWED_ORIGINS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
     USE_SUPABASE_STORAGE=(bool, False),
 )
@@ -59,7 +58,6 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     # Third party
     "rest_framework",
-    "corsheaders",
     "django_filters",
     "taggit",
     "django_ckeditor_5",
@@ -67,6 +65,7 @@ INSTALLED_APPS = [
     "django_extensions",
     # Project apps
     "apps.core",
+    "apps.site",
     "apps.about",
     "apps.programmes",
     "apps.resources",
@@ -78,7 +77,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -100,6 +98,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.site.context_processors.site_context",
             ],
         },
     },
@@ -254,16 +253,16 @@ REST_FRAMEWORK = {
 }
 
 # ---------------------------------------------------------------------------
-# CORS — the Next.js frontend is a separate origin.
+# Trusted origins
 # ---------------------------------------------------------------------------
 
 def _as_origin(value: str) -> str:
-    """Normalise a value into an origin Django and django-cors-headers accept.
+    """Normalise a value into an origin Django accepts.
 
-    Both require a scheme: a bare hostname raises 4_0.E001 and corsheaders.E013
-    at startup, which fails the deploy. Hosting platforms and hand-typed
-    settings routinely supply the host alone, so add https:// when it is
-    missing rather than refuse to boot over a missing prefix.
+    CSRF_TRUSTED_ORIGINS requires a scheme: a bare hostname raises 4_0.E001 at
+    startup, which fails the deploy. Hosting platforms and hand-typed settings
+    routinely supply the host alone, so add https:// when it is missing rather
+    than refuse to boot over a missing prefix.
     """
     value = value.strip().rstrip("/")
     if not value:
@@ -273,16 +272,9 @@ def _as_origin(value: str) -> str:
     return f"https://{value}"
 
 
-CORS_ALLOWED_ORIGINS = [
-    origin for origin in (_as_origin(v) for v in env("CORS_ALLOWED_ORIGINS")) if origin
-]
 CSRF_TRUSTED_ORIGINS = [
     origin for origin in (_as_origin(v) for v in CSRF_TRUSTED_ORIGINS) if origin
 ]
-CORS_ALLOW_CREDENTIALS = False
-
-if DEBUG and not CORS_ALLOWED_ORIGINS:
-    CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 # ---------------------------------------------------------------------------
 # Security — hardened whenever DEBUG is off.
@@ -314,16 +306,6 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@simplygreen.or.tz")
 NOTIFICATION_RECIPIENTS = env.list("NOTIFICATION_RECIPIENTS", default=[])
-
-# ---------------------------------------------------------------------------
-# Frontend cache invalidation
-#
-# The Next.js site is statically prerendered. When content changes here we
-# post the affected cache tags to it so the change appears immediately.
-# ---------------------------------------------------------------------------
-
-FRONTEND_URL = _as_origin(env("FRONTEND_URL", default=""))
-REVALIDATE_SECRET = env("REVALIDATE_SECRET", default="")
 
 # ---------------------------------------------------------------------------
 # Rich text editor
@@ -556,3 +538,20 @@ def environment_callback(request):
     if name == "production":
         return None
     return [name.title(), "warning"]
+
+
+# ---------------------------------------------------------------------------
+# Cache
+#
+# Read-only pages are cached for a few minutes. One process, one cache: this
+# is a single small service, so an in-memory cache is the right size. Swap in
+# Redis here if the site ever runs more than one instance.
+# ---------------------------------------------------------------------------
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "simply-green",
+        "TIMEOUT": 300,
+    }
+}

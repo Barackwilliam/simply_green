@@ -8,136 +8,118 @@ sustainable livelihoods across Mainland Tanzania.
 
 ## Architecture
 
+One Django service renders the public site, serves the admin the
+organisation's staff use, and exposes a JSON API for anything that needs it
+later.
+
 ```
-┌──────────────────┐        JSON API         ┌────────────────────┐
-│  Next.js 16      │ ──────────────────────> │  Django 5 + DRF    │
-│  (public site)   │                         │  (API + admin)     │
-│                  │ <────────────────────── │                    │
-└──────────────────┘   cache invalidation    └────────────────────┘
-                                                       │
-                                                       ▼
-                                           ┌────────────────────────┐
-                                           │  Supabase              │
-                                           │  Postgres + Storage    │
-                                           └────────────────────────┘
+┌──────────────────────────────┐        ┌────────────────────────┐
+│  Django 5                    │ ─────> │  Supabase              │
+│  · public site (templates)   │        │  Postgres + Storage    │
+│  · admin (Unfold)            │ <───── │                        │
+│  · JSON API (DRF)            │        └────────────────────────┘
+└──────────────────────────────┘
 ```
 
-| Layer | Choice | Why |
+| Piece | Choice | Why |
 |---|---|---|
-| Frontend | Next.js 16, React 19, Tailwind v4 | Pages prerender to static HTML, which is what makes the site fast and indexable |
-| Backend | Django 5 + DRF | Staff manage everything through one admin; the ORM owns the schema |
+| Framework | Django 5 | One service: no separate frontend to build, deploy or keep in step |
+| Templates | Django + plain CSS | No build step, no Node, no bundler |
 | Admin UI | [Unfold](https://unfoldadmin.com/) | A current interface rather than stock Django admin |
 | Database | Supabase Postgres | Managed, with Django migrations as the source of truth |
-| Files | Supabase Storage (S3 API) | Images and PDFs served from a CDN, not from the app server |
-| Hosting | Render, Frankfurt | Same region as the database, so queries stay fast |
+| Files | Supabase Storage (S3 API) | Images and PDFs from a CDN, not the app server |
+| Hosting | Render, Frankfurt | Same region as the database |
 
-### How content reaches the site
+### Design
 
-The site is statically prerendered, so a page would normally keep serving the
-previous version until its cache lapsed. Instead:
+The structure follows the reference the client chose — a full-bleed hero,
+three solid colour cards overlapping it, a full-width panel over a photo band,
+bold uppercase navigation — using the organisation's own blue, green and gold.
+Those hues are darkened wherever white text sits on them so every combination
+clears WCAG AA, which the reference does not.
 
-1. An editor saves something in the Django admin.
-2. A `post_save` signal posts the affected cache tags to the frontend's
-   `/api/revalidate` endpoint.
-3. Next.js drops exactly those cache entries; the next request re-renders.
+### A note on caching
 
-Measured end to end at roughly **four seconds**. The endpoint requires a
-shared secret and refuses every request when that secret is unset, rather
-than defaulting to open.
+The views deliberately do **not** use `cache_page`. The newsletter form sits
+in the footer of every page, so every page carries a CSRF token, and a cached
+page would serve the first visitor's token to everyone — which Django rejects
+with a 403. This was found by testing the form, not by reading the code. If
+caching is wanted later, cache the fragments that carry no token.
 
 ## Repository layout
 
 ```
-backend/            Django project
-  config/             settings, URL routing, health check
-  apps/core/          site settings, social links, partners, impact stats
-  apps/about/         core values, objectives, partner reasons, team
-  apps/programmes/    focus areas, programmes, outcomes, images
-  apps/resources/     publications and reports
-  apps/news/          posts, events, event registrations
-  apps/gallery/       albums, photos, videos
-  apps/engage/        contact, volunteers, partners, newsletter, donations
-frontend/           Next.js app
-  app/                routes, sitemap, robots, revalidate endpoint
-  components/         layout, UI primitives, cards, forms, home sections
-  lib/                API client, types, utilities, navigation
-assets/source/      Original photographs and logo supplied by the client
-render.yaml         Render Blueprint for both services
+backend/
+  config/            settings, URL routing, health check
+  apps/site/         public website: views, forms, navigation, sitemaps
+  apps/core/         site settings, social links, partners, impact statistics
+  apps/about/        core values, objectives, partner reasons, team
+  apps/programmes/   focus areas, programmes, outcomes, images
+  apps/resources/    publications and reports
+  apps/news/         posts, events, event registrations
+  apps/gallery/      albums, photos, videos
+  apps/engage/       contact, volunteers, partners, newsletter, donations
+  templates/         base, partials, one template per page
+  static/            stylesheet, script, images
+assets/source/       original photographs and logo supplied by the client
+render.yaml          Render Blueprint — one service
 ```
 
 ## Running locally
-
-Two terminals.
-
-**Backend**
 
 ```bash
 cd backend
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-cp .env.example .env          # fill in the blanks
+cp .env.example .env            # then fill in the blanks
 .venv/bin/python manage.py migrate
-.venv/bin/python manage.py seed_content     # loads the content draft
+.venv/bin/python manage.py seed_content      # loads the content draft
 .venv/bin/python manage.py createsuperuser
 .venv/bin/python manage.py runserver
 ```
 
-**Frontend**
+Site: http://127.0.0.1:8000/ · Admin: http://127.0.0.1:8000/admin/
 
-```bash
-cd frontend
-npm install
-cp .env.example .env.local    # fill in the blanks
-npm run dev
-```
-
-Site: http://localhost:3000 · Admin: http://127.0.0.1:8000/admin/
-
-With `DATABASE_URL` left blank the backend falls back to SQLite, so it boots
-before any Supabase credentials exist.
+With `DATABASE_URL` blank the project falls back to SQLite, so it boots before
+any Supabase credentials exist.
 
 ## Deploying
 
-The repository ships a Render Blueprint. In Render, choose **New → Blueprint**
-and point it at this repository. It creates two services in Frankfurt and
-prompts for the secrets marked `sync: false`:
+In Render choose **New → Blueprint** and point it at this repository. It
+creates one service in Frankfurt and prompts for the secrets marked
+`sync: false`:
 
 | Secret | Where to find it |
 |---|---|
 | `DATABASE_URL` | Supabase → Project Settings → Database → Connection string → **Session pooler** |
-| `SUPABASE_PROJECT_REF` | The project reference in your Supabase dashboard URL |
+| `SUPABASE_PROJECT_REF` | The project reference in the Supabase dashboard URL |
 | `SUPABASE_S3_ACCESS_KEY_ID` / `SUPABASE_S3_SECRET_ACCESS_KEY` | Supabase → Project Settings → Storage → S3 access keys |
-| `REVALIDATE_SECRET` | Any long random string — **the same value on both services** |
-| `NEXT_PUBLIC_SITE_URL` | The site's real public address |
+| `DJANGO_SUPERUSER_USERNAME` / `EMAIL` / `PASSWORD` | Your choice — this is how you first log in |
+| `CSRF_TRUSTED_ORIGINS` | The site's own `https://` address |
 | Email settings | Your SMTP provider |
 
-Migrations run as part of the backend build, so the Supabase schema is created
-on first deploy.
+Migrations, the first admin account and the content draft all run during the
+build, because the free plan has no shell. All three steps are idempotent.
 
-### After the first deploy
-
-1. Create a superuser: Render → `simply-green-api` → Shell →
-   `python manage.py createsuperuser`
-2. Run `python manage.py seed_content` to load the content draft.
-3. Fill in Site settings: contact details, social links, logo.
-4. Add the real impact statistics, team members, partners and donation details.
+**`DATABASE_URL` is not optional in production.** Without it Django falls back
+to SQLite on an ephemeral disk and every restart silently discards all
+content. It warns loudly in the logs when this happens.
 
 ## A note on donation details
 
 `DonationMethod` holds bank and mobile money details that are **published on
-the website**, so they hold no secrets. They must still be verified with the
-organisation's leadership directly — by phone or in person — before going
+the website**, so they contain no secrets. They must still be verified with
+the organisation's leadership directly — by phone or in person — before going
 live. Substituting an account number is a common fraud, and a donation page is
 exactly where it pays off.
 
 Payment *gateway* credentials (M-Pesa API keys, Selcom or DPO merchant
-secrets) never belong in this repository or the database. They go in
-environment variables if and when a gateway is integrated.
+secrets) never belong in this repository or the database.
 
 The donation form records a donor's **intent to give**. It never asks for a
 card number, PIN or mobile money password.
 
-## Still to come from the organisation
+## Still needed from the organisation
 
 - Contact details: phone, email, office address, social media links
 - Real impact statistics — these must be theirs, not invented

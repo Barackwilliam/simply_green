@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Support Our Work — {{ site.organisation_name }}{% endblock %}
+{% block description %}Donate to {{ site.organisation_name }} and fund community-led environmental conservation, climate action and sustainable livelihoods in Tanzania.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:get_involved' %}">Get Involved</a> / Donate</p>
+    <h1>Support our work</h1>
+    <p>A donation puts tools, training and trees into the hands of the communities doing the work.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="grid grid-2" style="gap:48px;align-items:start">
+      <div>
+        <span class="eyebrow">How to give</span>
+        <h2>Where to send your gift</h2>
+
+        {% if not has_methods %}
+          <div class="empty" style="margin-top:20px"><strong>Payment details are not published yet</strong>Bank and mobile money details added in the admin will appear here.</div>
+        {% endif %}
+
+        {% if banks %}
+          <h3 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Bank transfer</h3>
+          {% for m in banks %}
+            <div class="tile" style="margin-top:14px">
+              <strong style="display:block;font-size:1.05rem;margin-bottom:12px">{{ m.label }}</strong>
+              <dl style="margin:0;font-size:.93rem;display:grid;grid-template-columns:auto 1fr;gap:6px 18px">
+                {% if m.account_name %}<dt style="color:var(--muted)">Account name</dt><dd style="margin:0;font-weight:600">{{ m.account_name }}</dd>{% endif %}
+                {% if m.account_number %}<dt style="color:var(--muted)">Account number</dt><dd style="margin:0;font-weight:700;font-family:ui-monospace,monospace">{{ m.account_number }}</dd>{% endif %}
+                {% if m.bank_name %}<dt style="color:var(--muted)">Bank</dt><dd style="margin:0;font-weight:600">{{ m.bank_name }}</dd>{% endif %}
+                {% if m.branch %}<dt style="color:var(--muted)">Branch</dt><dd style="margin:0;font-weight:600">{{ m.branch }}</dd>{% endif %}
+                {% if m.swift_code %}<dt style="color:var(--muted)">SWIFT</dt><dd style="margin:0;font-weight:600;font-family:ui-monospace,monospace">{{ m.swift_code }}</dd>{% endif %}
+                {% if m.currency %}<dt style="color:var(--muted)">Currency</dt><dd style="margin:0;font-weight:600">{{ m.currency }}</dd>{% endif %}
+              </dl>
+              {% if m.instructions %}<p style="margin:14px 0 0;font-size:.9rem;border-top:1px solid var(--line);padding-top:12px">{{ m.instructions }}</p>{% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {% if mobile %}
+          <h3 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Mobile money</h3>
+          <div class="grid grid-2" style="margin-top:14px">
+            {% for m in mobile %}
+              <div class="tile">
+                <span class="tag tag--green">{{ m.get_channel_display }}</span>
+                <strong style="display:block;margin-top:10px">{{ m.label }}</strong>
+                {% if m.account_number %}<p style="font-family:ui-monospace,monospace;font-size:1.25rem;font-weight:800;margin:10px 0 4px">{{ m.account_number }}</p>{% endif %}
+                {% if m.account_name %}<p style="margin:0;font-size:.9rem;color:var(--muted)">{{ m.account_name }}</p>{% endif %}
+                {% if m.instructions %}<p style="margin:10px 0 0;font-size:.88rem">{{ m.instructions }}</p>{% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="tile" style="margin-top:24px;background:#ddf1fa;border-color:#a9dcf2;display:flex;gap:14px;align-items:flex-start">
+          <div class="tile__icon" style="flex:none;margin:0;background:#fff">{% include "partials/icon.html" with name="shield" %}</div>
+          <p style="margin:0;font-size:.92rem;color:var(--blue-ink)">
+            Always confirm these account details with us by phone before sending a large gift.
+            We will never email you to say our bank details have changed.
+          </p>
+        </div>
+      </div>
+
+      <div class="tile" style="padding:30px">
+        <span class="eyebrow">Tell us</span>
+        <h2 style="font-size:1.5rem">Let us know your gift is coming</h2>
+        <p style="font-size:.93rem">This helps us match your transfer when it arrives, thank you properly, and send a receipt.</p>
+        <form method="post" novalidate style="margin-top:20px">
+          {% csrf_token %}
+          {% include "partials/form.html" %}
+          <p class="hint" style="margin-bottom:16px">
+            This form records your intention to give. It never asks for a card number,
+            PIN or mobile money password — you pay through your own bank or mobile money app.
+          </p>
+          <button class="btn btn--green" type="submit">Record my pledge</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

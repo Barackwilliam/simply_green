@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy — {{ site.organisation_name }}{% endblock %}
+{% block description %}How {{ site.organisation_name }} collects, uses and protects the information you share through this website.{% endblock %}
+{% block content %}
+<section class="pagehead">
+  <div class="wrap"><p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Privacy</p><h1>Privacy policy</h1></div>
+</section>
+<section class="section">
+  <div class="wrap" style="max-width:780px">
+    <div class="prose">
+      <h2>What we collect</h2>
+      <p>We only collect what you choose to give us through the forms on this site: your name and contact details, plus whatever you write in the message, application or enquiry.</p>
+      <h2>What we never collect</h2>
+      <p>We do not ask for and never store card numbers, bank passwords or mobile money PINs. Donations are made through your own bank or mobile money service using the published account details. Any message claiming to be from us and asking for a PIN or password is not from us.</p>
+      <h2>How we use it</h2>
+      <p>Only to reply to you, to organise the volunteering, partnership, event or donation you asked about, and to send the newsletter if you subscribed. We do not sell your information and do not share it outside the organisation except where the law requires it.</p>
+      <h2>How long we keep it</h2>
+      <p>Enquiries and applications for as long as they are useful to the work they relate to; donation records for as long as our financial reporting obligations require. You can ask us to delete your information at any time.</p>
+      <h2>Newsletter</h2>
+      <p>Every newsletter includes a way to unsubscribe, and you can ask us directly.</p>
+      <h2>Cookies</h2>
+      <p>This site sets no advertising or tracking cookies.</p>
+      <h2>Your rights</h2>
+      <p>You can ask what we hold about you, ask us to correct it, or ask us to delete it. Write to {% if site.email %}{{ site.email }}{% else %}our contact address{% endif %} and we will respond.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

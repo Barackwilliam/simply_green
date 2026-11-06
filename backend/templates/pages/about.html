@@ -1,0 +1,102 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}About Us — {{ site.organisation_name }}{% endblock %}
+{% block description %}{{ site.who_we_are|striptags|truncatechars:158 }}{% endblock %}
+{% block og_title %}About {{ site.organisation_name }}{% endblock %}
+
+{% block content %}
+<section class="pagehead">
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / About Us</p>
+    <h1>Who we are</h1>
+    <p>{{ site.organisation_name }} works across Mainland {{ site.country }} on environmental sustainability, climate action, community empowerment and sustainable livelihoods.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="grid grid-2" style="gap:48px;align-items:start">
+      <div class="prose">
+        {{ site.who_we_are|safe }}
+        {% if site.registration_number %}
+          <div class="stats" style="grid-template-columns:repeat(2,1fr);margin-top:28px">
+            <div><div class="n" style="font-size:1.3rem">{{ site.registration_number }}</div><div class="l">Registration number</div></div>
+            <div><div class="n" style="font-size:1.3rem">Mainland {{ site.country }}</div><div class="l">Where we operate</div></div>
+          </div>
+        {% endif %}
+      </div>
+      <img src="{% static 'img/portrait.jpg' %}" width="800" height="1000" loading="lazy"
+           style="border-radius:var(--radius)" alt="Simply Green Organization team members at a clean-up">
+    </div>
+  </div>
+</section>
+
+<section class="section section--wash" id="vision">
+  <div class="wrap">
+    <div class="grid grid-2">
+      <div class="tile" style="border-top:5px solid var(--blue-ink)">
+        <div class="tile__icon" style="background:#ddf1fa">{% include "partials/icon.html" with name="globe" %}</div>
+        <h3>Our Vision</h3>
+        <p>{{ site.vision }}</p>
+      </div>
+      <div class="tile" style="border-top:5px solid var(--green-ink)">
+        <div class="tile__icon">{% include "partials/icon.html" with name="leaf" %}</div>
+        <h3>Our Mission</h3>
+        <p>{{ site.mission }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if values %}
+<section class="section" id="values">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:40px">
+      <span class="eyebrow">What guides us</span>
+      <h2>Our core values</h2>
+    </div>
+    <div class="grid grid-3">
+      {% for v in values %}
+        <div class="tile">
+          <div class="tile__icon">{% include "partials/icon.html" with name=v.icon %}</div>
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if objectives %}
+<section class="section section--deep" id="objectives">
+  <div class="wrap">
+    <div class="grid grid-2" style="gap:48px">
+      <div>
+        <span class="eyebrow">What we set out to do</span>
+        <h2>Our objectives</h2>
+        <a class="btn btn--green" href="{% url 'site:programmes' %}" style="margin-top:12px">See this in practice</a>
+      </div>
+      <ol style="list-style:none;padding:0;margin:0;display:grid;gap:16px">
+        {% for o in objectives %}
+          <li style="display:flex;gap:14px">
+            <span style="flex:none;width:30px;height:30px;border-radius:50%;background:rgba(153,190,61,.2);color:var(--green);display:grid;place-items:center;font-weight:800;font-size:.85rem">{{ forloop.counter }}</span>
+            <span style="color:#cdd9c6">{{ o.text }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if site.registration_statement %}
+<section class="section section--tight section--wash">
+  <div class="wrap">
+    <div class="tile" style="display:flex;gap:14px;align-items:flex-start">
+      <div class="tile__icon" style="flex:none;margin:0">{% include "partials/icon.html" with name="shield" %}</div>
+      <p style="margin:0">{{ site.registration_statement }}</p>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

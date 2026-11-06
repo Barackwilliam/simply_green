@@ -1,6 +1,7 @@
 """News, announcements, impact stories, podcasts and events."""
 
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
@@ -132,6 +133,9 @@ class Post(PublishableModel, SEOModel):
             self.reading_minutes = max(1, round(words / 200))
         super().save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse("site:post_detail", kwargs={"slug": self.slug})
+
 
 class Event(PublishableModel, SEOModel):
     """An upcoming or past event, with optional online registration."""
@@ -201,6 +205,9 @@ class Event(PublishableModel, SEOModel):
         if self.registration_deadline and timezone.now() > self.registration_deadline:
             return False
         return not self.is_full
+
+    def get_absolute_url(self):
+        return reverse("site:event_detail", kwargs={"slug": self.slug})
 
 
 class EventRegistration(TimeStampedModel):
