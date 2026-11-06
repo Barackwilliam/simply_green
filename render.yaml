@@ -141,7 +141,11 @@ services:
     region: frankfurt
     plan: free
     rootDir: frontend
-    buildCommand: npm ci && npm run build
+    # NODE_ENV=production makes `npm ci` skip devDependencies, but Tailwind
+    # and @tailwindcss/turbopack are build-time tools that live there. Without
+    # --include=dev the CSS pipeline has no loader and the build fails.
+    # They are not needed at runtime, so they stay in devDependencies.
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npx next start -p $PORT
     autoDeploy: true
     envVars:
