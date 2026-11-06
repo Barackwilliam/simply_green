@@ -50,10 +50,23 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * How long to wait for the API before giving up on a single request.
+ *
+ * Without this a request to an unreachable backend hangs until Next.js kills
+ * the whole prerender, which fails the build — exactly what happens on a
+ * first deploy, where the frontend is built while the API is still starting.
+ * A bounded wait lets `safe()` fall back and the build finish; the page then
+ * fills in on the next revalidation, or immediately when Django posts its
+ * cache tags.
+ */
+const REQUEST_TIMEOUT_MS = Number(process.env.API_TIMEOUT_MS ?? 20_000);
+
 async function request<T>(path: string): Promise<T> {
   const url = `${API_BASE_URL}/api${path}`;
   const response = await fetch(url, {
     headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
 
   if (!response.ok) {
@@ -72,7 +85,13 @@ async function request<T>(path: string): Promise<T> {
 async function safe<T>(path: string, fallback: T): Promise<T> {
   try {
     return await request<T>(path);
-  } catch {
+  } catch (error) {
+    // Worth seeing in the build log: an empty section on a fresh deploy is
+    // usually this, not missing content.
+    console.warn(
+      `[api] ${path} unavailable, using fallback:`,
+      error instanceof Error ? error.message : error,
+    );
     return fallback;
   }
 }
