@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Simply Green Organization — design tokens
+
+   The brand marks give three hues: blue #11A2D7, green #99BE3D, gold #FCCD75.
+   Those are the anchors. Each is extended into a full ramp so text, borders
+   and surfaces stay legible, and a deep forest ink carries the dark sections.
+   ========================================================================== */
+
+@theme {
+  /* --- Green: primary action colour ---------------------------------- */
+  --color-green-50:  #f5faea;
+  --color-green-100: #e8f4ce;
+  --color-green-200: #d3e9a4;
+  --color-green-300: #b9dc72;
+  --color-green-400: #a6cd50;
+  --color-green-500: #99be3d;  /* logo green */
+  --color-green-600: #7da32f;
+  --color-green-700: #5f7e24;
+  --color-green-800: #4b6220;
+  --color-green-900: #3e521e;
+  --color-green-950: #202d0c;
+
+  /* --- Blue: secondary accent ---------------------------------------- */
+  --color-sky-50:  #eefaff;
+  --color-sky-100: #d9f3ff;
+  --color-sky-200: #bcebff;
+  --color-sky-300: #8ddfff;
+  --color-sky-400: #56cafd;
+  --color-sky-500: #11a2d7;  /* logo blue */
+  --color-sky-600: #0a87b8;
+  --color-sky-700: #0c6c94;
+  --color-sky-800: #115a7a;
+  --color-sky-900: #144b67;
+  --color-sky-950: #0d3045;
+
+  /* --- Gold: highlight ------------------------------------------------ */
+  --color-gold-50:  #fffaeb;
+  --color-gold-100: #fef2c7;
+  --color-gold-200: #fde48a;
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #fccd75;  /* logo gold */
+  --color-gold-500: #f3b01c;
+  --color-gold-600: #d78d09;
+  --color-gold-700: #b2660c;
+  --color-gold-800: #915011;
+  --color-gold-900: #784211;
+
+  /* --- Ink: deep forest for dark surfaces ----------------------------- */
+  --color-ink-50:  #f3f7f5;
+  --color-ink-100: #e0ebe5;
+  --color-ink-200: #c2d7cd;
+  --color-ink-300: #9bbbad;
+  --color-ink-400: #6f9a89;
+  --color-ink-500: #517e6d;
+  --color-ink-600: #3e6457;
+  --color-ink-700: #345147;
+  --color-ink-800: #2c413b;
+  --color-ink-900: #263733;
+  --color-ink-950: #0f1f1c;
+
+  /* --- Warm neutrals for body copy ------------------------------------ */
+  --color-sand-50:  #faf9f7;
+  --color-sand-100: #f3f1ed;
+  --color-sand-200: #e7e3db;
+  --color-sand-300: #d5cec2;
+  --color-sand-400: #b8ae9d;
+  --color-sand-500: #9d9181;
+  --color-sand-600: #837768;
+  --color-sand-700: #6b6155;
+  --color-sand-800: #595249;
+  --color-sand-900: #4c463f;
+
+  /* --- Typography ------------------------------------------------------ */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+
+  /* --- Motion ---------------------------------------------------------- */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- Layout ---------------------------------------------------------- */
+  --spacing-gutter: 1.25rem;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+:root {
+  --surface: #ffffff;
+  --surface-muted: var(--color-sand-50);
+  --text: var(--color-ink-950);
+  --text-muted: var(--color-sand-700);
+  --header-height: 5rem;
+}
+
+* {
+  border-color: var(--color-sand-200);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Stop anchored headings hiding under the sticky header. */
+  scroll-padding-top: calc(var(--header-height) + 1rem);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Visible, branded focus ring for keyboard users. */
+:focus-visible {
+  outline: 2px solid var(--color-sky-500);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+/* Respect a reduced-motion preference everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--spacing-gutter);
+  max-width: 80rem;
+}
+
+@utility text-balance-tight {
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+
+/* A soft radial wash used behind hero and CTA sections. */
+@utility bg-forest-wash {
+  background-image:
+    radial-gradient(60rem 30rem at 15% -10%, rgba(17, 162, 215, 0.25), transparent 60%),
+    radial-gradient(50rem 28rem at 95% 0%, rgba(153, 190, 61, 0.22), transparent 55%),
+    linear-gradient(180deg, var(--color-ink-950) 0%, var(--color-ink-900) 100%);
+}
+
+/* Rich text coming out of CKEditor. */
+.prose-content {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--color-sand-800);
+}
+.prose-content > * + * { margin-top: 1.25em; }
+.prose-content h2 {
+  font-size: 1.75rem;
+  margin-top: 2.5em;
+  color: var(--color-ink-950);
+}
+.prose-content h3 {
+  font-size: 1.375rem;
+  margin-top: 2em;
+  color: var(--color-ink-950);
+}
+.prose-content h4 {
+  font-size: 1.125rem;
+  margin-top: 1.75em;
+  color: var(--color-ink-950);
+}
+.prose-content a {
+  color: var(--color-sky-700);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-content a:hover { color: var(--color-sky-800); }
+.prose-content ul,
+.prose-content ol { padding-left: 1.5rem; }
+.prose-content ul { list-style: disc; }
+.prose-content ol { list-style: decimal; }
+.prose-content li + li { margin-top: 0.5em; }
+.prose-content blockquote {
+  border-left: 3px solid var(--color-green-500);
+  padding-left: 1.25rem;
+  font-style: italic;
+  color: var(--color-sand-700);
+}
+.prose-content img {
+  border-radius: 0.75rem;
+  width: 100%;
+  height: auto;
+}
+.prose-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.prose-content th,
+.prose-content td {
+  border: 1px solid var(--color-sand-200);
+  padding: 0.625rem 0.875rem;
+  text-align: left;
+}
+.prose-content th {
+  background: var(--color-sand-50);
+  font-weight: 600;
+}
+
+/* Entry animation used by sections as they scroll into view. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(1.25rem); }
+  to   { opacity: 1; transform: none; }
+}
+
+@utility animate-rise {
+  animation: rise 0.6s var(--ease-out-soft) both;
+}

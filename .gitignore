@@ -44,3 +44,5 @@ Thumbs.db
 htmlcov/
 .coverage
 coverage/
+
+# Next.js generated agent rules are rewritten by `next dev`

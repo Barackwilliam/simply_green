@@ -262,6 +262,16 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@simplygreen.or.t
 NOTIFICATION_RECIPIENTS = env.list("NOTIFICATION_RECIPIENTS", default=[])
 
 # ---------------------------------------------------------------------------
+# Frontend cache invalidation
+#
+# The Next.js site is statically prerendered. When content changes here we
+# post the affected cache tags to it so the change appears immediately.
+# ---------------------------------------------------------------------------
+
+FRONTEND_URL = env("FRONTEND_URL", default="")
+REVALIDATE_SECRET = env("REVALIDATE_SECRET", default="")
+
+# ---------------------------------------------------------------------------
 # Rich text editor
 # ---------------------------------------------------------------------------
 
