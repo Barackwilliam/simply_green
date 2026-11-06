@@ -5,6 +5,7 @@ Configuration is environment-driven so the same code runs locally, on Render,
 and in CI without edits. See `.env.example` for every variable this file reads.
 """
 
+import warnings
 from pathlib import Path
 
 import dj_database_url
@@ -129,6 +130,17 @@ else:
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+    if not DEBUG:
+        # On a deployed host this is a trap, not a convenience: the container
+        # has no persistent disk, so every restart silently discards all
+        # content. Say so loudly rather than let it look like it works.
+        warnings.warn(
+            "DATABASE_URL is not set. Falling back to SQLite on an ephemeral "
+            "disk — ALL DATA WILL BE LOST on the next restart or deploy. Set "
+            "DATABASE_URL to the Supabase session-pooler connection string.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -176,13 +188,34 @@ STORAGES = {
     },
 }
 
+SUPABASE_PROJECT_REF = env("SUPABASE_PROJECT_REF", default="")
+SUPABASE_S3_ACCESS_KEY_ID = env("SUPABASE_S3_ACCESS_KEY_ID", default="")
+SUPABASE_S3_SECRET_ACCESS_KEY = env("SUPABASE_S3_SECRET_ACCESS_KEY", default="")
+
+# Storage is only switched over when the credentials to reach it are actually
+# present. A half-configured bucket would otherwise take the whole site down
+# at boot, which is a worse failure than serving uploads from local disk.
+if USE_SUPABASE_STORAGE and not (
+    SUPABASE_PROJECT_REF
+    and SUPABASE_S3_ACCESS_KEY_ID
+    and SUPABASE_S3_SECRET_ACCESS_KEY
+):
+    warnings.warn(
+        "USE_SUPABASE_STORAGE is on but SUPABASE_PROJECT_REF and the S3 keys "
+        "are not all set. Falling back to local file storage — uploads will "
+        "not survive a restart. Add the S3 access keys from Supabase "
+        "Project Settings -> Storage.",
+        RuntimeWarning,
+        stacklevel=2,
+    )
+    USE_SUPABASE_STORAGE = False
+
 if USE_SUPABASE_STORAGE:
-    SUPABASE_PROJECT_REF = env("SUPABASE_PROJECT_REF")
     SUPABASE_STORAGE_BUCKET = env("SUPABASE_STORAGE_BUCKET", default="media")
     SUPABASE_S3_REGION = env("SUPABASE_S3_REGION", default="eu-central-1")
 
-    AWS_ACCESS_KEY_ID = env("SUPABASE_S3_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = env("SUPABASE_S3_SECRET_ACCESS_KEY")
+    AWS_ACCESS_KEY_ID = SUPABASE_S3_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY = SUPABASE_S3_SECRET_ACCESS_KEY
     AWS_STORAGE_BUCKET_NAME = SUPABASE_STORAGE_BUCKET
     AWS_S3_REGION_NAME = SUPABASE_S3_REGION
     AWS_S3_ENDPOINT_URL = (
