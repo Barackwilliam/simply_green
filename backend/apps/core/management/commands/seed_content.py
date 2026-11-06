@@ -367,8 +367,20 @@ def attach_image(instance, field_name, filename, *, force=False):
 class Command(BaseCommand):
     help = "Load the client's website content draft into the database."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--force",
+            action="store_true",
+            help=(
+                "Overwrite records that already exist. Without this the "
+                "command only fills in what is missing, so it is safe to run "
+                "on every deploy without undoing an editor's changes."
+            ),
+        )
+
     @transaction.atomic
     def handle(self, *args, **options):
+        self.force = options["force"]
         self._site_settings()
         self._core_values()
         self._objectives()
@@ -377,8 +389,17 @@ class Command(BaseCommand):
         self._programmes(focus_by_title)
         self.stdout.write(self.style.SUCCESS("Content draft loaded."))
 
+    def _upsert(self, model, defaults, **lookup):
+        """Create when missing; update only when --force was passed."""
+        if self.force:
+            return model.objects.update_or_create(defaults=defaults, **lookup)
+        return model.objects.get_or_create(defaults=defaults, **lookup)
+
     def _site_settings(self):
         settings_obj = SiteSettings.load()
+        if settings_obj.vision and not self.force:
+            self.stdout.write("  site settings already filled in — left alone")
+            return
         settings_obj.organisation_name = "Simply Green Organization"
         settings_obj.acronym = "SGO"
         settings_obj.tagline = (
@@ -420,45 +441,34 @@ class Command(BaseCommand):
 
     def _core_values(self):
         for order, (title, description, icon) in enumerate(CORE_VALUES):
-            CoreValue.objects.update_or_create(
+            self._upsert(
+                CoreValue,
+                {"description": description, "icon": icon, "display_order": order},
                 title=title,
-                defaults={
-                    "description": description,
-                    "icon": icon,
-                    "display_order": order,
-                },
             )
         self.stdout.write(f"  core values ({len(CORE_VALUES)})")
 
     def _objectives(self):
         for order, text in enumerate(OBJECTIVES):
-            Objective.objects.update_or_create(
-                text=text, defaults={"display_order": order}
-            )
+            self._upsert(Objective, {"display_order": order}, text=text)
         self.stdout.write(f"  objectives ({len(OBJECTIVES)})")
 
     def _partner_reasons(self):
         for order, (title, description, icon) in enumerate(PARTNER_REASONS):
-            PartnerReason.objects.update_or_create(
+            self._upsert(
+                PartnerReason,
+                {"description": description, "icon": icon, "display_order": order},
                 title=title,
-                defaults={
-                    "description": description,
-                    "icon": icon,
-                    "display_order": order,
-                },
             )
         self.stdout.write(f"  partner reasons ({len(PARTNER_REASONS)})")
 
     def _focus_areas(self):
         mapping = {}
         for order, (title, summary, icon) in enumerate(FOCUS_AREAS):
-            area, _ = FocusArea.objects.update_or_create(
+            area, _ = self._upsert(
+                FocusArea,
+                {"summary": summary, "icon": icon, "display_order": order},
                 title=title,
-                defaults={
-                    "summary": summary,
-                    "icon": icon,
-                    "display_order": order,
-                },
             )
             mapping[title] = area
         self.stdout.write(f"  focus areas ({len(FOCUS_AREAS)})")
@@ -468,9 +478,9 @@ class Command(BaseCommand):
         from apps.programmes.models import ProgrammeOutcome
 
         for order, entry in enumerate(PROGRAMMES):
-            programme, _ = Programme.objects.update_or_create(
-                title=entry["title"],
-                defaults={
+            programme, _ = self._upsert(
+                Programme,
+                {
                     "subtitle": entry["subtitle"],
                     "status": entry["status"],
                     "summary": entry["summary"],
@@ -482,6 +492,7 @@ class Command(BaseCommand):
                     "display_order": order,
                     "is_featured": True,
                 },
+                title=entry["title"],
             )
             programme.focus_areas.set(
                 [focus_by_title[name] for name in entry["focus"]]
@@ -493,9 +504,10 @@ class Command(BaseCommand):
             for outcome_order, (label, value) in enumerate(
                 entry.get("outcomes", [])
             ):
-                ProgrammeOutcome.objects.update_or_create(
+                self._upsert(
+                    ProgrammeOutcome,
+                    {"value": value, "display_order": outcome_order},
                     programme=programme,
                     label=label,
-                    defaults={"value": value, "display_order": outcome_order},
                 )
         self.stdout.write(f"  programmes ({len(PROGRAMMES)})")

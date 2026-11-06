@@ -22,10 +22,16 @@ services:
     region: frankfurt
     plan: free
     rootDir: backend
+    # The free plan has no shell, so the first admin account and the content
+    # draft have to be created during the build. Both steps are idempotent:
+    # `ensure_superuser` never touches an account that already exists, and
+    # `seed_content` only fills in what is missing unless passed --force.
     buildCommand: >-
       pip install --no-cache-dir -r requirements.txt &&
       python manage.py collectstatic --noinput &&
-      python manage.py migrate --noinput
+      python manage.py migrate --noinput &&
+      python manage.py ensure_superuser &&
+      python manage.py seed_content
     startCommand: >-
       gunicorn config.wsgi:application
       --bind 0.0.0.0:$PORT
@@ -54,6 +60,17 @@ services:
         value: INFO
       - key: SECURE_SSL_REDIRECT
         value: "True"
+
+      # --- First admin account -----------------------------------------
+      # Created during the build because the free plan has no shell. Change
+      # the password in the admin afterwards; this command never overwrites
+      # an existing account, so the change sticks.
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
 
       # --- Supabase Postgres -------------------------------------------
       # Project Settings -> Database -> Connection string -> Session pooler
