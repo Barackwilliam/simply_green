@@ -50,12 +50,11 @@ services:
         value: "False"
       - key: SECRET_KEY
         generateValue: true
+      # A leading dot matches every subdomain, which covers this service's
+      # own onrender.com address without hard-coding the random suffix Render
+      # appends. Add the custom domain here once it is connected.
       - key: ALLOWED_HOSTS
-        # Render injects the service's own hostname here.
-        fromService:
-          type: web
-          name: simply-green-api
-          property: host
+        value: ".onrender.com"
       - key: LOG_LEVEL
         value: INFO
       - key: SECURE_SSL_REDIRECT
@@ -95,21 +94,15 @@ services:
         sync: false
 
       # --- Frontend ----------------------------------------------------
+      # `fromService` resolves to the bare service name rather than a full
+      # host, which Django rejects as an origin. These are set explicitly to
+      # the frontend's full https:// address instead.
       - key: FRONTEND_URL
-        fromService:
-          type: web
-          name: simply-green-web
-          property: host
+        sync: false
       - key: CORS_ALLOWED_ORIGINS
-        fromService:
-          type: web
-          name: simply-green-web
-          property: host
+        sync: false
       - key: CSRF_TRUSTED_ORIGINS
-        fromService:
-          type: web
-          name: simply-green-web
-          property: host
+        sync: false
       # Shared with the frontend so Django can invalidate its cache.
       - key: REVALIDATE_SECRET
         sync: false
@@ -149,22 +142,22 @@ services:
     startCommand: npx next start -p $PORT
     autoDeploy: true
     envVars:
+      # Must be >= 22.12. Tailwind's Turbopack loader require()s magic-string,
+      # which ships as ESM, and require(esm) only works from 22.12 onwards.
+      # On 22.11 the CSS build fails with "require() of ES Module ... not
+      # supported".
       - key: NODE_VERSION
-        value: "22.11.0"
+        value: "22.23.4"
       - key: NODE_ENV
         value: production
 
       # Read at build time (server side) and from the browser.
+      # Full https:// address of the API service, for the same reason as the
+      # origins above.
       - key: API_URL
-        fromService:
-          type: web
-          name: simply-green-api
-          property: host
+        sync: false
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: simply-green-api
-          property: host
+        sync: false
 
       # The public address of the site. Set this to the real domain once it
       # is connected — canonical URLs, Open Graph and the sitemap all use it.

@@ -257,7 +257,28 @@ REST_FRAMEWORK = {
 # CORS — the Next.js frontend is a separate origin.
 # ---------------------------------------------------------------------------
 
-CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
+def _as_origin(value: str) -> str:
+    """Normalise a value into an origin Django and django-cors-headers accept.
+
+    Both require a scheme: a bare hostname raises 4_0.E001 and corsheaders.E013
+    at startup, which fails the deploy. Hosting platforms and hand-typed
+    settings routinely supply the host alone, so add https:// when it is
+    missing rather than refuse to boot over a missing prefix.
+    """
+    value = value.strip().rstrip("/")
+    if not value:
+        return ""
+    if "://" in value:
+        return value
+    return f"https://{value}"
+
+
+CORS_ALLOWED_ORIGINS = [
+    origin for origin in (_as_origin(v) for v in env("CORS_ALLOWED_ORIGINS")) if origin
+]
+CSRF_TRUSTED_ORIGINS = [
+    origin for origin in (_as_origin(v) for v in CSRF_TRUSTED_ORIGINS) if origin
+]
 CORS_ALLOW_CREDENTIALS = False
 
 if DEBUG and not CORS_ALLOWED_ORIGINS:
@@ -301,7 +322,7 @@ NOTIFICATION_RECIPIENTS = env.list("NOTIFICATION_RECIPIENTS", default=[])
 # post the affected cache tags to it so the change appears immediately.
 # ---------------------------------------------------------------------------
 
-FRONTEND_URL = env("FRONTEND_URL", default="")
+FRONTEND_URL = _as_origin(env("FRONTEND_URL", default=""))
 REVALIDATE_SECRET = env("REVALIDATE_SECRET", default="")
 
 # ---------------------------------------------------------------------------
