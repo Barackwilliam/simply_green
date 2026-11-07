@@ -1,14 +1,8 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}Partner With Us — {{ site.organisation_name }}{% endblock %}
 {% block description %}Partner with {{ site.organisation_name }} — funding, technical support, joint implementation and research collaboration.{% endblock %}
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Partner with us</h1>
-    <p>We work at the frontline, and we account for every shilling that gets us there.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="text" title="Partner with us" lead="We work at the frontline, and we account for every shilling that gets us there." static_image="img/planning.webp" eyebrow="Partnership" %}
 <section class="section">
   <div class="wrap">
     <div class="grid grid--aside" style="gap:48px;align-items:start">

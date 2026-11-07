@@ -1,14 +1,8 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}Support Our Work — {{ site.organisation_name }}{% endblock %}
 {% block description %}Donate to {{ site.organisation_name }} and fund community-led environmental conservation, climate action and sustainable livelihoods in Tanzania.{% endblock %}
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Support our work</h1>
-    <p>A donation puts tools, training and trees into the hands of the communities doing the work.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="text" title="Support our work" lead="A donation puts tools, training and trees into the hands of the communities doing the work." static_image="img/sacks.webp" eyebrow="Support" %}
 
 <section class="section">
   <div class="wrap">

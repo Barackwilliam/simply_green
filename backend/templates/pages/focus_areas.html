@@ -1,15 +1,9 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}Focus Areas — {{ site.organisation_name }}{% endblock %}
 {% block description %}Environmental conservation, climate action, waste management, community empowerment, sustainable livelihoods, research and green innovation.{% endblock %}
 
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Focus areas</h1>
-    <p>Our work spans conservation, climate and livelihoods — because environmental problems in Tanzania do not arrive one at a time.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="curve" title="Focus areas" lead="Our work spans conservation, climate and livelihoods — because environmental problems in Tanzania do not arrive one at a time." static_image="img/sacks.webp" eyebrow="What we work on" %}
 
 <section class="section">
   <div class="wrap">

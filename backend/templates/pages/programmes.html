@@ -1,15 +1,9 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}Programmes — {{ site.organisation_name }}{% endblock %}
 {% block description %}Community-led environmental programmes in schools, markets and coastal villages across Dar es Salaam.{% endblock %}
 
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Programmes</h1>
-    <p>What we are running now, and what we have delivered.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="curve" title="Programmes" lead="What we are running now, and what we have delivered." static_image="img/band.webp" eyebrow="On the ground" %}
 
 <section class="section">
   <div class="wrap">

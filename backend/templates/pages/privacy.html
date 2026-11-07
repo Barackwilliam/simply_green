@@ -1,10 +1,8 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}Privacy Policy — {{ site.organisation_name }}{% endblock %}
 {% block description %}How {{ site.organisation_name }} collects, uses and protects the information you share through this website.{% endblock %}
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">{% include "partials/crumbs.html" %}<h1>Privacy policy</h1></div>
-</section>
+{% include "partials/pagehead.html" with variant="plain" title="Privacy policy" %}
 <section class="section">
   <div class="wrap" style="max-width:780px">
     <div class="prose">

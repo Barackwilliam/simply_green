@@ -20,17 +20,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" with final=programme.title %}
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-      <span class="tag tag--green">{{ programme.get_status_display }}</span>
-      {% for a in programme.focus_areas.all %}<span class="tag tag--grey">{{ a.title }}</span>{% endfor %}
-    </div>
-    <h1>{{ programme.title }}</h1>
-    {% if programme.subtitle %}<p>{{ programme.subtitle }}</p>{% endif %}
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="curve" title=programme.title lead=programme.subtitle image=programme.featured_image static_image="img/band.webp" crumb_final=programme.title %}
 
 {% if programme.featured_image %}
 <div class="wrap" style="margin-top:-28px;position:relative;z-index:2">

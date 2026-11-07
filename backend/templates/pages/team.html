@@ -1,15 +1,9 @@
-{% extends "base.html" %}{% load media %}
+{% extends "base.html" %}{% load static %}{% load media %}
 {% block title %}Our Team — {{ site.organisation_name }}{% endblock %}
 {% block description %}The people behind {{ site.organisation_name }}'s environmental work in Tanzania.{% endblock %}
 
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Our team</h1>
-    <p>The people who turn plans into work on the ground.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="frame" title="Our team" lead="The people who turn plans into work on the ground." static_image="img/about.webp" eyebrow="The people" %}
 
 <section class="section">
   <div class="wrap">

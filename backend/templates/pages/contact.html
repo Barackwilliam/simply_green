@@ -1,14 +1,8 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}Contact Us — {{ site.organisation_name }}{% endblock %}
 {% block description %}Get in touch with {{ site.organisation_name }} in {{ site.city }}, {{ site.country }}.{% endblock %}
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Contact us</h1>
-    <p>Questions, proposals, press enquiries — we read everything that comes in.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="text" title="Contact us" lead="Questions, proposals, press enquiries — we read everything that comes in." static_image="img/portrait.webp" eyebrow="Say hello" %}
 <section class="section">
   <div class="wrap">
     <div class="grid grid--aside" style="gap:48px;align-items:start">

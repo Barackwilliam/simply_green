@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}{{ event.meta_title|default:event.title }} — {{ site.organisation_name }}{% endblock %}
 {% block description %}{{ event.meta_description|default:event.summary|truncatechars:158 }}{% endblock %}
 {% block og_title %}{{ event.title }}{% endblock %}
@@ -16,17 +16,10 @@
 {% endblock %}
 
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" with final=event.title %}
-    <span class="tag tag--green">{{ event.get_status_display }}</span>
-    <h1 style="margin-top:14px">{{ event.title }}</h1>
-    <p>
-      {{ event.start_datetime|date:"l, j F Y · H:i" }}
-      {% if event.venue or event.is_online %} — {% if event.is_online %}Online{% else %}{{ event.venue }}{% endif %}{% endif %}
-    </p>
-  </div>
-</section>
+{% with when=event.start_datetime|date:"l, j F Y · H:i" %}
+{% with where=event.is_online|yesno:"Online," %}
+  {% include "partials/pagehead.html" with variant="overlay" title=event.title tag=event.get_status_display lead=when lead2=where|default:event.venue image=event.featured_image static_image="img/band.webp" crumb_final=event.title %}
+{% endwith %}{% endwith %}
 
 <section class="section">
   <div class="wrap">

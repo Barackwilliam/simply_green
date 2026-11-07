@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load media %}
+{% extends "base.html" %}{% load static %}{% load media %}
 {% block title %}{{ post.meta_title|default:post.title|truncatechars:52 }} — {{ site.acronym|default:site.organisation_name }}{% endblock %}
 {% block description %}{{ post.meta_description|default:post.excerpt|default:post.body|striptags|truncatechars:158 }}{% endblock %}
 {% block og_title %}{{ post.title }}{% endblock %}
@@ -19,20 +19,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="pagehead">
-  <div class="wrap" style="max-width:820px">
-    {% include "partials/crumbs.html" with final=post.title %}
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-      <span class="tag tag--blue">{{ post.get_kind_display }}</span>
-      {% if post.category %}<span class="tag tag--grey">{{ post.category.name }}</span>{% endif %}
-    </div>
-    <h1>{{ post.title }}</h1>
-    <p style="font-size:.92rem">
-      {% if post.author %}{{ post.author.full_name }} · {% elif post.author_name %}{{ post.author_name }} · {% endif %}
-      {{ post.published_at|date:"j F Y" }}{% if post.reading_minutes %} · {{ post.reading_minutes }} min read{% endif %}
-    </p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="overlay" title=post.title image=post.featured_image static_image="img/planning.webp" crumb_final=post.title %}
 
 {% if post.featured_image %}
 <div class="wrap" style="max-width:900px;margin-top:-28px;position:relative;z-index:2">

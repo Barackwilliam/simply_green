@@ -1,17 +1,8 @@
-{% extends "base.html" %}{% load media %}
+{% extends "base.html" %}{% load static %}{% load media %}
 {% block title %}{{ album.title }} — {{ site.organisation_name }}{% endblock %}
 {% block description %}{% if album.description %}{{ album.description|truncatechars:120 }} {% endif %}Photographs from {{ album.title }}{% if album.location %} in {{ album.location }}{% endif %}{% if album.date %}, {{ album.date|date:"F Y" }}{% endif %} — {{ site.organisation_name }}.{% endblock %}
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" with final=album.title %}
-    <h1>{{ album.title }}</h1>
-    {% if album.description %}<p>{{ album.description }}</p>{% endif %}
-    <p style="font-size:.9rem;margin-top:8px">
-      {% if album.date %}{{ album.date|date:"j F Y" }}{% endif %}{% if album.location %} · {{ album.location }}{% endif %}
-    </p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="card" title=album.title lead=album.description image=album.cover_image static_image="img/hero.webp" crumb_final=album.title %}
 <section class="section">
   <div class="wrap">
     {% if album.photos.all %}

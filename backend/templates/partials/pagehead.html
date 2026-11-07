@@ -1,0 +1,74 @@
+{% load static media %}
+{% comment %}
+  The banner at the top of every page that is not the home page.
+
+  There used to be one: a flat green band, identical on all twenty. A
+  reader moving through the site had nothing to tell them they had
+  arrived somewhere new. These are five, drawn from the same set the home
+  banner came from, grouped so that pages which belong together look
+  alike and pages which do not, do not.
+
+      overlay  news, events, and the articles and events themselves
+      frame    about, team, the resource centre
+      curve    focus areas and programmes
+      card     gallery, videos, albums
+      text     get involved, volunteer, partner, donate, contact
+      plain    privacy — a page nobody should be detained by
+
+  Arguments: variant, title, lead, eyebrow, and a photograph as either
+  `image` (an upload) or `static_image` (a path under static/img/).
+  `crumb_final` names the last breadcrumb when it is not in the url,
+  `tag` puts a status pill above the heading, and `lead2` is a second
+  line joined to the first with a dash — for a date and a place.
+{% endcomment %}
+
+{% with v=variant|default:"plain" %}
+<section class="ph ph--{{ v }}">
+
+  {% if v == "overlay" or v == "curve" or v == "card" %}
+    <div class="ph__shot">
+      {% if image %}
+        {% picture image alt=image_alt|default:title sizes="full" priority=True %}
+      {% elif static_image %}
+        <img src="{% static static_image %}" alt="" width="1600" height="900"
+             fetchpriority="high" decoding="async">
+      {% endif %}
+      <span class="ph__veil" aria-hidden="true"></span>
+      {% if v == "curve" %}<span class="ph__curve" aria-hidden="true"></span>{% endif %}
+    </div>
+  {% endif %}
+
+  <div class="ph__body">
+    <div class="wrap">
+      <div class="ph__inner">
+        <div class="ph__text" data-reveal="mask">
+          {% include "partials/crumbs.html" with final=crumb_final %}
+          {% if tag %}<span class="tag tag--green ph__tag">{{ tag }}</span>{% endif %}
+          {% if eyebrow %}<span class="eyebrow ph__eyebrow">{{ eyebrow }}</span>{% endif %}
+          <h1>{{ title }}</h1>
+          {% if lead or lead2 %}
+            <p class="ph__lead">{{ lead }}{% if lead and lead2 %} <span class="ph__sep">—</span> {% endif %}{{ lead2 }}</p>
+          {% endif %}
+          {% if cta_label %}
+            <p class="ph__cta">
+              <a class="btn {{ cta_class|default:'btn--green' }}" href="{{ cta_url }}">{{ cta_label }}</a>
+              {% if cta2_label %}<a class="btn btn--outline" href="{{ cta2_url }}">{{ cta2_label }}</a>{% endif %}
+            </p>
+          {% endif %}
+        </div>
+
+        {% if v == "text" or v == "frame" %}
+          <div class="ph__aside" data-reveal="pop" style="--d:.12s">
+            {% if image %}
+              {% picture image alt=image_alt|default:title sizes="half" priority=True %}
+            {% elif static_image %}
+              <img src="{% static static_image %}" alt="" width="1200" height="900"
+                   fetchpriority="high" decoding="async">
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endwith %}

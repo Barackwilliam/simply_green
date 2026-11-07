@@ -89,7 +89,17 @@
 
     <div class="footer__bottom">
       <span>&copy; {{ current_year }} {{ site.organisation_name }}. All rights reserved.</span>
-      <span><a href="{% url 'site:privacy' %}">Privacy Policy</a></span>
+      <span class="footer__by">
+        <a href="{% url 'site:privacy' %}">Privacy Policy</a>
+        <span class="footer__dot" aria-hidden="true">&middot;</span>
+        {% comment %}
+          rel="noopener" because the link opens a new tab: without it the
+          page opened there can reach back through window.opener.
+        {% endcomment %}
+        Designed by
+        <a class="footer__jt" href="https://www.jamiitek.com"
+           target="_blank" rel="noopener noreferrer">JamiiTek</a>
+      </span>
     </div>
   </div>
 </footer>

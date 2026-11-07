@@ -1,14 +1,8 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}News &amp; Stories — {{ site.organisation_name }}{% endblock %}
 {% block description %}News, announcements, impact stories and podcasts from {{ site.organisation_name }}.{% endblock %}
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>News and stories</h1>
-    <p>What we are learning, publishing and seeing change.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="overlay" title="News and stories" lead="What we are learning, publishing and seeing change." static_image="img/planning.webp" eyebrow="Latest" %}
 <section class="section">
   <div class="wrap">
     <div class="filters">

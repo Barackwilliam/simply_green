@@ -2,13 +2,7 @@
 {% block title %}Become a Volunteer — {{ site.organisation_name }}{% endblock %}
 {% block description %}Volunteer with {{ site.organisation_name }} — clean-ups, restoration days, school sessions and community trainings.{% endblock %}
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Become a volunteer</h1>
-    <p>Give the time you have. We will find work that fits it.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="text" title="Become a volunteer" lead="Give the time you have. We will find work that fits it." static_image="img/about.webp" eyebrow="Volunteer" %}
 <section class="section">
   <div class="wrap">
     <div class="grid grid--aside" style="gap:48px;align-items:start">

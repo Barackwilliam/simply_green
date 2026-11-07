@@ -4,13 +4,9 @@
 {% block og_title %}About {{ site.organisation_name }}{% endblock %}
 
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Who we are</h1>
-    <p>{{ site.organisation_name }} works across Mainland {{ site.country }} on environmental sustainability, climate action, community empowerment and sustainable livelihoods.</p>
-  </div>
-</section>
+{% with tail=" on environmental sustainability, climate action, community empowerment and sustainable livelihoods." %}
+{% include "partials/pagehead.html" with variant="frame" title="Who we are" eyebrow="About us" static_image="img/portrait.webp" lead=site.organisation_name|add:" works across Mainland "|add:site.country|add:tail %}
+{% endwith %}
 
 <section class="section">
   <div class="wrap">

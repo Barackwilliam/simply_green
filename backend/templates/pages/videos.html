@@ -1,14 +1,8 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}Videos — {{ site.organisation_name }}{% endblock %}
 {% block description %}Film from {{ site.organisation_name }}'s environmental work across Tanzania.{% endblock %}
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" %}
-    <h1>Videos</h1>
-    <p>Film from the field.</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="card" title="Videos" lead="Film from the field." static_image="img/band.webp" eyebrow="Film" %}
 <section class="section">
   <div class="wrap">
     {% if videos %}

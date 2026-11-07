@@ -1,17 +1,11 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}{{ area.meta_title|default:area.title }} — {{ site.organisation_name }}{% endblock %}
 {% block description %}{{ area.meta_description|default:area.summary|truncatechars:158 }}{% endblock %}
 {% block og_title %}{{ area.title }}{% endblock %}
 {% block robots %}{% if area.noindex %}<meta name="robots" content="noindex,follow">{% endif %}{% endblock %}
 
 {% block content %}
-<section class="pagehead">
-  <div class="wrap">
-    {% include "partials/crumbs.html" with final=area.title %}
-    <h1>{{ area.title }}</h1>
-    <p>{{ area.summary }}</p>
-  </div>
-</section>
+{% include "partials/pagehead.html" with variant="curve" title=area.title lead=area.summary image=area.image static_image="img/sacks.webp" crumb_final=area.title %}
 
 {% if area.body %}
 <section class="section">
