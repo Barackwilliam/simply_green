@@ -1,4 +1,8 @@
 {% load static %}
+{% comment %}
+  The status label and the "goes somewhere" arrow sit on the photograph, so
+  every card in a row starts its heading at the same height.
+{% endcomment %}
 <a class="card" href="{{ programme.get_absolute_url }}">
   <div class="card__media">
     {% if programme.featured_image %}
@@ -6,9 +10,13 @@
     {% else %}
       <img src="{% static 'img/sacks.webp' %}" alt="" loading="lazy">
     {% endif %}
+    <div class="card__over">
+      <span class="tag tag--{% if programme.status == 'ongoing' %}green{% else %}grey{% endif %}">{{ programme.get_status_display }}</span>
+      {% with fa=programme.focus_areas.first %}{% if fa %}<span class="tag tag--onimg">{{ fa.title }}</span>{% endif %}{% endwith %}
+    </div>
+    <span class="card__badge" aria-hidden="true">{% include "partials/icon.html" with name="arrow" %}</span>
   </div>
   <div class="card__body">
-    <span class="tag tag--{% if programme.status == 'ongoing' %}green{% else %}grey{% endif %}" style="align-self:flex-start;margin-bottom:10px">{{ programme.get_status_display }}</span>
     <h3>{{ programme.title }}</h3>
     <p>{{ programme.summary|truncatewords:24 }}</p>
     <div class="card__meta">

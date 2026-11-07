@@ -17,18 +17,32 @@
       <div class="empty"><strong>Team members have not been added yet</strong>Once staff and board members are added in the admin, they will appear here.</div>
     {% endif %}
     {% for g in groups %}
-      <h2 style="margin-bottom:24px">{{ g.label }}</h2>
-      <div class="grid grid-4" style="margin-bottom:48px">
+      <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:26px">
+        <h2 style="margin:0">{{ g.label }}</h2>
+        <span style="flex:1;height:1px;background:var(--line)"></span>
+        <span style="font-size:.82rem;font-weight:800;letter-spacing:.06em;color:var(--muted)">{{ g.people|length }}</span>
+      </div>
+      <div class="pgrid" style="margin-bottom:52px">
         {% for m in g.people %}
-          <article class="card">
-            <div class="card__media" style="aspect-ratio:4/5">
-              {% if m.photo %}<img src="{{ m.photo.url }}" alt="{{ m.full_name }}" loading="lazy">
-              {% else %}<div style="height:100%;display:grid;place-items:center;background:#e9f3d6;color:var(--green-ink);font-size:2rem;font-weight:800">{{ m.full_name|slice:":1" }}</div>{% endif %}
-            </div>
-            <div class="card__body">
-              <h3 style="margin-bottom:4px">{{ m.full_name }}</h3>
-              <p style="color:var(--green-ink);font-weight:700;font-size:.9rem;margin-bottom:8px">{{ m.role }}</p>
-              {% if m.short_bio %}<p>{{ m.short_bio }}</p>{% endif %}
+          <article class="person" data-reveal style="--d:{{ forloop.counter0 }}0ms">
+            {% if m.photo %}
+              <img src="{{ m.photo.url }}" alt="{{ m.full_name }}" loading="lazy">
+            {% else %}
+              <span class="person__initial" aria-hidden="true">{{ m.full_name|slice:":1" }}</span>
+            {% endif %}
+            <div class="person__body">
+              <span class="person__role">{{ m.role }}</span>
+              <h3>{{ m.full_name }}</h3>
+              {% if m.short_bio %}
+                <div class="person__bio"><span>{{ m.short_bio }}</span></div>
+              {% endif %}
+              {% if m.email or m.linkedin or m.x_handle %}
+                <div class="person__links">
+                  {% if m.email %}<a href="mailto:{{ m.email }}" aria-label="Email {{ m.full_name }}">{% include "partials/icon.html" with name="mail" %}</a>{% endif %}
+                  {% if m.linkedin %}<a href="{{ m.linkedin }}" target="_blank" rel="noreferrer noopener" aria-label="{{ m.full_name }} on LinkedIn">{% include "partials/icon.html" with name="linkedin" %}</a>{% endif %}
+                  {% if m.x_handle %}<a href="https://x.com/{{ m.x_handle|cut:'@' }}" target="_blank" rel="noreferrer noopener" aria-label="{{ m.full_name }} on X">{% include "partials/icon.html" with name="x" %}</a>{% endif %}
+                </div>
+              {% endif %}
             </div>
           </article>
         {% endfor %}

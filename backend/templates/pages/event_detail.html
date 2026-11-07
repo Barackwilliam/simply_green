@@ -30,7 +30,7 @@
 
 <section class="section">
   <div class="wrap">
-    <div class="grid" style="grid-template-columns:3fr 2fr;gap:48px;align-items:start">
+    <div class="grid grid--aside" style="gap:48px;align-items:start">
       <div>
         {% if event.summary %}<p class="lead" style="color:var(--ink);font-size:1.15rem">{{ event.summary }}</p>{% endif %}
         {% if event.body %}<div class="prose">{{ event.body|safe }}</div>{% endif %}

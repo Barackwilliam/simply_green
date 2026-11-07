@@ -119,6 +119,15 @@ img { max-width: 100%; height: auto; display: block; }
 @media (max-width: 900px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
 
+/* A page body with a sidebar. These tracks used to be written inline on
+   each template, which meant they could not carry a breakpoint and the
+   sidebar stayed a third of the width down to the narrowest phone. */
+.grid--aside { grid-template-columns: 3fr 2fr; }
+.grid--main { grid-template-columns: 2fr 1fr; }
+@media (max-width: 900px) {
+  .grid--aside, .grid--main { grid-template-columns: 1fr; }
+}
+
 .eyebrow {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: .78rem; font-weight: 800; letter-spacing: .16em;
@@ -239,6 +248,15 @@ img { max-width: 100%; height: auto; display: block; }
 @media (max-width: 1279px) {
   .nav { display: none; }
   .burger { display: inline-flex; }
+}
+/* On a 360px phone the logo, the donate button and the burger together
+   came to 342px in 316px of room, and the burger was pushed off the edge.
+   The donate button is the one of the three that is repeated elsewhere —
+   it sits at the foot of the drawer the burger opens. */
+@media (max-width: 480px) {
+  .header__cta .btn { display: none; }
+  .brand img { height: 44px; }
+  .wrap { padding: 0 16px; }
 }
 
 /* --- Mobile: a drawer that slides in from the left --------------------- */
@@ -492,35 +510,99 @@ img { max-width: 100%; height: auto; display: block; }
   .band__panel { margin-top: -90px; padding: 32px 24px; }
 }
 
-/* --- Cards ------------------------------------------------------------- */
+/* --- Cards -------------------------------------------------------------
+   Programmes, news, events, albums and publications all ride on this one.
+   The earlier version was a white box with a photo on top; the changes
+   below are about making it feel picked up rather than printed:
+
+   - the label sits on the photograph, so the words below start higher and
+     every card in a row breaks its text at the same place;
+   - a scrim across the foot of the photo both seats the label and stops a
+     pale sky washing the tag out;
+   - an arrow badge rises out of the photo's corner on hover, which is the
+     cheapest possible way to say "this goes somewhere";
+   - the heading underlines itself rather than merely changing colour. */
 
 .card {
   position: relative; background: #fff;
-  border: 1px solid var(--line); border-radius: var(--r);
+  border: 1px solid var(--line); border-radius: 18px;
   overflow: hidden; display: flex; flex-direction: column;
   text-decoration: none; color: inherit;
-  transition: transform .4s var(--ease), box-shadow .4s var(--ease), border-color .3s;
+  transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .3s;
 }
 .card::after {
   content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px;
   background: linear-gradient(90deg, var(--green), var(--blue));
   transform: scaleX(0); transform-origin: left;
-  transition: transform .45s var(--ease); z-index: 2;
+  transition: transform .45s var(--ease); z-index: 3;
 }
-a.card:hover { transform: translateY(-8px); box-shadow: var(--sh-3); border-color: transparent; }
-a.card:hover::after { transform: scaleX(1); }
-.card__media { aspect-ratio: 16 / 10; background: var(--wash); overflow: hidden; }
-.card__media img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s var(--ease); }
-a.card:hover .card__media img { transform: scale(1.07); }
+a.card:hover, a.card:focus-visible {
+  transform: translateY(-9px);
+  box-shadow: 0 6px 14px rgba(20,29,23,.07), 0 28px 60px rgba(20,29,23,.17);
+  border-color: transparent;
+}
+a.card:hover::after, a.card:focus-visible::after { transform: scaleX(1); }
+
+.card__media {
+  position: relative;
+  aspect-ratio: 16 / 10; background: var(--wash); overflow: hidden;
+}
+.card__media img {
+  width: 100%; height: 100%; object-fit: cover;
+  /* Faces sit above the middle of a photograph far more often than below. */
+  object-position: center 40%;
+  transition: transform .8s var(--ease);
+}
+a.card:hover .card__media img { transform: scale(1.06); }
+
+/* Seats whatever is overlaid on the photo. The scrim belongs to the strip
+   rather than to the media box, so cards that bring their own overlay
+   (albums, videos) are untouched and no :has() support is required. */
+.card__over {
+  position: absolute; z-index: 2; left: 0; right: 0; bottom: 0;
+  padding: 44px 68px 15px 18px;
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  background: linear-gradient(to top, rgba(14,22,8,.74) 0%, rgba(14,22,8,.34) 52%, rgba(14,22,8,0) 100%);
+  pointer-events: none;
+}
+.card__over .tag { box-shadow: 0 2px 10px rgba(0,0,0,.22); }
+
+.card__badge {
+  position: absolute; z-index: 3; right: 14px; bottom: 14px;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--green); color: var(--green-deep);
+  box-shadow: 0 8px 22px rgba(0,0,0,.28);
+  transform: scale(.4) rotate(-40deg); opacity: 0;
+  transition: transform .45s var(--ease), opacity .35s;
+}
+.card__badge svg { width: 18px; height: 18px; fill: currentColor; }
+a.card:hover .card__badge, a.card:focus-visible .card__badge {
+  transform: none; opacity: 1;
+}
+
 .card__body { padding: 24px; display: flex; flex-direction: column; flex: 1; }
-.card__body h3 { font-size: 1.1rem; margin-bottom: 9px; transition: color .25s; }
+.card__body h3 {
+  position: relative; display: inline-block; align-self: flex-start;
+  font-size: 1.12rem; margin-bottom: 10px;
+  transition: color .25s;
+}
+.card__body h3::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px;
+  background: var(--green-ink);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .45s var(--ease);
+}
 a.card:hover .card__body h3 { color: var(--green-ink); }
+a.card:hover .card__body h3::after { transform: scaleX(1); }
 .card__body p { font-size: .93rem; color: var(--ink-soft); flex: 1; }
 .card__meta {
   margin-top: 18px; padding-top: 15px; border-top: 1px solid var(--line);
   font-size: .8rem; color: var(--muted);
   display: flex; flex-direction: column; gap: 7px;
+  transition: border-color .35s;
 }
+a.card:hover .card__meta { border-color: #d6e3bf; }
 .card__meta span { display: flex; gap: 8px; align-items: flex-start; }
 .card__meta svg { width: 14px; height: 14px; fill: var(--green-ink); flex: none; margin-top: 3px; }
 
@@ -663,12 +745,91 @@ a.card:hover .card__body h3 { color: var(--green-ink); }
 .skip { position: absolute; left: -9999px; background: var(--green-ink); color: #fff; padding: 11px 20px; z-index: 200; border-radius: 0 0 var(--r-sm) 0; }
 .skip:focus { left: 0; top: 0; }
 
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border-radius: var(--r); overflow: hidden; box-shadow: var(--sh-1); }
-.stats > div { background: #fff; padding: 30px 24px; transition: background .25s; }
-.stats > div:hover { background: var(--wash); }
-.stats .n { font-size: 2.5rem; font-weight: 800; color: var(--green-ink); line-height: 1; letter-spacing: -.03em; }
-.stats .l { font-size: .88rem; color: var(--muted); margin-top: 9px; }
-@media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+/* --- Impact numbers ----------------------------------------------------
+   Was a white table with hairline gaps, which is exactly what a table
+   looks like. The numbers are the loudest thing the organisation can say,
+   so they now sit on a dark panel, oversized, each on its own tile that
+   lights up as the cursor crosses it. */
+
+.stats {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 4px; padding: 8px;
+  border-radius: 24px;
+  background:
+    radial-gradient(130% 150% at 2% 0%, #4a6327 0%, rgba(74,99,39,0) 58%),
+    linear-gradient(135deg, var(--green-deep) 0%, #253509 100%);
+  box-shadow: 0 20px 50px rgba(20, 29, 23, .24);
+}
+/* A faint diagonal sheen so the panel is not a flat slab of colour. */
+.stats::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(100deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 42%);
+}
+.stats > div {
+  position: relative;
+  padding: 34px 26px 30px; border-radius: 18px;
+  background: transparent;
+  transition: background .35s var(--ease);
+}
+/* Hairlines between tiles, drawn on the tile rather than with grid gaps so
+   they disappear the moment a tile is highlighted. */
+.stats > div + div::before {
+  content: ""; position: absolute; left: -2px; top: 24%; bottom: 24%;
+  width: 1px; background: rgba(255,255,255,.14);
+  transition: opacity .3s;
+}
+.stats > div:hover { background: rgba(255,255,255,.07); }
+.stats > div:hover::before, .stats > div:hover + div::before { opacity: 0; }
+
+/* Top right, not bottom right: at the foot of the tile a two-line label
+   runs straight under it. */
+.stats__icon {
+  position: absolute; right: 20px; top: 26px;
+  width: 44px; height: 44px; pointer-events: none;
+  transition: transform .5s var(--ease), opacity .4s;
+}
+.stats__icon svg { width: 100%; height: 100%; fill: var(--green); opacity: .16; }
+.stats > div:hover .stats__icon { transform: translateY(-4px) rotate(-7deg); }
+.stats > div:hover .stats__icon svg { opacity: .3; }
+
+.stats .n {
+  position: relative; z-index: 1;
+  font-size: clamp(2.1rem, 3.3vw, 2.95rem); font-weight: 800;
+  color: #fff; line-height: 1; letter-spacing: -.035em;
+  padding-right: 52px;
+}
+/* The suffix should not compete with the figure it hangs off. */
+.stats .n { font-variant-numeric: tabular-nums; }
+.stats .l {
+  position: relative; z-index: 1;
+  font-size: .86rem; color: rgba(255, 255, 255, .64);
+  margin-top: 11px; max-width: 18ch;
+}
+/* An accent rule that draws itself in as the tile scrolls into view. */
+.stats > div .n::after {
+  content: ""; display: block; width: 34px; height: 3px; border-radius: 3px;
+  margin-top: 16px; background: var(--green);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .55s var(--ease) .15s, width .35s var(--ease);
+}
+.stats > div.is-in .n::after, .no-js .stats > div .n::after { transform: scaleX(1); }
+.stats > div:hover .n::after { width: 56px; }
+
+/* Two figures instead of four, e.g. the registration pair on About. */
+.stats--2 { grid-template-columns: repeat(2, 1fr); }
+
+@media (max-width: 900px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .stats > div { padding: 28px 22px 24px; }
+}
+@media (max-width: 560px) {
+  .stats--2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 460px) {
+  .stats { grid-template-columns: 1fr; }
+  .stats > div + div::before { left: 24%; right: 24%; top: -2px; bottom: auto; width: auto; height: 1px; }
+}
 
 /* A reveal wrapper around a card must not break the equal-height grid it
    sits in. Scoped to a class, not to every [data-reveal] inside a .grid —
@@ -840,4 +1001,232 @@ a.card:hover .card__body h3 { color: var(--green-ink); }
 
 @media (prefers-reduced-motion: reduce) {
   .fcard::before { transition: none; }
+}
+
+/* --- Value cards -------------------------------------------------------
+   Core values, and the vision/mission pair. These had been the same white
+   tile used for a phone number in a sidebar, which is the wrong weight for
+   the thing the organisation says it stands for.
+
+   Deliberately a different shape from the focus cards above: a rail down
+   the left edge that draws itself, a round solid-colour icon, and a tint
+   that washes up from the floor of the card. The focus cards flood with
+   colour; if these did too the page would repeat itself. */
+
+.vgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.vgrid--2 { grid-template-columns: repeat(2, 1fr); }
+/* The reveal wrapper is a flex row; without this the card shrinks to
+   its text and the grid column it sits in looks half empty. */
+.vgrid > * > .vcard { flex: 1; }
+@media (max-width: 920px) { .vgrid, .vgrid--2 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .vgrid, .vgrid--2 { grid-template-columns: 1fr; } }
+
+.vcard {
+  --accent: var(--green-ink);
+  --accent-soft: #eef6de;
+  --accent-glow: rgba(95, 126, 36, .34);
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; flex-direction: column; height: 100%;
+  padding: 34px 30px 30px;
+  border: 1px solid var(--line); border-radius: 20px;
+  background: #fff; box-shadow: var(--sh-1);
+  transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .35s;
+}
+.vcard--blue { --accent: var(--blue-ink); --accent-soft: #e4f3fb; --accent-glow: rgba(12,108,148,.32); }
+.vcard--gold { --accent: var(--gold-ink); --accent-soft: #fdf3e0; --accent-glow: rgba(178,102,12,.3); }
+.vcard--deep { --accent: var(--green-deep); --accent-soft: #e8eee0; --accent-glow: rgba(51,70,26,.3); }
+
+/* The rail. Drawn top-down, so it reads as the card waking up. */
+.vcard::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(180deg, var(--accent), rgba(0,0,0,0));
+  transform: scaleY(0); transform-origin: top;
+  transition: transform .55s var(--ease);
+}
+/* The tint. Only the lower half, so the heading keeps full contrast. */
+.vcard::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 28%, var(--accent-soft) 100%);
+  opacity: 0; transition: opacity .45s var(--ease);
+}
+.vcard:hover, .vcard:focus-within {
+  transform: translateY(-7px);
+  border-color: transparent;
+  box-shadow: 0 6px 14px rgba(20,29,23,.06), 0 26px 56px rgba(20,29,23,.15);
+}
+.vcard:hover::before, .vcard:focus-within::before { transform: scaleY(1); }
+.vcard:hover::after, .vcard:focus-within::after { opacity: 1; }
+
+.vcard__icon {
+  width: 58px; height: 58px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; margin-bottom: 20px;
+  background: var(--accent);
+  box-shadow: 0 10px 24px var(--accent-glow);
+  transition: transform .5s var(--ease), box-shadow .45s;
+}
+.vcard__icon svg { width: 26px; height: 26px; fill: #fff; }
+.vcard:hover .vcard__icon {
+  transform: translateY(-4px) rotate(8deg);
+  box-shadow: 0 16px 34px var(--accent-glow);
+}
+
+/* Top right. At the foot of the card the last line of a long value ran
+   straight through the numeral; beside the icon there is always room. */
+.vcard__n {
+  position: absolute; right: 22px; top: 18px; pointer-events: none;
+  font-size: 4.6rem; font-weight: 800; line-height: 1; letter-spacing: -.05em;
+  color: var(--accent); opacity: .08;
+  transition: opacity .4s var(--ease), transform .5s var(--ease);
+}
+.vcard:hover .vcard__n { opacity: .15; transform: translateY(3px); }
+
+.vcard h3 { font-size: 1.14rem; margin-bottom: 10px; }
+.vcard p { margin: 0; font-size: .95rem; color: var(--ink-soft); }
+
+/* Vision and mission carry one sentence each and get the room to say it. */
+.vcard--wide { padding: 40px 36px 36px; }
+.vcard--wide h3 { font-size: 1.5rem; }
+.vcard--wide p { font-size: 1.04rem; max-width: 46ch; }
+.vcard--wide .vcard__icon { width: 66px; height: 66px; }
+.vcard--wide .vcard__icon svg { width: 30px; height: 30px; }
+
+/* --- Reason rows -------------------------------------------------------
+   The "why partner with us" list, on the dark section. Thin outlined boxes
+   read as a form; these are glass panels that step sideways towards the
+   reader as the cursor crosses them. */
+
+.rsn {
+  position: relative; overflow: hidden;
+  display: flex; gap: 18px; align-items: flex-start;
+  padding: 22px 24px; border-radius: 16px;
+  background: rgba(255, 255, 255, .055);
+  border: 1px solid rgba(255, 255, 255, .13);
+  transition: transform .45s var(--ease), background .4s, border-color .4s,
+              box-shadow .45s var(--ease);
+}
+.rsn::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--green);
+  transform: scaleY(0); transform-origin: center;
+  transition: transform .45s var(--ease);
+}
+.rsn:hover {
+  transform: translateX(9px);
+  background: rgba(255, 255, 255, .1);
+  border-color: rgba(153, 190, 61, .45);
+  box-shadow: -8px 14px 34px rgba(0, 0, 0, .22);
+}
+.rsn:hover::before { transform: scaleY(1); }
+
+.rsn__icon {
+  width: 46px; height: 46px; border-radius: 14px; flex: none;
+  display: grid; place-items: center;
+  background: rgba(153, 190, 61, .17);
+  transition: background .4s, transform .5s var(--ease);
+}
+.rsn__icon svg { width: 22px; height: 22px; fill: var(--green); transition: fill .4s; }
+.rsn:hover .rsn__icon { background: var(--green); transform: rotate(-8deg); }
+.rsn:hover .rsn__icon svg { fill: var(--green-deep); }
+
+.rsn h3 { font-size: 1.02rem; margin-bottom: 6px; color: #fff; }
+.rsn p { margin: 0; font-size: .9rem; color: #cdd9c6; }
+.rsn__n {
+  margin-left: auto; flex: none; align-self: flex-start;
+  font-size: .78rem; font-weight: 800; letter-spacing: .08em;
+  color: rgba(255, 255, 255, .26);
+  transition: color .4s;
+}
+.rsn:hover .rsn__n { color: var(--green); }
+
+/* --- People ------------------------------------------------------------
+   A portrait, a name and a role were sitting in the same box used for a
+   news story, photograph on top and text beneath. A person is better served
+   by the photograph filling the card and the words sitting on it: the bio
+   stays folded away and unfolds on hover, so a row of four reads as faces
+   first and biographies second. */
+
+.pgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+@media (max-width: 1040px) { .pgrid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px) { .pgrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 420px) { .pgrid { grid-template-columns: 1fr; } }
+
+.person {
+  position: relative; overflow: hidden;
+  aspect-ratio: 3 / 4; border-radius: 20px;
+  background: var(--green-deep);
+  box-shadow: var(--sh-1);
+  transition: transform .5s var(--ease), box-shadow .5s var(--ease);
+}
+.person:hover, .person:focus-within {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 18px rgba(20,29,23,.1), 0 30px 62px rgba(20,29,23,.22);
+}
+.person > img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center 22%;
+  transition: transform .9s var(--ease);
+}
+.person:hover > img { transform: scale(1.07); }
+
+.person__initial {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: linear-gradient(150deg, #5f7e24, var(--green-deep));
+  color: rgba(255, 255, 255, .5); font-size: 4rem; font-weight: 800;
+}
+
+/* Two stops rather than one: the lower half needs to be near-solid for the
+   bio, but a gradient that dark starting halfway up greys out the face. */
+.person::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(11, 18, 6, .95) 0%, rgba(11, 18, 6, .8) 26%,
+    rgba(11, 18, 6, .3) 52%, rgba(11, 18, 6, 0) 78%);
+  transition: opacity .45s;
+}
+.person:hover::after { opacity: .96; }
+
+.person__body {
+  position: absolute; z-index: 1; left: 0; right: 0; bottom: 0;
+  padding: 24px 22px 22px; color: #fff;
+}
+.person__body h3 {
+  font-size: 1.08rem; margin: 0 0 3px;
+  color: #fff; letter-spacing: -.02em;
+}
+.person__role {
+  display: block; font-size: .82rem; font-weight: 800;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--green);
+}
+/* grid-template-rows animates; max-height on an unknown number of lines
+   either clips the long ones or overshoots on the short ones. */
+.person__bio {
+  display: grid; grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .5s var(--ease), opacity .35s var(--ease);
+}
+.person__bio > span {
+  overflow: hidden;
+  display: block; font-size: .86rem; line-height: 1.55;
+  color: rgba(255, 255, 255, .8); padding-top: 10px;
+}
+.person:hover .person__bio, .person:focus-within .person__bio {
+  grid-template-rows: 1fr; opacity: 1;
+}
+
+.person__links { display: flex; gap: 10px; margin-top: 13px; }
+.person__links a {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(255, 255, 255, .14); color: #fff;
+  transition: background .3s, transform .3s var(--ease);
+}
+.person__links a:hover { background: var(--green); color: var(--green-deep); transform: translateY(-3px); }
+.person__links svg { width: 15px; height: 15px; fill: currentColor; }
+
+/* Touch: there is no hover, so the bio stays open. */
+@media (hover: none) {
+  .person__bio { grid-template-rows: 1fr; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vcard::before, .vcard::after, .person__bio { transition: none; }
 }

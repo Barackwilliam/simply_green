@@ -103,8 +103,23 @@
 
     root.style.setProperty("--hero-delay", DELAY + "ms");
 
+    // A slide that is not showing is transparent, not off screen, so the
+    // browser counts it as in the viewport and downloads it immediately —
+    // loading="lazy" buys nothing. Three hero photographs came to 1.7MB
+    // before the page had painted. Only the first carries a src in the
+    // markup; the rest are fetched here, one slide ahead of being needed.
+    // With JavaScript off there is no way to reach them, so nothing is lost.
+    function load(i) {
+      var img = slides[(i + slides.length) % slides.length].querySelector("img[data-src]");
+      if (!img) return;
+      img.src = img.dataset.src;
+      img.removeAttribute("data-src");
+    }
+
     function show(to) {
       index = (to + slides.length) % slides.length;
+      load(index);
+      load(index + 1);
       slides.forEach(function (slide, i) {
         var on = i === index;
         slide.classList.toggle("is-active", on);
@@ -175,7 +190,16 @@
       if (e.key === "ArrowRight") { e.preventDefault(); go(index + 1); }
     });
 
-    show(0);
+    // show(0) would fetch slide two straight away, which is the competition
+    // for bandwidth this was meant to remove. Mark slide one active without
+    // touching the others, and wait for the page to settle first.
+    slides[0].classList.add("is-active");
+    var warm = function () { load(1); };
+    if (window.requestIdleCallback) {
+      window.addEventListener("load", function () { window.requestIdleCallback(warm); });
+    } else {
+      window.addEventListener("load", function () { window.setTimeout(warm, 400); });
+    }
     play();
   });
 

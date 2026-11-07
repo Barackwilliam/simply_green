@@ -12,8 +12,14 @@ controls only appear when there is something to move between.
                role="group" aria-roledescription="slide"
                aria-label="{{ forloop.counter }} of {{ slides|length }}"
                {% if not forloop.first %}aria-hidden="true"{% endif %}>
-        <img src="{{ slide.image.url }}" alt="{{ slide.image_alt }}"
-             {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+        {% comment %}
+          Only the first slide carries a src. A hidden slide still counts as
+          in the viewport, so loading="lazy" did not stop the other two
+          downloading before the page had painted; the slideshow script
+          fetches them once the page is idle, one slide ahead of need.
+        {% endcomment %}
+        <img {% if forloop.first %}src="{{ slide.image.url }}" fetchpriority="high"{% else %}data-src="{{ slide.image.url }}" decoding="async"{% endif %}
+             alt="{{ slide.image_alt }}">
         <div class="hero__scrim"></div>
         <div class="hero__inner">
           <div class="wrap">

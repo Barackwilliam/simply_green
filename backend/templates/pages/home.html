@@ -35,6 +35,7 @@
     <div class="stats">
       {% for s in stats %}
         <div data-reveal style="--d:{{ forloop.counter0 }}00ms">
+          {% if s.icon %}<span class="stats__icon" aria-hidden="true">{% include "partials/icon.html" with name=s.icon %}</span>{% endif %}
           <div class="n"><span data-count="{{ s.value|cut:','|cut:'+' }}">{{ s.value }}</span>{{ s.suffix }}</div>
           <div class="l">{{ s.label }}</div>
         </div>
@@ -153,13 +154,14 @@
       </div>
       <div class="grid" style="gap:14px">
         {% for r in reasons %}
-          <div data-reveal style="--d:{{ forloop.counter0 }}20ms;display:flex;gap:16px;padding:20px;border:1px solid rgba(255,255,255,.14);border-radius:var(--r)">
-            <div class="tile__icon" style="background:rgba(153,190,61,.18);flex:none;margin:0">
-              {% include "partials/icon.html" with name=r.icon %}
-            </div>
-            <div>
-              <h3 style="font-size:1rem;margin-bottom:6px">{{ r.title }}</h3>
-              <p style="margin:0;font-size:.9rem;color:#cdd9c6">{{ r.description|truncatewords:26 }}</p>
+          <div data-reveal style="--d:{{ forloop.counter0 }}20ms">
+            <div class="rsn">
+              <span class="rsn__icon">{% include "partials/icon.html" with name=r.icon %}</span>
+              <div>
+                <h3>{{ r.title }}</h3>
+                <p>{{ r.description|truncatewords:26 }}</p>
+              </div>
+              <span class="rsn__n" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
             </div>
           </div>
         {% endfor %}

@@ -6,12 +6,13 @@
     {% else %}
       <img src="{% static 'img/planning.webp' %}" alt="" loading="lazy">
     {% endif %}
+    <div class="card__over">
+      <span class="tag tag--blue">{{ post.get_kind_display }}</span>
+      {% if post.category %}<span class="tag tag--onimg">{{ post.category.name }}</span>{% endif %}
+    </div>
+    <span class="card__badge" aria-hidden="true">{% include "partials/icon.html" with name="arrow" %}</span>
   </div>
   <div class="card__body">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-      <span class="tag tag--blue">{{ post.get_kind_display }}</span>
-      {% if post.category %}<span class="tag tag--grey">{{ post.category.name }}</span>{% endif %}
-    </div>
     <h3>{{ post.title }}</h3>
     <p>{{ post.excerpt|default:post.body|striptags|truncatewords:22 }}</p>
     <div class="card__meta">

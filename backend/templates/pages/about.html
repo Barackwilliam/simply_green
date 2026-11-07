@@ -18,9 +18,9 @@
       <div class="prose">
         {{ site.who_we_are|safe }}
         {% if site.registration_number %}
-          <div class="stats" style="grid-template-columns:repeat(2,1fr);margin-top:28px">
-            <div><div class="n" style="font-size:1.3rem">{{ site.registration_number }}</div><div class="l">Registration number</div></div>
-            <div><div class="n" style="font-size:1.3rem">Mainland {{ site.country }}</div><div class="l">Where we operate</div></div>
+          <div class="stats stats--2" style="margin-top:28px">
+            <div data-reveal><div class="n" style="font-size:1.3rem">{{ site.registration_number }}</div><div class="l">Registration number</div></div>
+            <div data-reveal style="--d:.1s"><div class="n" style="font-size:1.3rem">Mainland {{ site.country }}</div><div class="l">Where we operate</div></div>
           </div>
         {% endif %}
       </div>
@@ -32,16 +32,20 @@
 
 <section class="section section--wash" id="vision">
   <div class="wrap">
-    <div class="grid grid-2">
-      <div class="tile" style="border-top:5px solid var(--blue-ink)">
-        <div class="tile__icon" style="background:#ddf1fa">{% include "partials/icon.html" with name="globe" %}</div>
-        <h3>Our Vision</h3>
-        <p>{{ site.vision }}</p>
+    <div class="vgrid vgrid--2">
+      <div data-reveal style="display:flex">
+        <div class="vcard vcard--wide vcard--blue">
+          <span class="vcard__icon">{% include "partials/icon.html" with name="globe" %}</span>
+          <h3>Our Vision</h3>
+          <p>{{ site.vision }}</p>
+        </div>
       </div>
-      <div class="tile" style="border-top:5px solid var(--green-ink)">
-        <div class="tile__icon">{% include "partials/icon.html" with name="leaf" %}</div>
-        <h3>Our Mission</h3>
-        <p>{{ site.mission }}</p>
+      <div data-reveal style="--d:.12s;display:flex">
+        <div class="vcard vcard--wide">
+          <span class="vcard__icon">{% include "partials/icon.html" with name="leaf" %}</span>
+          <h3>Our Mission</h3>
+          <p>{{ site.mission }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -54,12 +58,15 @@
       <span class="eyebrow">What guides us</span>
       <h2>Our core values</h2>
     </div>
-    <div class="grid grid-3">
+    <div class="vgrid">
       {% for v in values %}
-        <div class="tile">
-          <div class="tile__icon">{% include "partials/icon.html" with name=v.icon %}</div>
-          <h3>{{ v.title }}</h3>
-          <p>{{ v.description }}</p>
+        <div data-reveal style="--d:{{ forloop.counter0 }}0ms;display:flex">
+          <div class="vcard vcard--{% cycle 'green' 'blue' 'gold' 'deep' %}">
+            <span class="vcard__n" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+            <span class="vcard__icon">{% include "partials/icon.html" with name=v.icon %}</span>
+            <h3>{{ v.title }}</h3>
+            <p>{{ v.description }}</p>
+          </div>
         </div>
       {% endfor %}
     </div>
