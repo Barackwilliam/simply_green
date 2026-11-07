@@ -319,7 +319,13 @@ img { max-width: 100%; height: auto; display: block; }
 
 .hero { position: relative; background: var(--green-deep); overflow: hidden; }
 .hero__media { position: relative; height: clamp(580px, 72vh, 740px); }
-.hero__media > img { width: 100%; height: 100%; object-fit: cover; animation: zoomSlow 1.6s var(--ease) both; }
+.hero__media > img {
+  width: 100%; height: 100%; object-fit: cover;
+  /* Above centre: the people stand in the upper half, so cropping for a wide
+     box must not take their heads off. */
+  object-position: center 34%;
+  animation: zoomSlow 1.6s var(--ease) both;
+}
 .hero__overlay {
   position: absolute; inset: 0; display: flex; align-items: center;
   /* Clear of the sticky header above and of the cards that ride up over the
@@ -402,11 +408,13 @@ img { max-width: 100%; height: auto; display: block; }
 /* --- Photo band + green panel ------------------------------------------ */
 
 .band { position: relative; }
-.band__photo { height: 440px; overflow: hidden; }
-.band__photo img { width: 100%; height: 100%; object-fit: cover; }
+.band__photo { height: 520px; overflow: hidden; }
+.band__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 45%; }
 .band__panel {
   background: linear-gradient(140deg, #6e9129, var(--green-ink));
-  color: #fff; margin-top: -270px; position: relative;
+  color: #fff; /* The panel used to ride so far up the photograph that it cut the
+     faces in half. It overlaps enough to tie the two together and no more. */
+  margin-top: -170px; position: relative;
   padding: 48px 40px; border-radius: var(--r); box-shadow: var(--sh-3);
 }
 .band__panel h3 { color: #fff; }
@@ -416,8 +424,8 @@ img { max-width: 100%; height: auto; display: block; }
 .band__col:hover svg { transform: translateY(-5px) scale(1.1); }
 
 @media (max-width: 900px) {
-  .band__photo { height: 260px; }
-  .band__panel { margin-top: -130px; padding: 32px 24px; }
+  .band__photo { height: 300px; }
+  .band__panel { margin-top: -90px; padding: 32px 24px; }
 }
 
 /* --- Cards ------------------------------------------------------------- */
@@ -598,7 +606,9 @@ a.card:hover .card__body h3 { color: var(--green-ink); }
 .stats .l { font-size: .88rem; color: var(--muted); margin-top: 9px; }
 @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 
-/* Reveal wrappers must not break the equal-height card grids they sit in. */
-[data-reveal] > .card { height: 100%; }
-.grid > [data-reveal] { display: flex; }
-.grid > [data-reveal] > .card { flex: 1; }
+/* A reveal wrapper around a card must not break the equal-height grid it
+   sits in. Scoped to a class, not to every [data-reveal] inside a .grid —
+   that caught the two-column text sections as well and laid their headings,
+   paragraphs and button out in a row. */
+.r-cell { display: flex; }
+.r-cell > .card { flex: 1; height: 100%; }

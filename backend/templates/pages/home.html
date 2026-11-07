@@ -9,7 +9,7 @@
 {# ---------------------------------------------------------------- hero #}
 <section class="hero">
   <div class="hero__media">
-    <img src="{% static 'img/hero.webp' %}" width="1920" height="840" fetchpriority="high"
+    <img src="{% static 'img/hero.webp' %}" width="1700" height="1133" fetchpriority="high"
          alt="Simply Green Organization staff standing with sacks of waste collected at a coastal clean-up in Dar es Salaam">
     <div class="hero__overlay">
       <div class="wrap">
@@ -110,7 +110,7 @@
 {% if values %}
 <section class="band">
   <div class="band__photo">
-    <img src="{% static 'img/band.webp' %}" width="1800" height="771" loading="lazy"
+    <img src="{% static 'img/band.webp' %}" width="1600" height="800" loading="lazy"
          alt="Community clean-up in progress on the Dar es Salaam coast">
   </div>
   <div class="wrap">
@@ -141,7 +141,7 @@
       <a class="btn btn--blue btn--sm" href="{% url 'site:programmes' %}">All programmes</a>
     </div>
     <div class="grid grid-3" style="align-items:stretch">
-      {% for p in programmes %}<div data-reveal style="--d:{{ forloop.counter0 }}20ms">{% include "partials/programme_card.html" with programme=p %}</div>{% endfor %}
+      {% for p in programmes %}<div class="r-cell" data-reveal style="--d:{{ forloop.counter0 }}20ms">{% include "partials/programme_card.html" with programme=p %}</div>{% endfor %}
     </div>
   </div>
 </section>
@@ -188,7 +188,7 @@
       <a class="btn btn--blue btn--sm" href="{% url 'site:news' %}">All news</a>
     </div>
     <div class="grid grid-3">
-      {% for post in posts %}<div data-reveal style="--d:{{ forloop.counter0 }}20ms">{% include "partials/post_card.html" %}</div>{% endfor %}
+      {% for post in posts %}<div class="r-cell" data-reveal style="--d:{{ forloop.counter0 }}20ms">{% include "partials/post_card.html" %}</div>{% endfor %}
     </div>
   </div>
 </section>
