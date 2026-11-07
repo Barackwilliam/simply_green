@@ -347,13 +347,26 @@ PROGRAMME_IMAGES = {
 def attach_image(instance, field_name, filename, *, force=False):
     """Attach a file from assets/source to an ImageField.
 
-    Skips silently when the file is missing, and leaves an existing upload
-    alone unless `force` is set — so re-running the command never overwrites
-    an image an editor has since replaced.
+    Skips silently when the source is missing, and leaves an existing
+    upload alone unless `force` is set — so re-running the command never
+    overwrites an image an editor has since replaced.
+
+    "Existing" means the file is actually there, not merely that the
+    column holds a path. On a host with no persistent disk the database
+    survives a deploy and the uploads do not, and this check only looked
+    at the column: it saw a path, concluded the image was present, and
+    left the site pointing at files that had been wiped. Every photograph
+    on the production site was a 404 for exactly this reason.
     """
     field = getattr(instance, field_name)
     if field and not force:
-        return False
+        try:
+            if field.storage.exists(field.name):
+                return False
+        except Exception:
+            # If the backend cannot answer, assume it is there rather than
+            # overwrite something real.
+            return False
 
     source = ASSET_DIR / filename
     if not source.exists():
@@ -399,6 +412,11 @@ class Command(BaseCommand):
     def _site_settings(self):
         settings_obj = SiteSettings.load()
         if settings_obj.vision and not self.force:
+            # The words are the editor's now, but the logo file may still
+            # have been wiped with the disk, and attach_image only acts
+            # when the file is genuinely missing.
+            if attach_image(settings_obj, "logo", "logo.png"):
+                self.stdout.write("  logo restored")
             self.stdout.write("  site settings already filled in — left alone")
             return
         settings_obj.organisation_name = "Simply Green Organization"

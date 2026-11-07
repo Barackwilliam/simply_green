@@ -161,6 +161,17 @@ def dashboard_callback(request, context):
     ]
     outstanding = [c for c in checks if not c["done"]]
 
+    # --- is the bucket actually configured? -------------------------------
+    # Uploads on local disk are lost on every deploy, because the host
+    # rebuilds the filesystem and keeps the database. The warning this
+    # replaces was a RuntimeWarning in a build log nobody reads, and the
+    # result was a live site whose every photograph was a 404.
+    from django.conf import settings as dj_settings
+
+    ephemeral_media = not (
+        dj_settings.USE_SUPABASE_STORAGE or dj_settings.DEBUG
+    )
+
     # --- photographs a wide frame will crop badly -------------------------
     upright = ImageRendition.objects.filter(width__lt=F("height")).count()
 
@@ -214,6 +225,7 @@ def dashboard_callback(request, context):
             "setup_checks": checks,
             "setup_done": len(checks) - len(outstanding),
             "setup_total": len(checks),
+            "ephemeral_media": ephemeral_media,
             "upright_images": upright,
             "upright_url": _admin_url("core_imagerendition"),
             "quick_actions": actions,

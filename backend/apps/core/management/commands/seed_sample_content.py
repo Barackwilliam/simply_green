@@ -377,10 +377,20 @@ class Command(BaseCommand):
         self.stdout.write(f"  {len(posts)} articles, and the rest alongside.")
 
     def _attach(self, instance, field_name, filename):
-        """Attach an asset, leaving an existing upload alone."""
+        """Attach an asset, leaving an existing upload alone.
+
+        "Existing" means the file is really there. A column holding a path
+        to a file the disk no longer has is not an image, and treating it
+        as one is what left the deployed site showing nothing but broken
+        pictures after a redeploy.
+        """
         field = getattr(instance, field_name)
         if field:
-            return
+            try:
+                if field.storage.exists(field.name):
+                    return
+            except Exception:
+                return
         source = ASSET_DIR / filename
         if not source.exists():
             self.stdout.write(f"  missing asset, skipped: {filename}")
@@ -486,14 +496,24 @@ class Command(BaseCommand):
             )
             self._attach(album, "cover_image", photos[0][0])
             for i, (asset, caption) in enumerate(photos):
-                if album.photos.filter(caption=caption).exists():
-                    continue
                 source = ASSET_DIR / asset
                 if not source.exists():
                     continue
-                photo = Photo(
-                    album=album, caption=caption, alt_text=caption, display_order=i
-                )
+                # A row whose file the disk no longer has is not a
+                # photograph. Reuse the row and give it its picture back
+                # rather than skipping it and leaving a broken image.
+                photo = album.photos.filter(caption=caption).first()
+                if photo and photo.image:
+                    try:
+                        if photo.image.storage.exists(photo.image.name):
+                            continue
+                    except Exception:
+                        continue
+                if photo is None:
+                    photo = Photo(
+                        album=album, caption=caption, alt_text=caption,
+                        display_order=i,
+                    )
                 with source.open("rb") as handle:
                     photo.image.save(f"{album.slug}-{i}-{asset}", File(handle), save=True)
         self.stdout.write(f"  albums ({len(ALBUMS)})")

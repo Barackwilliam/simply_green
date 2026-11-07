@@ -39,6 +39,23 @@
     </a>
   </div>
 
+  {% if ephemeral_media %}
+    <section class="sg-alarm">
+      <span class="material-symbols-outlined">cloud_off</span>
+      <div>
+        <strong>Photographs are not being stored safely.</strong>
+        Uploads are going to the server's own disk, which is rebuilt every
+        time the site is deployed — so every picture, including ones added
+        here, disappears and the pages that used them break. Add the three
+        Supabase Storage keys to the service's environment
+        (<code>SUPABASE_PROJECT_REF</code>,
+        <code>SUPABASE_S3_ACCESS_KEY_ID</code>,
+        <code>SUPABASE_S3_SECRET_ACCESS_KEY</code>) from
+        Project&nbsp;Settings → Storage → S3 access keys, then deploy again.
+      </div>
+    </section>
+  {% endif %}
+
   {# ------------------------------------------------- waiting for a reply #}
   {% if waiting_now %}
     <section class="sg-waiting">

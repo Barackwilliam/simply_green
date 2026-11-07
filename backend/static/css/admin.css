@@ -250,3 +250,22 @@
 @media (prefers-reduced-motion: reduce) {
   .sg-kpi, .sg-bar span { transition: none; }
 }
+
+
+/* --- the one thing that must not be missed ----------------------------- */
+
+.sg-alarm {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 18px 22px; border-radius: 8px;
+  border: 1px solid #fca5a5; background: #fef2f2;
+  font-size: .88rem; line-height: 1.55; color: #7f1d1d;
+}
+.dark .sg-alarm { border-color: rgba(248,113,113,.4); background: rgba(248,113,113,.1); color: #fecaca; }
+.sg-alarm .material-symbols-outlined { flex: none; font-size: 22px; color: #dc2626; }
+.dark .sg-alarm .material-symbols-outlined { color: #f87171; }
+.sg-alarm strong { display: block; margin-bottom: 3px; }
+.sg-alarm code {
+  font-size: .82em; padding: 1px 5px; border-radius: 4px;
+  background: rgba(127,29,29,.1); font-family: ui-monospace, monospace;
+}
+.dark .sg-alarm code { background: rgba(255,255,255,.1); }

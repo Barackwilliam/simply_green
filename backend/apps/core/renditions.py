@@ -112,6 +112,26 @@ def lookup(name):
     return row
 
 
+def _variants_present(row):
+    """True when the files this row names are actually in storage.
+
+    A row is a claim about files, and on a host with no persistent disk
+    the row outlives them. Trusting the claim meant writing a srcset of
+    404s into the page: the browser then has no fallback, because a
+    <source> that fails is not retried against the <img>.
+
+    Checks one file, not all of them. They are written in a single pass,
+    so either the set is there or it is not, and one call is enough to
+    tell which.
+    """
+    for path in row.variants.values():
+        try:
+            return default_storage.exists(path)
+        except Exception:
+            return True
+    return False
+
+
 def build(fieldfile, *, force=False):
     """Make the WebP copies for one image and record them.
 
@@ -128,7 +148,7 @@ def build(fieldfile, *, force=False):
         return None
 
     row = ImageRendition.objects.filter(source=name).first()
-    if row and row.variants and not force:
+    if row and row.variants and not force and _variants_present(row):
         return row
 
     try:

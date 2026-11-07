@@ -26,15 +26,22 @@ services:
     # draft are created during the build. Every step is idempotent:
     # `ensure_superuser` never touches an account that already exists,
     # `seed_content` only fills in what is missing unless passed --force,
-    # and `seed_sample_content --if-enabled` does nothing at all unless
-    # SAMPLE_CONTENT is set (see below).
+    # `seed_sample_content --if-enabled` does nothing at all unless
+    # SAMPLE_CONTENT is set (see below), and `repair_media` reconciles
+    # what the database says about images with what storage actually has.
+    #
+    # That last step matters while uploads are on local disk: the disk is
+    # rebuilt on every deploy but the database is not, so without it the
+    # site comes back up pointing at photographs that no longer exist.
+    # Setting the Supabase Storage keys below is the real fix.
     buildCommand: >-
       pip install --no-cache-dir -r requirements.txt &&
       python manage.py collectstatic --noinput &&
       python manage.py migrate --noinput &&
       python manage.py ensure_superuser &&
       python manage.py seed_content &&
-      python manage.py seed_sample_content --if-enabled
+      python manage.py seed_sample_content --if-enabled &&
+      python manage.py repair_media
     startCommand: >-
       gunicorn config.wsgi:application
       --bind 0.0.0.0:$PORT
