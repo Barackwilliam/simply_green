@@ -258,6 +258,24 @@ if USE_SUPABASE_STORAGE:
     )
     # Supabase Storage requires path-style addressing.
     AWS_S3_ADDRESSING_STYLE = "path"
+
+    # Without this, FieldFile.url goes through S3Storage.url(), which
+    # builds a presigned url against AWS_S3_ENDPOINT_URL — the S3 API
+    # path, .storage.supabase.co/storage/v1/s3/..., which is for signed
+    # API calls and serves nothing to a browser. Every photograph on the
+    # site was a 404 with a perfectly valid-looking address.
+    #
+    # Setting a custom domain makes it build {protocol}//{domain}/{key}
+    # instead, and Supabase's public object url is exactly that shape.
+    # The bucket goes in the domain because django-storages leaves it out
+    # when a custom domain is set.
+    #
+    # MEDIA_URL below is the same address; it is what the preconnect in
+    # the page head points at.
+    AWS_S3_CUSTOM_DOMAIN = (
+        f"{SUPABASE_PROJECT_REF}.supabase.co"
+        f"/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}"
+    )
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None
     AWS_QUERYSTRING_AUTH = False

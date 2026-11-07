@@ -127,10 +127,41 @@ class Command(BaseCommand):
         except Exception as exc:
             self.stdout.write(BAD + f"could not read it back: {exc}")
 
+        # Uploading proves the keys. It does not prove a browser can read
+        # the file back: a Supabase bucket is private when it is created,
+        # and a private bucket answers the public url with an error while
+        # every write keeps succeeding.
         try:
-            self.stdout.write(OK + f"public url {default_storage.url(saved)}")
+            public = default_storage.url(saved)
         except Exception as exc:
+            public = ""
             self.stdout.write(WARN + f"no public url: {exc}")
+
+        if public:
+            self.stdout.write(f"          {public}")
+            try:
+                import urllib.request
+
+                with urllib.request.urlopen(public, timeout=20) as response:
+                    code = response.status
+                    body = response.read(len(payload) + 16)
+                if code == 200 and body.startswith(payload):
+                    self.stdout.write(OK + "a browser can read it back")
+                elif code == 200:
+                    self.stdout.write(
+                        WARN + "the url answers 200 but with something else"
+                    )
+                else:
+                    self.stdout.write(BAD + f"the url answers {code}")
+            except Exception as exc:
+                self.stdout.write(BAD + f"a browser cannot read it: {exc}")
+                self.stdout.write(
+                    "\n       The upload worked, so the keys are right. The\n"
+                    "       bucket is private — which is how Supabase creates\n"
+                    "       one. Open Storage -> the bucket -> settings and\n"
+                    "       make it public, or the site can write photographs\n"
+                    "       it can never show.\n"
+                )
 
         try:
             default_storage.delete(saved)
