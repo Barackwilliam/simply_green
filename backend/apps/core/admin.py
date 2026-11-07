@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from unfold.admin import ModelAdmin
 
 from .models import (
@@ -137,6 +137,27 @@ class HeroSlideAdmin(ModelAdmin):
         return "—"
 
 
+class OrientationFilter(admin.SimpleListFilter):
+    """Upright photographs are the ones a wide frame mistreats, so they are
+    the ones worth being able to list on their own."""
+
+    title = "shape"
+    parameter_name = "shape"
+
+    def lookups(self, request, model_admin):
+        return (("upright", "Upright — needs a focus point"),
+                ("landscape", "Landscape"))
+
+    def queryset(self, request, queryset):
+        from django.db.models import F
+
+        if self.value() == "upright":
+            return queryset.filter(width__lt=F("height"))
+        if self.value() == "landscape":
+            return queryset.filter(width__gte=F("height"))
+        return queryset
+
+
 @admin.register(ImageRendition)
 class ImageRenditionAdmin(ModelAdmin):
     """Where a photograph gets cropped.
@@ -151,11 +172,26 @@ class ImageRenditionAdmin(ModelAdmin):
     needs adding by hand.
     """
 
-    list_display = ("preview", "source", "shape", "focus")
-    list_display_links = ("preview", "source")
+    list_display = ("preview", "filename", "shape", "focus")
+    list_display_links = ("preview", "filename")
+    list_filter = (OrientationFilter,)
     search_fields = ("source",)
     readonly_fields = ("source", "width", "height", "variants", "preview_large")
-    fields = ("preview_large", "source", "width", "height", "focal_x", "focal_y", "variants")
+    fieldsets = (
+        (None, {
+            "fields": ("preview_large", "focal_x", "focal_y"),
+            "description": (
+                "Move the focus towards the part of the photograph that "
+                "matters — a face, a group — and every frame on the site "
+                "keeps that part when it has to crop. 50% / 38% is the "
+                "default: centred left to right, a little above the middle."
+            ),
+        }),
+        ("File details", {
+            "classes": ("collapse",),
+            "fields": ("source", "width", "height", "variants"),
+        }),
+    )
 
     def has_add_permission(self, request):
         return False
@@ -169,6 +205,18 @@ class ImageRenditionAdmin(ModelAdmin):
             '<img src="{}" style="width:76px;height:52px;object-fit:cover;'
             'object-position:{}% {}%;border-radius:6px">',
             url, obj.focal_x, obj.focal_y,
+        )
+
+    @admin.display(description="Photograph", ordering="source")
+    def filename(self, obj):
+        """The file's own name. The full storage path is on the detail
+        page; in a list it is a column of prefixes that are all the same."""
+        name = obj.source.rsplit("/", 1)[-1]
+        folder = obj.source.rsplit("/", 1)[0] if "/" in obj.source else ""
+        return format_html(
+            '<span style="font-weight:500">{}</span>'
+            '<span style="display:block;font-size:11px;color:#6d786f">{}</span>',
+            name, folder or "—",
         )
 
     @admin.display(description="Shape")
@@ -198,22 +246,27 @@ class ImageRenditionAdmin(ModelAdmin):
             return "—"
         # The three shapes the site actually uses, side by side, so the
         # effect of moving the focus is visible without hunting for the page.
+        #
+        # format_html_join rather than "".join over format_html: joining
+        # SafeStrings with str.join gives back a plain str, which the outer
+        # format_html then escapes, and the preview renders as a wall of
+        # visible markup.
         frames = (("Hero band", "320px", "150px"),
                   ("Card", "220px", "138px"),
                   ("Portrait", "130px", "173px"))
-        cells = "".join(
-            format_html(
-                '<figure style="margin:0 14px 0 0;display:inline-block;'
-                'vertical-align:top">'
+        return format_html(
+            '<div style="display:flex;gap:16px;flex-wrap:wrap">{}</div>',
+            format_html_join(
+                "",
+                '<figure style="margin:0">'
                 '<img src="{}" style="width:{};height:{};object-fit:cover;'
                 'object-position:{}% {}%;border-radius:8px;display:block">'
                 '<figcaption style="font-size:11px;color:#6d786f;'
-                'margin-top:5px">{}</figcaption></figure>',
-                url, w, h, obj.focal_x, obj.focal_y, label,
-            )
-            for label, w, h in frames
+                'margin-top:6px">{}</figcaption></figure>',
+                ((url, w, h, obj.focal_x, obj.focal_y, label)
+                 for label, w, h in frames),
+            ),
         )
-        return format_html("<div>{}</div>", cells)
 
     def _url(self, obj):
         from django.core.files.storage import default_storage

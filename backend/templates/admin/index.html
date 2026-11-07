@@ -1,0 +1,179 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% comment %}
+  Unfold's stock index renders the app list and nothing else, so the
+  numbers dashboard_callback works out were being discarded. This renders
+  them, and puts two things above the list of models that this client
+  needs more than a model list: who is waiting for a reply, and which
+  parts of the site are still empty and therefore invisible to visitors.
+
+  Classes come from static/css/admin.css rather than Tailwind utilities.
+  Unfold ships a prebuilt stylesheet holding only the classes its own
+  templates use, so anything it happens not to use does nothing at all and
+  the layout comes out wrong without any error to notice.
+{% endcomment %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+  <h1 id="site-name">
+    <a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a>
+  </h1>
+{% endblock %}
+
+{% block content %}
+<div class="sg-dash">
+
+  {# ---------------------------------------------------------- greeting #}
+  <div class="sg-hello">
+    <div>
+      <h1>Habari, {{ greeting_name }}</h1>
+      <p>Everything on the public site is edited from here.</p>
+    </div>
+    <a class="sg-hello__btn" href="/" target="_blank" rel="noreferrer">
+      <span class="material-symbols-outlined">open_in_new</span>
+      View the site
+    </a>
+  </div>
+
+  {# ------------------------------------------------- waiting for a reply #}
+  {% if waiting_now %}
+    <section class="sg-waiting">
+      <div class="sg-waiting__head">
+        <span class="material-symbols-outlined">notifications</span>
+        {{ waiting_total }} thing{{ waiting_total|pluralize }} waiting for you
+      </div>
+      <div class="sg-waiting__grid">
+        {% for row in waiting_now %}
+          <a class="sg-waiting__item" href="{{ row.url }}">
+            <span class="sg-waiting__n">{{ row.count }}</span>
+            <span class="sg-waiting__l">{{ row.label }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ------------------------------------------------------- the numbers #}
+  <section class="sg-kpis">
+    {% for card in kpi %}
+      <a class="sg-kpi" href="{{ card.url }}">
+        <span class="material-symbols-outlined">{{ card.icon }}</span>
+        <span class="sg-kpi__n">{{ card.metric }}</span>
+        <span class="sg-kpi__t">{{ card.title }}</span>
+      </a>
+    {% endfor %}
+  </section>
+
+  <div class="sg-split">
+
+    {# ----------------------------------------------- set-up checklist #}
+    <section class="sg-panel">
+      <div class="sg-panel__head">
+        <h2>Setting up the site</h2>
+        <span class="sg-panel__note">{{ setup_done }} of {{ setup_total }} done</span>
+      </div>
+      <div class="sg-bar"><span style="width:{% widthratio setup_done setup_total 100 %}%"></span></div>
+
+      <ul class="sg-list">
+        {% for check in setup_checks %}
+          <li>
+            <div class="sg-check">
+              {% if check.done %}
+                <span class="material-symbols-outlined sg-check__mark sg-check__mark--on">check_circle</span>
+              {% else %}
+                <span class="material-symbols-outlined sg-check__mark sg-check__mark--off">circle</span>
+              {% endif %}
+              <span class="sg-check__body">
+                <a href="{{ check.url }}">{{ check.label }}</a>
+                {% if not check.done %}<span class="sg-check__hint">{{ check.hint }}</span>{% endif %}
+              </span>
+              {% if not check.done %}
+                <a class="sg-check__add" href="{{ check.url }}">Add</a>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {% if upright_images %}
+        <div class="sg-aside">
+          <span class="material-symbols-outlined">warning</span>
+          <span>
+            {{ upright_images }} photograph{{ upright_images|pluralize }}
+            {{ upright_images|pluralize:"is,are" }} taller than
+            {{ upright_images|pluralize:"it is,they are" }} wide. Wide frames — the
+            home page banner above all — will crop
+            {{ upright_images|pluralize:"it,them" }}.
+            <a href="{{ upright_url }}">Choose which part to keep</a>.
+          </span>
+        </div>
+      {% endif %}
+    </section>
+
+    {# ---------------------------------------------------- quick actions #}
+    <section class="sg-panel">
+      <div class="sg-panel__head"><h2>Add something</h2></div>
+      <ul class="sg-list">
+        {% for action in quick_actions %}
+          <li>
+            <a class="sg-act" href="{{ action.url }}">
+              <span class="material-symbols-outlined">{{ action.icon }}</span>
+              {{ action.label }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  </div>
+
+  {# --------------------------------------------------- recently edited #}
+  {% if recent_posts %}
+    <section class="sg-panel">
+      <div class="sg-panel__head"><h2>Recently edited articles</h2></div>
+      <ul class="sg-list">
+        {% for post in recent_posts %}
+          <li>
+            <a class="sg-row" href="{% url 'admin:news_post_change' post.pk %}">
+              <span class="sg-row__t">{{ post.title }}</span>
+              {% if post.is_published %}
+                <span class="sg-pill sg-pill--on">Published</span>
+              {% else %}
+                <span class="sg-pill sg-pill--off">Draft</span>
+              {% endif %}
+              <span class="sg-row__d">{{ post.updated_at|date:"j M Y" }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {# -------------------------------------------------------- the library #}
+  <section class="sg-panel">
+    <div class="sg-panel__head"><h2>Everything in the library</h2></div>
+    <div class="sg-lib">
+      {% for item in library %}
+        <a href="{{ item.url }}">
+          <span class="sg-lib__n">{{ item.count }}</span>
+          <span class="sg-lib__l">{{ item.label }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% comment %}
+    The stock app list is deliberately not repeated here. It listed every
+    model in the project in alphabetical groups — including "Taggit" and
+    "Authentication and Authorization" — which is a developer's view of
+    the database, not a view of the website, and it is the first thing the
+    client would have read. The sidebar navigates the same models under
+    names that mean something, has a search box, and keeps "All
+    applications" for the rest.
+  {% endcomment %}
+  {% include "unfold/helpers/history.html" %}
+</div>
+{% endblock %}

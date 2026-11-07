@@ -412,6 +412,11 @@ def _badge_new_submissions(request):
 
 
 UNFOLD = {
+    # Written as plain CSS, not Tailwind utilities: Unfold's stylesheet is
+    # prebuilt and holds only the classes its own templates use, so a
+    # utility it happens not to use does nothing and the layout quietly
+    # comes out wrong.
+    "STYLES": [lambda request: static("css/admin.css")],
     "SITE_TITLE": "Simply Green Organization",
     "SITE_HEADER": "Simply Green",
     "SITE_SUBHEADER": "Content management",

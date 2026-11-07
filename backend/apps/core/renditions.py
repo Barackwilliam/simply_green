@@ -58,8 +58,17 @@ class ImageRendition(models.Model):
     # shape from the image. Percentages, as CSS object-position takes them.
     # 38% rather than 50% down: in a photograph of people standing, the
     # faces are above the middle, and the middle is where a wide frame cuts.
-    focal_x = models.PositiveSmallIntegerField(default=50)
-    focal_y = models.PositiveSmallIntegerField(default=38)
+    focal_x = models.PositiveSmallIntegerField(
+        default=50,
+        verbose_name="Focus from the left",
+        help_text="0 is the left edge, 100 the right. 50 is centred.",
+    )
+    focal_y = models.PositiveSmallIntegerField(
+        default=38,
+        verbose_name="Focus from the top",
+        help_text="0 is the top edge, 100 the bottom. 38 keeps faces in "
+                  "frame in most photographs of people standing.",
+    )
 
     updated_at = models.DateTimeField(auto_now=True)
 
