@@ -1,8 +1,9 @@
-{% load static %}
+{% load static %}{% load media %}
 <a class="card" href="{{ event.get_absolute_url }}">
   <div class="card__media">
-    {% if event.featured_image %}<img src="{{ event.featured_image.url }}" alt="{{ event.title }}" loading="lazy">
-    {% else %}<img src="{% static 'img/band.webp' %}" alt="" loading="lazy">{% endif %}
+    {% if event.featured_image %}
+      {% picture event.featured_image alt=event.title sizes=card_sizes|default:"card" %}
+    {% else %}<img src="{% static 'img/band.webp' %}" alt="" loading="lazy" decoding="async">{% endif %}
     <div class="card__over">
       <span class="tag tag--{% if event.status == 'upcoming' %}green{% else %}grey{% endif %}">{{ event.get_status_display }}</span>
       {% if event.is_online %}<span class="tag tag--onimg">Online</span>{% endif %}

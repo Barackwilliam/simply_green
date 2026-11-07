@@ -110,7 +110,17 @@
     // markup; the rest are fetched here, one slide ahead of being needed.
     // With JavaScript off there is no way to reach them, so nothing is lost.
     function load(i) {
-      var img = slides[(i + slides.length) % slides.length].querySelector("img[data-src]");
+      var slide = slides[(i + slides.length) % slides.length];
+      // The <source> first: setting the img's src while the source list is
+      // still empty makes the browser commit to the JPEG fallback, and the
+      // WebP arriving a moment later is a second download, not a cheaper
+      // first one.
+      var source = slide.querySelector("source[data-srcset]");
+      if (source) {
+        source.srcset = source.dataset.srcset;
+        source.removeAttribute("data-srcset");
+      }
+      var img = slide.querySelector("img[data-src]");
       if (!img) return;
       img.src = img.dataset.src;
       img.removeAttribute("data-src");

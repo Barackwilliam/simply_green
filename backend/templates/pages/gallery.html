@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load media %}
 {% block title %}Gallery — {{ site.organisation_name }}{% endblock %}
 {% block description %}Photographs from {{ site.organisation_name }}'s clean-ups, trainings, restoration days and community work.{% endblock %}
 {% block content %}
@@ -16,8 +16,8 @@
       <div class="grid grid-3">
         {% for a in albums %}
           <a class="card" href="{{ a.get_absolute_url }}">
-            <div class="card__media" style="aspect-ratio:4/3;position:relative">
-              {% if a.cover_image %}<img src="{{ a.cover_image.url }}" alt="{{ a.title }}" loading="lazy">{% endif %}
+            <div class="card__media card__media--album">
+              {% if a.cover_image %}{% picture a.cover_image alt=a.title sizes="card" %}{% endif %}
               <div style="position:absolute;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:18px;color:#fff">
                 <strong style="display:block">{{ a.title }}</strong>
                 <span style="font-size:.8rem;opacity:.85">{{ a.photo_count }} photo{{ a.photo_count|pluralize }}{% if a.date %} · {{ a.date|date:"j F Y" }}{% endif %}</span>

@@ -1,45 +1,21 @@
-/* Self-hosted Mulish.
-   Loading this from Google cost 628ms before any text appeared: a DNS lookup,
-   a TLS handshake and a render-blocking stylesheet, all before the font file
-   was even requested. Served from our own origin it is one request on a
-   connection the browser already has open. */
+/* Self-hosted Mulish, one file.
+
+   Loading this from Google cost 628ms before any text appeared: a DNS
+   lookup, a TLS handshake and a render-blocking stylesheet, all before the
+   font file was even requested.
+
+   It was then served as four files — 400, 600, 700 and 800 — which turned
+   out to be four byte-identical copies of the same variable font, so the
+   browser fetched the same 29KB four times over four connections. Mulish
+   carries a weight axis from 200 to 1000, so one face declared across that
+   range gives every weight the site uses out of a single download. */
 
 @font-face {
   font-family: "Mulish";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 200 1000;
   font-display: swap;
-  src: url("../fonts/mulish-400-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-    U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
-    U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Mulish";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("../fonts/mulish-600-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-    U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
-    U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Mulish";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("../fonts/mulish-700-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-    U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
-    U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Mulish";
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url("../fonts/mulish-800-latin.woff2") format("woff2");
+  src: url("../fonts/mulish-var-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
     U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;

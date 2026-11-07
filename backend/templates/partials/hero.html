@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %}{% load media %}
 {% comment %}
 Home page slideshow. Each slide is a record in the admin, so the organisation
 controls what the site leads with. With one slide it is simply a hero; the
@@ -13,13 +13,14 @@ controls only appear when there is something to move between.
                aria-label="{{ forloop.counter }} of {{ slides|length }}"
                {% if not forloop.first %}aria-hidden="true"{% endif %}>
         {% comment %}
-          Only the first slide carries a src. A hidden slide still counts as
-          in the viewport, so loading="lazy" did not stop the other two
-          downloading before the page had painted; the slideshow script
-          fetches them once the page is idle, one slide ahead of need.
+          Only the first slide loads with the page. A hidden slide still
+          counts as in the viewport, so loading="lazy" did not stop the
+          other two downloading before the page had painted; the slideshow
+          script fetches them once the page is idle, one slide ahead of
+          need. The first is a full <picture> so a phone takes the 420px
+          WebP rather than the desktop master.
         {% endcomment %}
-        <img {% if forloop.first %}src="{{ slide.image.url }}" fetchpriority="high"{% else %}data-src="{{ slide.image.url }}" decoding="async"{% endif %}
-             alt="{{ slide.image_alt }}">
+        {% picture slide.image alt=slide.image_alt sizes="full" priority=forloop.first deferred=forloop.first|yesno:",True" %}
         <div class="hero__scrim"></div>
         <div class="hero__inner">
           <div class="wrap">

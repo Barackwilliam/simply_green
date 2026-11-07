@@ -14,7 +14,7 @@ import logging
 
 from django.core.files.base import ContentFile
 from django.db.models import ImageField
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save, pre_save
 
 logger = logging.getLogger(__name__)
 
@@ -78,12 +78,25 @@ def optimise(fieldfile) -> bool:
         # Already smaller than anything we would produce.
         return False
 
-    stem = fieldfile.name.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+    previous = fieldfile.name
+    stem = previous.rsplit("/", 1)[-1].rsplit(".", 1)[0]
     fieldfile.save(f"{stem}{suffix}", ContentFile(buffer.getvalue()), save=False)
     logger.info(
-        "Optimised %s: %.0f KB -> %.0f KB", fieldfile.name, len(raw) / 1024,
+        "Optimised %s: %.0f KB -> %.0f KB", previous, len(raw) / 1024,
         buffer.tell() / 1024,
     )
+
+    # Django writes the shrunk copy under a new name, which left the
+    # six-megabyte camera original sitting in the bucket forever — nothing
+    # points at it, and the client pays to store it. Nothing else can be
+    # referencing it: the upload had just been written for this field, and
+    # Django gives every upload a unique name.
+    if previous and previous != fieldfile.name:
+        try:
+            fieldfile.storage.delete(previous)
+        except Exception as exc:
+            logger.warning("Could not remove superseded %s: %s", previous, exc)
+
     return True
 
 
@@ -124,15 +137,41 @@ def _handler(sender, instance, **kwargs):
             logger.warning("Image optimisation failed for %s: %s", field.name, exc)
 
 
+def _renditions(sender, instance, **kwargs):
+    """Make the smaller WebP copies, after the master filename has settled.
+
+    Deliberately post_save rather than pre_save: the optimiser above can
+    rewrite the master under a new name, and renditions keyed to a name
+    that no longer exists are worse than none.
+    """
+    from apps.core.renditions import build
+
+    for field in sender._meta.get_fields():
+        if not isinstance(field, ImageField):
+            continue
+        fieldfile = getattr(instance, field.name, None)
+        if not fieldfile:
+            continue
+        try:
+            build(fieldfile)
+        except Exception as exc:
+            logger.warning("Renditions failed for %s: %s", field.name, exc)
+
+
 def register():
-    """Connect the handler to every model that stores an image."""
+    """Connect the handlers to every model that stores an image."""
     from django.apps import apps
 
     for model in apps.get_models():
+        if model._meta.label_lower == "core.imagerendition":
+            continue
         if any(isinstance(f, ImageField) for f in model._meta.get_fields()):
+            label = model._meta.label_lower
             pre_save.connect(
-                _handler,
-                sender=model,
-                weak=False,
-                dispatch_uid=f"optimise-images-{model._meta.label_lower}",
+                _handler, sender=model, weak=False,
+                dispatch_uid=f"optimise-images-{label}",
+            )
+            post_save.connect(
+                _renditions, sender=model, weak=False,
+                dispatch_uid=f"renditions-{label}",
             )

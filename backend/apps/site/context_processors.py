@@ -1,5 +1,8 @@
 """Values every template needs: site settings, navigation, social links."""
 
+from urllib.parse import urlsplit
+
+from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
 
@@ -9,6 +12,24 @@ from .navigation import build_nav
 
 # Written by seed_sample_content on every row it creates.
 SAMPLE_MARK = "[sample]"
+
+
+def _media_origin():
+    """The origin photographs are served from, when it is not this one.
+
+    In production that is Supabase, and the hero image is the largest thing
+    on the page. Without this the browser cannot start fetching it until it
+    has done a DNS lookup and a TLS handshake with a host it has never
+    spoken to — from Tanzania to Supabase that is most of a second before a
+    single byte of the photograph moves.
+    """
+    parts = urlsplit(settings.MEDIA_URL or "")
+    if not parts.scheme or not parts.netloc:
+        return ""
+    return f"{parts.scheme}://{parts.netloc}"
+
+
+MEDIA_ORIGIN = _media_origin()
 
 
 def _showing_sample_content():
@@ -36,4 +57,5 @@ def site_context(request):
         "canonical_url": request.build_absolute_uri(request.path),
         "site_base_url": f"{request.scheme}://{request.get_host()}",
         "showing_sample_content": _showing_sample_content(),
+        "media_origin": MEDIA_ORIGIN,
     }

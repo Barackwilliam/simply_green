@@ -298,3 +298,8 @@ class HeroSlide(PublishableModel):
 
     def __str__(self):
         return self.headline
+
+
+# Lives in its own module because it is machinery rather than content, but
+# it has to be imported here for Django to see it as a model of this app.
+from apps.core.renditions import ImageRendition  # noqa: E402,F401

@@ -20,14 +20,20 @@
 <meta name="twitter:card" content="summary_large_image">
 
 {% load static %}
-{% comment %} Fonts are served from this origin, so there is no third-party lookup,
-   handshake or render-blocking stylesheet before the first word appears.
-   The two weights the page opens with are preloaded; the rest swap in. {% endcomment %}
+{% comment %} One variable font file, preloaded, with its @font-face inline
+   rather than in a stylesheet of its own: a separate file for twenty lines
+   of CSS is a whole render-blocking round trip before the first word can
+   be drawn, and it was blocking the preload it exists to describe. {% endcomment %}
+{% if media_origin %}<link rel="preconnect" href="{{ media_origin }}" crossorigin>
+<link rel="dns-prefetch" href="{{ media_origin }}">{% endif %}
 <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="{% static 'fonts/mulish-400-latin.woff2' %}">
-<link rel="preload" as="font" type="font/woff2" crossorigin
-      href="{% static 'fonts/mulish-800-latin.woff2' %}">
-<link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+      href="{% static 'fonts/mulish-var-latin.woff2' %}">
+<style>
+@font-face{font-family:"Mulish";font-style:normal;font-weight:200 1000;
+font-display:swap;src:url("{% static 'fonts/mulish-var-latin.woff2' %}") format("woff2");
+unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
+U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+</style>
 <link rel="stylesheet" href="{% static 'css/site.css' %}">
 
 <script type="application/ld+json">

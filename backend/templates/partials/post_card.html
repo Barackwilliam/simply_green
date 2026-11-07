@@ -1,10 +1,10 @@
-{% load static %}
+{% load static %}{% load media %}
 <a class="card" href="{{ post.get_absolute_url }}">
   <div class="card__media">
     {% if post.featured_image %}
-      <img src="{{ post.featured_image.url }}" alt="{{ post.featured_image_alt|default:post.title }}" loading="lazy">
+      {% picture post.featured_image alt=post.featured_image_alt|default:post.title sizes=card_sizes|default:"card" %}
     {% else %}
-      <img src="{% static 'img/planning.webp' %}" alt="" loading="lazy">
+      <img src="{% static 'img/planning.webp' %}" alt="" loading="lazy" decoding="async">
     {% endif %}
     <div class="card__over">
       <span class="tag tag--blue">{{ post.get_kind_display }}</span>

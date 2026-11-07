@@ -1,4 +1,4 @@
-{% if site.newsletter_enabled %}
+{% load media %}{% if site.newsletter_enabled %}
 <section class="newsletter">
   <div class="wrap">
     <div>
@@ -20,7 +20,7 @@
   <div class="wrap">
     <div class="grid grid-4">
       <div class="footer__brand">
-        {% if site.logo %}<img src="{{ site.logo.url }}" alt="{{ site.organisation_name }}">{% endif %}
+        {% if site.logo %}{% picture site.logo alt=site.organisation_name sizes="200px" %}{% endif %}
         {% if site.tagline %}<p>{{ site.tagline }}</p>{% endif %}
         {% if site.registration_number %}
           <p class="footer__reg">
