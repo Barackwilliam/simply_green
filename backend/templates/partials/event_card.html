@@ -2,7 +2,7 @@
 <a class="card" href="{{ event.get_absolute_url }}">
   <div class="card__media">
     {% if event.featured_image %}<img src="{{ event.featured_image.url }}" alt="{{ event.title }}" loading="lazy">
-    {% else %}<img src="{% static 'img/band.jpg' %}" alt="" loading="lazy">{% endif %}
+    {% else %}<img src="{% static 'img/band.webp' %}" alt="" loading="lazy">{% endif %}
   </div>
   <div class="card__body">
     <span class="tag tag--{% if event.status == 'upcoming' %}green{% else %}grey{% endif %}" style="align-self:flex-start;margin-bottom:10px">{{ event.get_status_display }}</span>

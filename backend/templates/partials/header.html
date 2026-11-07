@@ -52,32 +52,63 @@
             {% include "partials/icon.html" with name="heart" class="btn__i" %} Donate
           </a>
         {% endif %}
-        <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu" data-burger>
+        <button class="burger" type="button" aria-expanded="false" aria-controls="sidenav" aria-label="Open menu" data-burger>
           {% include "partials/icon.html" with name="menu" %}
         </button>
       </div>
     </div>
   </div>
 
-  <nav class="mobile-nav" id="mobile-nav" data-open="false" aria-label="Mobile">
+</header>
+
+{% comment %} Mobile navigation: a panel that slides in from the left, with a scrim
+   behind it. Outside the header element so it can sit above everything. {% endcomment %}
+<div class="scrim" data-open="false" data-scrim hidden></div>
+
+<nav class="sidenav" id="sidenav" data-open="false" aria-label="Mobile" aria-hidden="true">
+  <div class="sidenav__head">
+    <a href="{% url 'site:home' %}" aria-label="{{ site.organisation_name }} — home">
+      {% if site.logo %}
+        <img src="{{ site.logo.url }}" alt="{{ site.organisation_name }}" width="200" height="64">
+      {% else %}
+        <span class="brand__text">Simply Green</span>
+      {% endif %}
+    </a>
+    <button class="sidenav__close" type="button" aria-label="Close menu" data-close>
+      {% include "partials/icon.html" with name="close" %}
+    </button>
+  </div>
+
+  <div class="sidenav__body">
     <ul>
       {% for item in nav %}
         <li>
-          <div class="mobile-nav__row">
+          <div class="sidenav__row{% if item.active %} sidenav__row--active{% endif %}">
             <a href="{{ item.url }}">{{ item.label }}</a>
             {% if item.children %}
-              <button class="mobile-nav__toggle" type="button" aria-expanded="false" aria-label="Show {{ item.label }} links" data-subtoggle>
+              <button class="sidenav__toggle" type="button" aria-expanded="false"
+                      aria-label="Show {{ item.label }} links" data-subtoggle>
                 {% include "partials/icon.html" with name="chevron" %}
               </button>
             {% endif %}
           </div>
           {% if item.children %}
-            <div class="mobile-nav__sub" data-open="false">
-              {% for child in item.children %}<a href="{{ child.url }}">{{ child.label }}</a>{% endfor %}
+            <div class="sidenav__sub" data-open="false">
+              <div>
+                {% for child in item.children %}<a href="{{ child.url }}">{{ child.label }}</a>{% endfor %}
+              </div>
             </div>
           {% endif %}
         </li>
       {% endfor %}
     </ul>
-  </nav>
-</header>
+  </div>
+
+  {% if site.donate_enabled %}
+    <div class="sidenav__foot">
+      <a class="btn btn--green" href="{% url 'site:donate' %}">
+        {% include "partials/icon.html" with name="heart" %} <span>Donate</span>
+      </a>
+    </div>
+  {% endif %}
+</nav>

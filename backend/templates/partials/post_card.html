@@ -4,7 +4,7 @@
     {% if post.featured_image %}
       <img src="{{ post.featured_image.url }}" alt="{{ post.featured_image_alt|default:post.title }}" loading="lazy">
     {% else %}
-      <img src="{% static 'img/planning.jpg' %}" alt="" loading="lazy">
+      <img src="{% static 'img/planning.webp' %}" alt="" loading="lazy">
     {% endif %}
   </div>
   <div class="card__body">

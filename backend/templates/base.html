@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,10 +19,15 @@
 {% block og_image %}{% if site.default_og_image %}<meta property="og:image" content="{{ site.default_og_image.url }}">{% endif %}{% endblock %}
 <meta name="twitter:card" content="summary_large_image">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
 {% load static %}
+{% comment %} Fonts are served from this origin, so there is no third-party lookup,
+   handshake or render-blocking stylesheet before the first word appears.
+   The two weights the page opens with are preloaded; the rest swap in. {% endcomment %}
+<link rel="preload" as="font" type="font/woff2" crossorigin
+      href="{% static 'fonts/mulish-400-latin.woff2' %}">
+<link rel="preload" as="font" type="font/woff2" crossorigin
+      href="{% static 'fonts/mulish-800-latin.woff2' %}">
+<link rel="stylesheet" href="{% static 'css/fonts.css' %}">
 <link rel="stylesheet" href="{% static 'css/site.css' %}">
 
 <script type="application/ld+json">
