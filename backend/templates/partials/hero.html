@@ -1,0 +1,66 @@
+{% load static %}
+{% comment %}
+Home page slideshow. Each slide is a record in the admin, so the organisation
+controls what the site leads with. With one slide it is simply a hero; the
+controls only appear when there is something to move between.
+{% endcomment %}
+
+<section class="hero" data-slider aria-roledescription="carousel" aria-label="Featured">
+  <div class="hero__track">
+    {% for slide in slides %}
+      <article class="hero__slide{% if forloop.first %} is-active{% endif %}"
+               role="group" aria-roledescription="slide"
+               aria-label="{{ forloop.counter }} of {{ slides|length }}"
+               {% if not forloop.first %}aria-hidden="true"{% endif %}>
+        <img src="{{ slide.image.url }}" alt="{{ slide.image_alt }}"
+             {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+        <div class="hero__scrim"></div>
+        <div class="hero__inner">
+          <div class="wrap">
+            <div class="hero__text">
+              {% if slide.eyebrow %}<span class="hero__badge">{{ slide.eyebrow }}</span>{% endif %}
+              <h1>{{ slide.headline }}</h1>
+              {% if slide.subheadline %}<p>{{ slide.subheadline }}</p>{% endif %}
+              {% if slide.primary_label or slide.secondary_label %}
+                <div class="hero__actions">
+                  {% if slide.primary_label %}
+                    <a class="btn btn--green" href="{{ slide.primary_url|default:'#' }}">{{ slide.primary_label }}</a>
+                  {% endif %}
+                  {% if slide.secondary_label %}
+                    <a class="btn btn--outline" href="{{ slide.secondary_url|default:'#' }}">{{ slide.secondary_label }}</a>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  {% if slides|length > 1 %}
+    <div class="hero__controls">
+      <div class="wrap">
+        <div class="hero__controls-inner">
+          <button class="hero__arrow" type="button" data-prev aria-label="Previous slide">
+            {% include "partials/icon.html" with name="chevron" %}
+          </button>
+          <ol class="hero__dots" role="tablist" aria-label="Choose slide">
+            {% for slide in slides %}
+              <li>
+                <button type="button" role="tab" data-dot="{{ forloop.counter0 }}"
+                        aria-label="Slide {{ forloop.counter }}"
+                        {% if forloop.first %}aria-selected="true"{% else %}aria-selected="false"{% endif %}>
+                  <span class="hero__dot-fill"></span>
+                </button>
+              </li>
+            {% endfor %}
+          </ol>
+          <button class="hero__arrow" type="button" data-next aria-label="Next slide">
+            {% include "partials/icon.html" with name="chevron" %}
+          </button>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</section>

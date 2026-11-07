@@ -25,6 +25,11 @@ MAX_EDGE = 1800
 # Below this there is nothing worth doing.
 SKIP_UNDER_BYTES = 120 * 1024
 
+# An image already within the long edge and under this size has been through
+# here before (or never needed to). Checking that is what makes running the
+# optimiser on every save harmless instead of slowly degrading quality.
+ALREADY_SMALL_BYTES = 900 * 1024
+
 JPEG_QUALITY = 82
 
 
@@ -82,6 +87,28 @@ def optimise(fieldfile) -> bool:
     return True
 
 
+def _needs_work(fieldfile) -> bool:
+    """Cheap check before reading and decoding the whole file.
+
+    An earlier version only looked at images arriving from a form, which meant
+    anything attached in code — a fixture, a management command, an import —
+    slipped past at full camera resolution. The test is now about the file
+    itself, not about how it arrived.
+    """
+    try:
+        size = fieldfile.size
+    except Exception:
+        return False
+    if size < SKIP_UNDER_BYTES:
+        return False
+    if size > ALREADY_SMALL_BYTES:
+        return True
+    try:
+        return max(fieldfile.width, fieldfile.height) > MAX_EDGE
+    except Exception:
+        return True
+
+
 def _handler(sender, instance, **kwargs):
     for field in sender._meta.get_fields():
         if not isinstance(field, ImageField):
@@ -89,12 +116,9 @@ def _handler(sender, instance, **kwargs):
         fieldfile = getattr(instance, field.name, None)
         if not fieldfile:
             continue
-        # Only touch a file that has just been uploaded, never one already
-        # stored — re-saving a model should not recompress its images again
-        # and again, losing a little quality each time.
-        if not hasattr(fieldfile.file, "content_type") and fieldfile._committed:
-            continue
         try:
+            if not _needs_work(fieldfile):
+                continue
             optimise(fieldfile)
         except Exception as exc:
             logger.warning("Image optimisation failed for %s: %s", field.name, exc)

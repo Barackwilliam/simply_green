@@ -13,7 +13,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from apps.about.models import CoreValue, Objective, PartnerReason
-from apps.core.models import SiteSettings
+from apps.core.models import HeroSlide, SiteSettings
 from apps.programmes.models import FocusArea, Programme
 
 CORE_VALUES = [
@@ -387,6 +387,7 @@ class Command(BaseCommand):
         self._partner_reasons()
         focus_by_title = self._focus_areas()
         self._programmes(focus_by_title)
+        self._hero_slides()
         self.stdout.write(self.style.SUCCESS("Content draft loaded."))
 
     def _upsert(self, model, defaults, **lookup):
@@ -473,6 +474,62 @@ class Command(BaseCommand):
             mapping[title] = area
         self.stdout.write(f"  focus areas ({len(FOCUS_AREAS)})")
         return mapping
+
+    def _hero_slides(self):
+        slides = [
+            {
+                "image": "team-with-collected-waste.jpg",
+                "alt": "Simply Green Organization staff with sacks of waste "
+                       "collected at a coastal clean-up in Dar es Salaam",
+                "eyebrow": "Registered NGO · Tanzania",
+                "headline": "A greener, more resilient Tanzania — led by its "
+                            "own communities",
+                "sub": "We empower communities to protect the environment and "
+                       "address climate challenges through conservation, "
+                       "innovation and sustainable livelihoods.",
+                "p_label": "See our programmes", "p_url": "/programmes/",
+                "s_label": "Get involved", "s_url": "/get-involved/",
+            },
+            {
+                "image": "litter-collection.jpg",
+                "alt": "Team members clearing plastic waste from a shoreline",
+                "eyebrow": "Waste management",
+                "headline": "Cleaner markets, cleaner coastlines",
+                "sub": "From Tandika Market to the shoreline at Mtoni, we work "
+                       "with traders, schools and households to separate, "
+                       "reduce and reuse what would otherwise be dumped.",
+                "p_label": "How we work", "p_url": "/focus-areas/",
+                "s_label": "Volunteer with us", "s_url": "/get-involved/volunteer/",
+            },
+            {
+                "image": "planning-session.jpg",
+                "alt": "Simply Green Organization team planning a programme",
+                "eyebrow": "Partner with us",
+                "headline": "Grassroots reach, accounted for to the shilling",
+                "sub": "We work at the frontline with communities, and we "
+                       "report transparently against national frameworks and "
+                       "the Sustainable Development Goals.",
+                "p_label": "Partner with us", "p_url": "/get-involved/partner/",
+                "s_label": "Support our work", "s_url": "/donate/",
+            },
+        ]
+        for order, entry in enumerate(slides):
+            slide, created = self._upsert(
+                HeroSlide,
+                {
+                    "image_alt": entry["alt"],
+                    "eyebrow": entry["eyebrow"],
+                    "subheadline": entry["sub"],
+                    "primary_label": entry["p_label"],
+                    "primary_url": entry["p_url"],
+                    "secondary_label": entry["s_label"],
+                    "secondary_url": entry["s_url"],
+                    "display_order": order,
+                },
+                headline=entry["headline"],
+            )
+            attach_image(slide, "image", entry["image"])
+        self.stdout.write(f"  home page slides ({len(slides)})")
 
     def _programmes(self, focus_by_title):
         from apps.programmes.models import ProgrammeOutcome

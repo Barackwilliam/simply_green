@@ -21,7 +21,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.about.models import CoreValue, Objective, PartnerReason, TeamMember
-from apps.core.models import ImpactStat, Partner
+from apps.core.models import HeroSlide, ImpactStat, Partner
 from apps.engage.models import DonationMethod, NewsletterSubscriber
 from apps.gallery.models import Album, Video
 from apps.news.models import Category, Event, Post
@@ -59,6 +59,7 @@ def _notify(subject: str, body: str) -> None:
 def home(request):
     focus_areas = list(FocusArea.objects.published())
     return render(request, "pages/home.html", {
+        "slides": HeroSlide.objects.published(),
         "stats": ImpactStat.objects.published()[:4],
         "focus_areas": focus_areas,
         "pillars": focus_areas[:3],

@@ -254,3 +254,47 @@ class ImpactStat(PublishableModel):
 
     def __str__(self):
         return f"{self.value}{self.suffix} {self.label}"
+
+
+class HeroSlide(PublishableModel):
+    """One frame of the slideshow at the top of the home page.
+
+    Managed here rather than hard-coded so the organisation can change what
+    the site leads with — a campaign, a new programme, a call to act — without
+    anyone touching the templates.
+    """
+
+    image = models.ImageField(
+        upload_to="hero/",
+        help_text="Landscape works best. Anything large is resized on upload.",
+    )
+    image_alt = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="Describes the photograph for screen readers and search engines.",
+    )
+    eyebrow = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text="Small line above the headline, e.g. 'Registered NGO · Tanzania'.",
+    )
+    headline = models.CharField(max_length=180)
+    subheadline = models.TextField(
+        blank=True, help_text="One or two sentences under the headline."
+    )
+
+    primary_label = models.CharField(max_length=60, blank=True)
+    primary_url = models.CharField(
+        max_length=300,
+        blank=True,
+        help_text="A path such as /programmes/ or a full https:// address.",
+    )
+    secondary_label = models.CharField(max_length=60, blank=True)
+    secondary_url = models.CharField(max_length=300, blank=True)
+
+    class Meta:
+        ordering = ["display_order", "id"]
+        verbose_name = "Home page slide"
+
+    def __str__(self):
+        return self.headline

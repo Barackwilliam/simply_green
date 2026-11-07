@@ -5,6 +5,7 @@
   "use strict";
 
   document.documentElement.classList.remove("no-js");
+  document.documentElement.classList.add("js");
 
   /* ---------------------------------------------------------------- menu */
 
@@ -80,6 +81,177 @@
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  /* ---------------------------------------------------------- slideshow */
+
+  document.querySelectorAll("[data-slider]").forEach(function (root) {
+    var slides = root.querySelectorAll(".hero__slide");
+    if (slides.length < 2) return;
+
+    var dots = root.querySelectorAll("[data-dot]");
+    var prev = root.querySelector("[data-prev]");
+    var next = root.querySelector("[data-next]");
+    var DELAY = 6500;
+    var index = 0;
+    var timer = null;
+    var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Autoplay must not restart underneath someone who is still reading,
+    // which is what happened when an arrow was clicked with the pointer
+    // resting on the slideshow.
+    var held = false;
+
+    root.style.setProperty("--hero-delay", DELAY + "ms");
+
+    function show(to) {
+      index = (to + slides.length) % slides.length;
+      slides.forEach(function (slide, i) {
+        var on = i === index;
+        slide.classList.toggle("is-active", on);
+        slide.setAttribute("aria-hidden", String(!on));
+      });
+      dots.forEach(function (dot, i) {
+        dot.setAttribute("aria-selected", String(i === index));
+        // Restart the timer bar rather than letting it continue from
+        // wherever the previous slide left it.
+        var fill = dot.querySelector(".hero__dot-fill");
+        if (fill) {
+          fill.style.animation = "none";
+          void fill.offsetWidth;
+          fill.style.animation = "";
+        }
+      });
+    }
+
+    function play() {
+      if (still || held) return;
+      stop();
+      timer = window.setInterval(function () { show(index + 1); }, DELAY);
+      root.classList.remove("is-paused");
+    }
+
+    function stop() {
+      if (timer) { window.clearInterval(timer); timer = null; }
+      root.classList.add("is-paused");
+    }
+
+    function go(to) { show(to); if (held) stop(); else play(); }
+
+    if (prev) prev.addEventListener("click", function () { go(index - 1); });
+    if (next) next.addEventListener("click", function () { go(index + 1); });
+    dots.forEach(function (dot, i) {
+      dot.addEventListener("click", function () { go(i); });
+    });
+
+    // Reading the slide should not have it snatched away.
+    root.addEventListener("mouseenter", function () { held = true; stop(); });
+    root.addEventListener("mouseleave", function () { held = false; play(); });
+    root.addEventListener("focusin", function () { held = true; stop(); });
+    root.addEventListener("focusout", function (e) {
+      if (!root.contains(e.relatedTarget)) { held = false; play(); }
+    });
+
+    // Nothing moves while the tab is in the background.
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop(); else play();
+    });
+
+    // Swipe.
+    var startX = null;
+    root.addEventListener("touchstart", function (e) {
+      startX = e.changedTouches[0].clientX; stop();
+    }, { passive: true });
+
+    root.addEventListener("touchend", function (e) {
+      if (startX === null) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 45) go(dx < 0 ? index + 1 : index - 1); else play();
+      startX = null;
+    }, { passive: true });
+
+    // Arrow keys when the slideshow has focus.
+    root.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") { e.preventDefault(); go(index - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); go(index + 1); }
+    });
+
+    show(0);
+    play();
+  });
+
+  /* ----------------------------------------------------------- carousels */
+
+  document.querySelectorAll("[data-carousel]").forEach(function (root) {
+    var view = root.querySelector(".carousel__viewport");
+    var prev = root.parentElement.querySelector("[data-cprev]")
+            || document.querySelector("[data-cprev]");
+    var next = root.parentElement.querySelector("[data-cnext]")
+            || document.querySelector("[data-cnext]");
+    var section = root.closest("section") || document;
+    prev = section.querySelector("[data-cprev]");
+    next = section.querySelector("[data-cnext]");
+    if (!view) return;
+
+    function step() {
+      var item = view.querySelector(".carousel__item");
+      if (!item) return view.clientWidth;
+      var gap = parseFloat(getComputedStyle(view).columnGap || "0") || 0;
+      return item.getBoundingClientRect().width + gap;
+    }
+
+    function sync() {
+      if (!prev || !next) return;
+      var max = view.scrollWidth - view.clientWidth - 2;
+      prev.disabled = view.scrollLeft <= 2;
+      next.disabled = view.scrollLeft >= max;
+      // One screenful of cards means nothing to scroll to.
+      var idle = view.scrollWidth <= view.clientWidth + 2;
+      prev.hidden = next.hidden = idle;
+    }
+
+    if (prev) prev.addEventListener("click", function () {
+      view.scrollBy({ left: -step(), behavior: "smooth" });
+    });
+    if (next) next.addEventListener("click", function () {
+      view.scrollBy({ left: step(), behavior: "smooth" });
+    });
+
+    view.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    sync();
+  });
+
+  /* ------------------------------------------------------------ counters */
+
+  var counters = document.querySelectorAll("[data-count]");
+  if (counters.length && "IntersectionObserver" in window &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var countObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        countObs.unobserve(el);
+        var target = parseFloat(el.getAttribute("data-count"));
+        if (isNaN(target)) return;
+        // Preserve how the editor wrote it: 12,400 stays 12,400.
+        var grouped = /,/.test(el.textContent);
+        var decimals = (String(target).split(".")[1] || "").length;
+        var started = null;
+        var DURATION = 1400;
+        var tick = function (now) {
+          if (started === null) started = now;
+          var t = Math.min((now - started) / DURATION, 1);
+          var eased = 1 - Math.pow(1 - t, 3);
+          var value = target * eased;
+          el.textContent = grouped
+            ? value.toLocaleString("en-GB", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+            : value.toFixed(decimals);
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }, { threshold: 0.4 });
+    counters.forEach(function (el) { countObs.observe(el); });
   }
 
   /* -------------------------------------------------------- reveal on scroll */

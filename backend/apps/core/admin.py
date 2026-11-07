@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin
 
-from .models import ImpactStat, Partner, SiteSettings, SocialLink
+from .models import HeroSlide, ImpactStat, Partner, SiteSettings, SocialLink
 
 
 class SingletonAdminMixin:
@@ -94,3 +94,42 @@ class ImpactStatAdmin(ModelAdmin):
     list_display = ("label", "value", "suffix", "is_published", "display_order")
     list_editable = ("is_published", "display_order")
     list_filter = ("is_published",)
+
+
+@admin.register(HeroSlide)
+class HeroSlideAdmin(ModelAdmin):
+    list_display = (
+        "preview", "headline", "eyebrow", "is_published", "display_order",
+    )
+    list_display_links = ("headline",)
+    list_editable = ("is_published", "display_order")
+    list_filter = ("is_published",)
+    search_fields = ("headline", "subheadline")
+    fieldsets = (
+        ("Picture", {
+            "fields": ("image", "image_alt"),
+            "description": (
+                "Landscape photographs work best. Large files are resized "
+                "automatically, so upload the original."
+            ),
+        }),
+        ("Words", {"fields": ("eyebrow", "headline", "subheadline")}),
+        ("Buttons", {
+            "fields": (
+                "primary_label", "primary_url",
+                "secondary_label", "secondary_url",
+            ),
+            "description": "Leave a label empty to hide that button.",
+        }),
+        ("Visibility", {"fields": ("is_published", "display_order")}),
+    )
+
+    @admin.display(description="")
+    def preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="height:44px;width:78px;'
+                'border-radius:4px;object-fit:cover;" />',
+                obj.image.url,
+            )
+        return "—"

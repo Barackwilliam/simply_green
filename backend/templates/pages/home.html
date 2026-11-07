@@ -7,25 +7,7 @@
 {% block content %}
 
 {# ---------------------------------------------------------------- hero #}
-<section class="hero">
-  <div class="hero__media">
-    <img src="{% static 'img/hero.webp' %}" width="1700" height="1133" fetchpriority="high"
-         alt="Simply Green Organization staff standing with sacks of waste collected at a coastal clean-up in Dar es Salaam">
-    <div class="hero__overlay">
-      <div class="wrap">
-        <div class="hero__text">
-          <span class="hero__badge" data-reveal="left">Registered NGO · Tanzania</span>
-          <h1 data-reveal="left" style="--d:.08s">{% if site.tagline %}{{ site.tagline }}{% else %}A greener, more resilient Tanzania{% endif %}</h1>
-          <p data-reveal="left" style="--d:.16s">{{ site.mission }}</p>
-          <div class="hero__actions" data-reveal="left" style="--d:.24s">
-            <a class="btn btn--green" href="{% url 'site:programmes' %}">See our programmes</a>
-            <a class="btn btn--outline" href="{% url 'site:get_involved' %}">Get involved</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+{% include "partials/hero.html" %}
 
 {# ------------------------------------------------- three pillar cards #}
 {% if pillars %}
@@ -53,7 +35,7 @@
     <div class="stats">
       {% for s in stats %}
         <div data-reveal style="--d:{{ forloop.counter0 }}00ms">
-          <div class="n">{{ s.value }}{{ s.suffix }}</div>
+          <div class="n"><span data-count="{{ s.value|cut:','|cut:'+' }}">{{ s.value }}</span>{{ s.suffix }}</div>
           <div class="l">{{ s.label }}</div>
         </div>
       {% endfor %}
@@ -138,10 +120,20 @@
         <span class="eyebrow">On the ground</span>
         <h2 style="margin:0">Programmes running now</h2>
       </div>
-      <a class="btn btn--blue btn--sm" href="{% url 'site:programmes' %}">All programmes</a>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="carousel__nav">
+          <button class="carousel__btn" type="button" data-cprev aria-label="Previous programmes">{% include "partials/icon.html" with name="chevron" %}</button>
+          <button class="carousel__btn" type="button" data-cnext aria-label="Next programmes">{% include "partials/icon.html" with name="chevron" %}</button>
+        </div>
+        <a class="btn btn--blue btn--sm" href="{% url 'site:programmes' %}">All programmes</a>
+      </div>
     </div>
-    <div class="grid grid-3" style="align-items:stretch">
-      {% for p in programmes %}<div class="r-cell" data-reveal style="--d:{{ forloop.counter0 }}20ms">{% include "partials/programme_card.html" with programme=p %}</div>{% endfor %}
+    <div class="carousel" data-carousel>
+      <div class="carousel__viewport" tabindex="0" role="region" aria-label="Programmes">
+        {% for p in programmes %}
+          <div class="carousel__item">{% include "partials/programme_card.html" with programme=p %}</div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </section>
@@ -185,10 +177,20 @@
         <span class="eyebrow">Latest</span>
         <h2 style="margin:0">News and stories</h2>
       </div>
-      <a class="btn btn--blue btn--sm" href="{% url 'site:news' %}">All news</a>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="carousel__nav">
+          <button class="carousel__btn" type="button" data-cprev aria-label="Previous articles">{% include "partials/icon.html" with name="chevron" %}</button>
+          <button class="carousel__btn" type="button" data-cnext aria-label="Next articles">{% include "partials/icon.html" with name="chevron" %}</button>
+        </div>
+        <a class="btn btn--blue btn--sm" href="{% url 'site:news' %}">All news</a>
+      </div>
     </div>
-    <div class="grid grid-3">
-      {% for post in posts %}<div class="r-cell" data-reveal style="--d:{{ forloop.counter0 }}20ms">{% include "partials/post_card.html" %}</div>{% endfor %}
+    <div class="carousel" data-carousel>
+      <div class="carousel__viewport" tabindex="0" role="region" aria-label="News and stories">
+        {% for post in posts %}
+          <div class="carousel__item">{% include "partials/post_card.html" %}</div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </section>
@@ -197,14 +199,17 @@
 {# --------------------------------------------------------- partners #}
 {% if partners %}
 <section class="section section--tight">
-  <div class="wrap center">
-    <span class="eyebrow">Working alongside</span>
-    <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:center;justify-content:center;margin-top:24px">
-      {% for p in partners %}
-        {% if p.website %}<a href="{{ p.website }}" target="_blank" rel="noreferrer noopener" title="{{ p.name }}">{% endif %}
-          <img src="{{ p.logo.url }}" alt="{{ p.name }}" height="44" loading="lazy"
-               style="height:44px;width:auto;max-width:150px;object-fit:contain;filter:grayscale(1);opacity:.65">
-        {% if p.website %}</a>{% endif %}
+  <div class="wrap">
+    <p class="eyebrow" style="display:flex;justify-content:center;margin-bottom:26px">Working alongside</p>
+  </div>
+  <div class="marquee">
+    <div class="marquee__track">
+      {% for n in "12"|make_list %}
+        {% for p in partners %}
+          {% if p.website %}<a href="{{ p.website }}" target="_blank" rel="noreferrer noopener" title="{{ p.name }}" {% if n == "2" %}aria-hidden="true" tabindex="-1"{% endif %}>{% endif %}
+            <img src="{{ p.logo.url }}" alt="{% if n == '1' %}{{ p.name }}{% endif %}" loading="lazy">
+          {% if p.website %}</a>{% endif %}
+        {% endfor %}
       {% endfor %}
     </div>
   </div>
