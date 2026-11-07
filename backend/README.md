@@ -33,6 +33,12 @@ API root: http://127.0.0.1:8000/api/
 With `DATABASE_URL` left blank the project falls back to SQLite, so it boots
 before any Supabase credentials exist.
 
+If Postgres answers `password authentication failed`, run
+`python manage.py checkdb` — it reports which of the three causes it is
+(wrong username for the host, a password the URL split on, or a password
+that is simply wrong) without printing the password. The root README has
+the detail.
+
 ## Apps
 
 | App | Holds |

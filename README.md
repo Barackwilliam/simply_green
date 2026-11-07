@@ -101,6 +101,36 @@ creates one service in Frankfurt and prompts for the secrets marked
 Migrations, the first admin account and the content draft all run during the
 build, because the free plan has no shell. All three steps are idempotent.
 
+### When Postgres says "password authentication failed"
+
+```bash
+python manage.py checkdb
+```
+
+It pulls `DATABASE_URL` apart and says which of the three causes it is,
+without printing the password. They produce the same message from Postgres
+but need different fixes:
+
+- **The username does not match the host.** The session pooler
+  (`aws-0-<region>.pooler.supabase.com`) wants `postgres.<project-ref>`;
+  only the direct host (`db.<ref>.supabase.co`) wants a plain `postgres`.
+  Editing a username by hand after pasting a URI is how they get crossed.
+- **The password contains a character a URL splits on** — usually `@`.
+  Everything after it is read as part of the address, so the server is sent
+  a fragment of the password and rejects it. Percent-encode it:
+  ```bash
+  python -c "import urllib.parse,getpass;print(urllib.parse.quote(getpass.getpass('password: '), safe=''))"
+  ```
+- **The password really is wrong.** Reset it under Project Settings →
+  Database and copy the whole connection string again.
+
+Two further traps the command also reports: port `6543` is the transaction
+pooler and cannot run migrations, and `db.<ref>.supabase.co` is IPv6-only on
+the free plan, so it will not connect at all from an IPv4-only network.
+
+None of this is needed to work on the site — leave `DATABASE_URL` blank and
+Django uses a local SQLite file.
+
 **`DATABASE_URL` is not optional in production.** Without it Django falls back
 to SQLite on an ephemeral disk and every restart silently discards all
 content. It warns loudly in the logs when this happens.
