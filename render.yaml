@@ -34,6 +34,12 @@ services:
     # rebuilt on every deploy but the database is not, so without it the
     # site comes back up pointing at photographs that no longer exist.
     # Setting the Supabase Storage keys below is the real fix.
+    #
+    # `checkmedia` runs last and prints where uploads are going, writing
+    # a file to the bucket and reading it back over the web to prove it.
+    # It is in the build because the free plan has no shell, so the
+    # deploy log is the only place that answer can be read. It never
+    # fails the build.
     buildCommand: >-
       pip install --no-cache-dir -r requirements.txt &&
       python manage.py collectstatic --noinput &&
@@ -41,7 +47,8 @@ services:
       python manage.py ensure_superuser &&
       python manage.py seed_content &&
       python manage.py seed_sample_content --if-enabled &&
-      python manage.py repair_media
+      python manage.py repair_media &&
+      python manage.py checkmedia
     startCommand: >-
       gunicorn config.wsgi:application
       --bind 0.0.0.0:$PORT

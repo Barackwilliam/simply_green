@@ -177,6 +177,18 @@ def dashboard_callback(request, context):
     # finished ends up half done.
     media_missing = list(getattr(dj_settings, "SUPABASE_STORAGE_MISSING", []))
 
+    # The free plan has no shell, so `manage.py checkmedia` is not
+    # somewhere the person who needs this answer can go. The same probe
+    # runs here instead, cached for ten minutes: a bucket that accepts
+    # every upload and serves none of them back is the one failure that
+    # looks exactly like success from the server's side.
+    from apps.core.storagecheck import probe
+
+    try:
+        storage = probe()
+    except Exception:
+        storage = None
+
     # --- photographs a wide frame will crop badly -------------------------
     upright = ImageRendition.objects.filter(width__lt=F("height")).count()
 
@@ -232,6 +244,7 @@ def dashboard_callback(request, context):
             "setup_total": len(checks),
             "ephemeral_media": ephemeral_media,
             "media_missing": media_missing,
+            "storage": storage,
             "upright_images": upright,
             "upright_url": _admin_url("core_imagerendition"),
             "quick_actions": actions,

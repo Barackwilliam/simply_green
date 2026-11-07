@@ -14,11 +14,7 @@ not worth reporting on its own.
     python manage.py checkmedia
 """
 
-import uuid
-
 from django.conf import settings
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand
 
 OK = "  \033[32mok\033[0m    "
@@ -100,78 +96,44 @@ class Command(BaseCommand):
             return
 
         # --- prove it --------------------------------------------------
+        # Same probe the admin dashboard runs, so the two can never give
+        # different answers about the same bucket.
+        from apps.core.storagecheck import probe
+
         self.stdout.write(self.style.MIGRATE_HEADING("\nWriting a test file\n"))
-        name = f"healthcheck/{uuid.uuid4().hex}.txt"
-        payload = b"simply-green storage check"
-        try:
-            saved = default_storage.save(name, ContentFile(payload))
-            self.stdout.write(OK + f"wrote {saved}")
-        except Exception as exc:
-            self.stdout.write(BAD + f"could not write: {exc.__class__.__name__}: {exc}")
+        result = probe(force=True)
+
+        if not result["wrote"]:
+            self.stdout.write(BAD + f"the bucket refused the upload: {result['error']}")
             self.stdout.write(
                 self.style.ERROR(
-                    "\n  The variables are set but the bucket refused the "
-                    "upload.\n  Check the bucket named above exists and that "
-                    "the keys belong\n  to this project.\n"
+                    "\n  The variables are set, so this is the keys or the "
+                    "bucket.\n  Check a bucket named "
+                    f"'{result['bucket']}' exists in this project and that\n"
+                    "  the S3 keys belong to the same project.\n"
                 )
             )
             return
 
-        try:
-            with default_storage.open(saved) as handle:
-                back = handle.read()
-            if back == payload:
-                self.stdout.write(OK + "read it back unchanged")
-            else:
-                self.stdout.write(BAD + "read it back but the contents differ")
-        except Exception as exc:
-            self.stdout.write(BAD + f"could not read it back: {exc}")
+        self.stdout.write(OK + "the bucket accepted it")
+        if result["url"]:
+            self.stdout.write(f"          {result['url']}")
 
-        # Uploading proves the keys. It does not prove a browser can read
-        # the file back: a Supabase bucket is private when it is created,
-        # and a private bucket answers the public url with an error while
-        # every write keeps succeeding.
-        try:
-            public = default_storage.url(saved)
-        except Exception as exc:
-            public = ""
-            self.stdout.write(WARN + f"no public url: {exc}")
-
-        if public:
-            self.stdout.write(f"          {public}")
-            try:
-                import urllib.request
-
-                with urllib.request.urlopen(public, timeout=20) as response:
-                    code = response.status
-                    body = response.read(len(payload) + 16)
-                if code == 200 and body.startswith(payload):
-                    self.stdout.write(OK + "a browser can read it back")
-                elif code == 200:
-                    self.stdout.write(
-                        WARN + "the url answers 200 but with something else"
-                    )
-                else:
-                    self.stdout.write(BAD + f"the url answers {code}")
-            except Exception as exc:
-                self.stdout.write(BAD + f"a browser cannot read it: {exc}")
-                self.stdout.write(
-                    "\n       The upload worked, so the keys are right. The\n"
-                    "       bucket is private — which is how Supabase creates\n"
-                    "       one. Open Storage -> the bucket -> settings and\n"
-                    "       make it public, or the site can write photographs\n"
-                    "       it can never show.\n"
+        if result["readable"]:
+            self.stdout.write(OK + "a browser can read it back")
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "\n  Uploads go to the bucket and will survive a deploy.\n"
                 )
+            )
+            return
 
-        try:
-            default_storage.delete(saved)
-            self.stdout.write(OK + "deleted the test file")
-        except Exception as exc:
-            self.stdout.write(WARN + f"left the test file behind: {exc}")
-
+        self.stdout.write(BAD + f"a browser cannot read it: {result['error']}")
         self.stdout.write(
-            self.style.SUCCESS(
-                "\n  Uploads are going to the bucket and will survive a "
-                "deploy.\n"
+            self.style.ERROR(
+                "\n  The upload worked, so the keys are right. The bucket is\n"
+                "  private — which is how Supabase creates one. Open\n"
+                f"  Storage -> {result['bucket']} and make it public, or the\n"
+                "  site will write photographs it can never show.\n"
             )
         )

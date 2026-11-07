@@ -63,6 +63,31 @@
     </section>
   {% endif %}
 
+  {% if storage and storage.active and not storage.readable %}
+    <section class="sg-alarm">
+      <span class="material-symbols-outlined">cloud_alert</span>
+      <div>
+        {% if not storage.wrote %}
+          <strong>The bucket is refusing uploads.</strong>
+          The three variables are set, so the problem is the keys or the
+          bucket itself — check that a bucket named
+          <code>{{ storage.bucket }}</code> exists in this Supabase project
+          and that the S3 keys belong to the same project.
+        {% else %}
+          <strong>Photographs upload, but nobody can see them.</strong>
+          A test file was written to the bucket and read back over the web
+          and the web could not read it — which is what a private bucket
+          does. Every write succeeds and every picture stays invisible.
+          Open Supabase → Storage → <code>{{ storage.bucket }}</code> and
+          make the bucket public.
+        {% endif %}
+        {% if storage.error %}
+          <span class="sg-alarm__why">{{ storage.error }}</span>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
+
   {# ------------------------------------------------- waiting for a reply #}
   {% if waiting_now %}
     <section class="sg-waiting">

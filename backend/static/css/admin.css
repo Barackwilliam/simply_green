@@ -272,3 +272,8 @@
 
 .sg-alarm__vars { display: block; margin: 7px 0; }
 .sg-alarm__vars code { display: inline-block; margin: 2px 6px 2px 0; }
+
+.sg-alarm__why {
+  display: block; margin-top: 7px;
+  font-family: ui-monospace, monospace; font-size: .78rem; opacity: .85;
+}
