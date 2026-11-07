@@ -112,6 +112,45 @@ def lookup(name):
     return row
 
 
+PRESENT_PREFIX = "imgok:"
+PRESENT_TTL = 600
+
+
+def present(fieldfile):
+    """Is the file behind this field actually in storage?
+
+    The database is not evidence. On a host that rebuilds its disk every
+    deploy and keeps the database, every ImageField goes on holding a
+    path to a file that is gone, and the page renders a broken picture
+    where a photograph should be.
+
+    One storage call per image per ten minutes, cached: a stat on local
+    disk, a HEAD against the bucket. That is affordable, and the
+    alternative — trusting the column — is what put a site full of
+    broken images in front of the client twice.
+    """
+    try:
+        name = fieldfile.name
+    except Exception:
+        return False
+    if not name:
+        return False
+
+    key = PRESENT_PREFIX + name
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+
+    try:
+        ok = fieldfile.storage.exists(name)
+    except Exception:
+        # If the backend cannot answer, assume the file is there: a
+        # transient error should not blank every photograph on the site.
+        ok = True
+    cache.set(key, ok, PRESENT_TTL)
+    return ok
+
+
 def _variants_present(row):
     """True when the files this row names are actually in storage.
 

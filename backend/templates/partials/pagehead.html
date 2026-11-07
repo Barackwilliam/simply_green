@@ -28,7 +28,7 @@
   {% if v == "overlay" or v == "curve" or v == "card" %}
     <div class="ph__shot">
       {% if image %}
-        {% picture image alt=image_alt|default:title sizes="full" priority=True %}
+        {% picture image alt=image_alt|default:title sizes="full" priority=True fallback=static_image %}
       {% elif static_image %}
         <img src="{% static static_image %}" alt="" width="1600" height="900"
              fetchpriority="high" decoding="async">
@@ -60,7 +60,7 @@
         {% if v == "text" or v == "frame" %}
           <div class="ph__aside" data-reveal="pop" style="--d:.12s">
             {% if image %}
-              {% picture image alt=image_alt|default:title sizes="half" priority=True %}
+              {% picture image alt=image_alt|default:title sizes="half" priority=True fallback=static_image %}
             {% elif static_image %}
               <img src="{% static static_image %}" alt="" width="1200" height="900"
                    fetchpriority="high" decoding="async">

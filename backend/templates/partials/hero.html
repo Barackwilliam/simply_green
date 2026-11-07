@@ -28,7 +28,7 @@ where a half-width 4:3 frame is a hero-sized picture in its own right.
             others downloading before the page had painted; the script
             fetches them once the page is idle, one slide ahead of need.
           {% endcomment %}
-          {% picture slide.image alt=slide.image_alt sizes="(max-width: 900px) 100vw, 52vw" priority=forloop.first deferred=forloop.first|yesno:",True" %}
+          {% picture slide.image alt=slide.image_alt sizes="(max-width: 900px) 100vw, 52vw" priority=forloop.first deferred=forloop.first|yesno:",True" fallback="img/hero.webp" %}
         </figure>
 
         <div class="hero__panel">

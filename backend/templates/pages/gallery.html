@@ -10,7 +10,7 @@
         {% for a in albums %}
           <a class="card" href="{{ a.get_absolute_url }}">
             <div class="card__media card__media--album">
-              {% if a.cover_image %}{% picture a.cover_image alt=a.title sizes="card" %}{% endif %}
+              {% if a.cover_image %}{% picture a.cover_image alt=a.title sizes="card" fallback="img/hero.webp" %}{% endif %}
               <div style="position:absolute;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:18px;color:#fff">
                 <strong style="display:block">{{ a.title }}</strong>
                 <span style="font-size:.8rem;opacity:.85">{{ a.photo_count }} photo{{ a.photo_count|pluralize }}{% if a.date %} · {{ a.date|date:"j F Y" }}{% endif %}</span>

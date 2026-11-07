@@ -2,7 +2,7 @@
 <a class="card" href="{{ post.get_absolute_url }}">
   <div class="card__media">
     {% if post.featured_image %}
-      {% picture post.featured_image alt=post.featured_image_alt|default:post.title sizes=card_sizes|default:"card" %}
+      {% picture post.featured_image alt=post.featured_image_alt|default:post.title sizes=card_sizes|default:"card" fallback="img/planning.webp" %}
     {% else %}
       <img src="{% static 'img/planning.webp' %}" alt="" width="900" height="675" loading="lazy" decoding="async">
     {% endif %}

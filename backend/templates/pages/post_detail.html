@@ -23,7 +23,7 @@
 
 {% if post.featured_image %}
 <div class="wrap" style="max-width:900px;margin-top:-28px;position:relative;z-index:2">
-  {% picture post.featured_image alt=post.featured_image_alt|default:post.title sizes="(max-width: 940px) 100vw, 900px" priority=True style="border-radius:var(--r);box-shadow:var(--sh-3);width:100%" %}
+  {% picture post.featured_image alt=post.featured_image_alt|default:post.title sizes="(max-width: 940px) 100vw, 900px" priority=True style="border-radius:var(--r);box-shadow:var(--sh-3);width:100%" fallback="img/planning.webp" %}
   {% if post.featured_image_credit %}<p style="font-size:.8rem;color:var(--muted);text-align:center;margin-top:8px">{{ post.featured_image_credit }}</p>{% endif %}
 </div>
 {% endif %}

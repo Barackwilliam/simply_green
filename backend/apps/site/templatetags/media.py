@@ -22,7 +22,7 @@ from django import template
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
-from apps.core.renditions import lookup
+from apps.core.renditions import lookup, present
 
 register = template.Library()
 
@@ -43,6 +43,30 @@ SIZES = {
 }
 
 
+def _static_fallback(path, alt, css, priority, ratio, style):
+    """The bundled stand-in, when there is no usable upload."""
+    if not path:
+        return ""
+    from django.templatetags.static import static
+
+    attrs = [
+        f'src="{escape(static(path))}"',
+        f'alt="{escape(alt or "")}"',
+        'decoding="async"',
+    ]
+    if css:
+        attrs.append(f'class="{escape(css)}"')
+    attrs.append('fetchpriority="high"' if priority else 'loading="lazy"')
+    inline = []
+    if ratio:
+        inline.append(f"aspect-ratio:{ratio}")
+    if style:
+        inline.append(style.rstrip(";"))
+    if inline:
+        attrs.append(f'style="{escape(";".join(inline))}"')
+    return mark_safe(f"<img {' '.join(attrs)}>")
+
+
 @register.simple_tag
 def picture(
     image,
@@ -54,12 +78,18 @@ def picture(
     ratio=None,
     style="",
     deferred=False,
+    fallback="",
 ):
     """Render one photograph at the sizes the layout will actually use.
 
     `sizes` takes a key from SIZES above, or a raw sizes attribute.
     `priority` marks the one image that is visible before any scrolling —
     there should be at most one per page, and it is never lazy.
+
+    `fallback` is a path under static/ to use when the upload is not
+    there. Static files live in the repository and are served by
+    WhiteNoise, so they survive a deploy whatever happens to the media
+    disk — which on this host is everything.
 
     `deferred` writes the urls into data- attributes instead, for images
     the page must not fetch on load at all. loading="lazy" cannot do this
@@ -68,14 +98,17 @@ def picture(
     Something has to move the attributes across later, and for the hero
     that is the slideshow script.
     """
-    if not image:
-        return ""
+    if not image or not present(image):
+        # A column holding a path to a file that is gone is not an image.
+        # Rendering it anyway is how every page on the deployed site came
+        # to show a broken picture where a photograph should be.
+        return _static_fallback(fallback, alt, css, priority, ratio, style)
 
     try:
         src = image.url
         name = image.name
     except Exception:
-        return ""
+        return _static_fallback(fallback, alt, css, priority, ratio, style)
 
     row = lookup(name)
     sizes_attr = SIZES.get(sizes, sizes)

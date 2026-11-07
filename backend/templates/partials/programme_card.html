@@ -6,7 +6,7 @@
 <a class="card" href="{{ programme.get_absolute_url }}">
   <div class="card__media">
     {% if programme.featured_image %}
-      {% picture programme.featured_image alt=programme.title sizes=card_sizes|default:"card" %}
+      {% picture programme.featured_image alt=programme.title sizes=card_sizes|default:"card" fallback="img/sacks.webp" %}
     {% else %}
       <img src="{% static 'img/sacks.webp' %}" alt="" width="900" height="675" loading="lazy" decoding="async">
     {% endif %}

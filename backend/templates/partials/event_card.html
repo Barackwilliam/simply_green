@@ -2,7 +2,7 @@
 <a class="card" href="{{ event.get_absolute_url }}">
   <div class="card__media">
     {% if event.featured_image %}
-      {% picture event.featured_image alt=event.title sizes=card_sizes|default:"card" %}
+      {% picture event.featured_image alt=event.title sizes=card_sizes|default:"card" fallback="img/band.webp" %}
     {% else %}<img src="{% static 'img/band.webp' %}" alt="" width="1600" height="800" loading="lazy" decoding="async">{% endif %}
     <div class="card__over">
       <span class="tag tag--{% if event.status == 'upcoming' %}green{% else %}grey{% endif %}">{{ event.get_status_display }}</span>

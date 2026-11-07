@@ -20,7 +20,7 @@
         {% for m in g.people %}
           <article class="person" data-reveal="pop" style="--d:{{ forloop.counter0 }}0ms">
             {% if m.photo %}
-              {% picture m.photo alt=m.full_name sizes="quarter" %}
+              {% picture m.photo alt=m.full_name sizes="quarter" fallback="img/portrait.webp" %}
             {% else %}
               <span class="person__initial person__initial--{% cycle 'a' 'b' 'c' 'd' %}" aria-hidden="true">{{ m.initials }}</span>
             {% endif %}

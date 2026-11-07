@@ -24,7 +24,7 @@
 
 {% if programme.featured_image %}
 <div class="wrap" style="margin-top:-28px;position:relative;z-index:2">
-  {% picture programme.featured_image alt=programme.title sizes="(max-width: 1220px) 100vw, 1180px" priority=True style="border-radius:var(--r);box-shadow:var(--sh-3);width:100%;max-height:460px;object-fit:cover" %}
+  {% picture programme.featured_image alt=programme.title sizes="(max-width: 1220px) 100vw, 1180px" priority=True style="border-radius:var(--r);box-shadow:var(--sh-3);width:100%;max-height:460px;object-fit:cover" fallback="img/band.webp" %}
 </div>
 {% endif %}
 
@@ -40,7 +40,7 @@
           <div class="grid grid-3" data-reveal-group>
             {% for img in programme.images.all %}
               <figure style="margin:0">
-                {% picture img.image alt=img.alt_text|default:programme.title sizes="card" style="border-radius:var(--r);aspect-ratio:4/3;object-fit:cover;width:100%" %}
+                {% picture img.image alt=img.alt_text|default:programme.title sizes="card" style="border-radius:var(--r);aspect-ratio:4/3;object-fit:cover;width:100%" fallback="img/sacks.webp" %}
                 {% if img.caption %}<figcaption style="font-size:.84rem;color:var(--muted);margin-top:8px">{{ img.caption }}</figcaption>{% endif %}
               </figure>
             {% endfor %}
