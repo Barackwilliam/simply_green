@@ -5,7 +5,7 @@
 {% include "partials/pagehead.html" with variant="text" title="Partner with us" lead="We work at the frontline, and we account for every shilling that gets us there." static_image="img/planning.webp" eyebrow="Partnership" %}
 <section class="section">
   <div class="wrap">
-    <div class="grid grid--aside" style="gap:48px;align-items:start">
+    <div class="grid grid--aside" data-reveal style="gap:48px;align-items:start">
       <form method="post" novalidate>
         {% csrf_token %}
         {% include "partials/form.html" %}

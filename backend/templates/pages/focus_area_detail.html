@@ -16,10 +16,13 @@
 {% if programmes %}
 <section class="section section--wash">
   <div class="wrap">
-    <span class="eyebrow">In practice</span>
-    <h2 style="margin-bottom:32px">Programmes under {{ area.title }}</h2>
-    <div class="grid grid-3">
-      {% for p in programmes %}{% include "partials/programme_card.html" with programme=p %}{% endfor %}
+    {% include "partials/carousel_head.html" with eyebrow="In practice" title=area.title|add:" in the field" label="programmes" all_url="/programmes/" all_label="All programmes" %}
+    <div class="carousel" data-carousel data-reveal>
+      <div class="carousel__viewport" tabindex="0" role="region" aria-label="Programmes under {{ area.title }}">
+        {% for p in programmes %}
+          <div class="carousel__item">{% include "partials/programme_card.html" with programme=p %}</div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </section>

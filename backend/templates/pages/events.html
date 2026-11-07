@@ -10,11 +10,11 @@
     {% endif %}
     {% if upcoming %}
       <span class="eyebrow">Coming up</span><h2 style="margin-bottom:28px">Upcoming events</h2>
-      <div class="grid grid-3" style="margin-bottom:56px">{% for e in upcoming %}{% include "partials/event_card.html" with event=e %}{% endfor %}</div>
+      <div class="grid grid-3" data-reveal-group style="margin-bottom:56px">{% for e in upcoming %}{% include "partials/event_card.html" with event=e %}{% endfor %}</div>
     {% endif %}
     {% if past %}
       <span class="eyebrow">Archive</span><h2 style="margin-bottom:28px">Past events</h2>
-      <div class="grid grid-3">{% for e in past %}{% include "partials/event_card.html" with event=e %}{% endfor %}</div>
+      <div class="grid grid-3" data-reveal-group>{% for e in past %}{% include "partials/event_card.html" with event=e %}{% endfor %}</div>
     {% endif %}
   </div>
 </section>

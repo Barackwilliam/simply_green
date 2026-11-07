@@ -1,0 +1,24 @@
+{% comment %}
+  The heading row above a carousel: eyebrow, title, arrows, and an
+  optional link to the full list. The arrows only appear once JavaScript
+  has loaded — without it the row still scrolls by touch and trackpad,
+  and a pair of dead buttons would be worse than none.
+
+  Arguments: eyebrow, title, label (for the arrows' aria-label),
+  all_url, all_label.
+{% endcomment %}
+<div class="crow">
+  <div>
+    {% if eyebrow %}<span class="eyebrow">{{ eyebrow }}</span>{% endif %}
+    <h2>{{ title }}</h2>
+  </div>
+  <div class="crow__tools">
+    <div class="carousel__nav">
+      <button class="carousel__btn" type="button" data-cprev
+              aria-label="Previous {{ label|default:'items' }}">{% include "partials/icon.html" with name="chevron" %}</button>
+      <button class="carousel__btn" type="button" data-cnext
+              aria-label="Next {{ label|default:'items' }}">{% include "partials/icon.html" with name="chevron" %}</button>
+    </div>
+    {% if all_url %}<a class="btn btn--blue btn--sm" href="{{ all_url }}">{{ all_label|default:"See all" }}</a>{% endif %}
+  </div>
+</div>

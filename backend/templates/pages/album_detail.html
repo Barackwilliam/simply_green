@@ -6,13 +6,16 @@
 <section class="section">
   <div class="wrap">
     {% if album.photos.all %}
-      <div class="grid grid-3">
-        {% for p in album.photos.all %}
-          <figure style="margin:0">
-            {% picture p.image alt=p.alt_text|default:album.title sizes="card" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r)" %}
-            {% if p.caption %}<figcaption style="font-size:.85rem;color:var(--muted);margin-top:8px">{{ p.caption }}{% if p.credit %} <span style="opacity:.7">— {{ p.credit }}</span>{% endif %}</figcaption>{% endif %}
-          </figure>
-        {% endfor %}
+      {% include "partials/carousel_head.html" with title="Photographs" label="photographs" %}
+      <div class="carousel" data-carousel data-reveal>
+        <div class="carousel__viewport" tabindex="0" role="region" aria-label="Photographs from {{ album.title }}">
+          {% for p in album.photos.all %}
+            <figure class="carousel__item carousel__item--photo">
+              {% picture p.image alt=p.alt_text|default:album.title sizes="slide" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px" %}
+              {% if p.caption %}<figcaption>{{ p.caption }}{% if p.credit %} <span style="opacity:.7">— {{ p.credit }}</span>{% endif %}</figcaption>{% endif %}
+            </figure>
+          {% endfor %}
+        </div>
       </div>
     {% else %}
       <div class="empty"><strong>This album has no photographs yet</strong></div>

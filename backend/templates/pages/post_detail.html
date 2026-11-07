@@ -46,8 +46,14 @@
 {% if related %}
 <section class="section section--wash">
   <div class="wrap">
-    <h2 style="margin-bottom:28px">More like this</h2>
-    <div class="grid grid-3">{% for post in related %}{% include "partials/post_card.html" %}{% endfor %}</div>
+    {% include "partials/carousel_head.html" with eyebrow="Keep reading" title="More like this" label="articles" all_url="/news/" all_label="All news" %}
+    <div class="carousel" data-carousel data-reveal>
+      <div class="carousel__viewport" tabindex="0" role="region" aria-label="More articles">
+        {% for post in related %}
+          <div class="carousel__item">{% include "partials/post_card.html" %}</div>
+        {% endfor %}
+      </div>
+    </div>
   </div>
 </section>
 {% endif %}

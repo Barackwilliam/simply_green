@@ -134,6 +134,24 @@ picture { display: contents; }
 [data-reveal].is-in[data-reveal="mask"] { animation: unmask .9s var(--ease) both; }
 [data-reveal].is-in[style*="--d"] { animation-delay: var(--d); }
 
+/* A grid whose children arrive in sequence. The stagger is written as
+   nth-child rules rather than a custom property per card, because the
+   cards are generated in a loop and the alternative was an inline style
+   on every one of them. Twelve is past the point where a reader is still
+   watching; anything later simply arrives with the twelfth. */
+[data-reveal-group] > * { opacity: 0; }
+[data-reveal-group].is-in > * { animation: pop .72s var(--ease) both; }
+[data-reveal-group].is-in > :nth-child(1)  { animation-delay: 0ms; }
+[data-reveal-group].is-in > :nth-child(2)  { animation-delay: 70ms; }
+[data-reveal-group].is-in > :nth-child(3)  { animation-delay: 140ms; }
+[data-reveal-group].is-in > :nth-child(4)  { animation-delay: 210ms; }
+[data-reveal-group].is-in > :nth-child(5)  { animation-delay: 260ms; }
+[data-reveal-group].is-in > :nth-child(6)  { animation-delay: 310ms; }
+[data-reveal-group].is-in > :nth-child(7)  { animation-delay: 355ms; }
+[data-reveal-group].is-in > :nth-child(8)  { animation-delay: 395ms; }
+[data-reveal-group].is-in > :nth-child(n+9) { animation-delay: 430ms; }
+.no-js [data-reveal-group] > * { opacity: 1; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
@@ -142,6 +160,7 @@ picture { display: contents; }
     transition-duration: .01ms !important;
   }
   [data-reveal] { opacity: 1; }
+  [data-reveal-group] > * { opacity: 1; }
 }
 /* If the observer never runs, nothing should stay invisible. */
 .no-js [data-reveal] { opacity: 1; }
@@ -1224,6 +1243,21 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
   display: flex;
 }
 .carousel__item > .card { flex: 1; }
+/* A photograph in a carousel is the item itself, not a card inside one. */
+.carousel__item--photo { flex-direction: column; margin: 0; }
+.carousel__item--photo figcaption {
+  font-size: .85rem; color: var(--muted); margin-top: 10px; line-height: 1.45;
+}
+
+/* The heading row above a carousel: title on the left, arrows and the
+   link to the full list on the right, stacking on a narrow screen. */
+.crow {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  align-items: flex-end; justify-content: space-between;
+  margin-bottom: 32px;
+}
+.crow h2 { margin: 0; }
+.crow__tools { display: flex; gap: 12px; align-items: center; }
 @media (max-width: 900px) { .carousel__item { width: min(78vw, 340px); } }
 
 .carousel__nav { display: none; gap: 10px; }

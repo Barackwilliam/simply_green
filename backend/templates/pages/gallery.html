@@ -6,7 +6,7 @@
 <section class="section">
   <div class="wrap">
     {% if albums %}
-      <div class="grid grid-3">
+      <div class="grid grid-3" data-reveal-group>
         {% for a in albums %}
           <a class="card" href="{{ a.get_absolute_url }}">
             <div class="card__media card__media--album">

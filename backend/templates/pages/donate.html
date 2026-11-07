@@ -6,7 +6,7 @@
 
 <section class="section">
   <div class="wrap">
-    <div class="grid grid-2" style="gap:48px;align-items:start">
+    <div class="grid grid-2" data-reveal-group style="gap:48px;align-items:start">
       <div>
         <span class="eyebrow">How to give</span>
         <h2>Where to send your gift</h2>
@@ -35,7 +35,7 @@
 
         {% if mobile %}
           <h2 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Mobile money</h2>
-          <div class="grid grid-2" style="margin-top:14px">
+          <div class="grid grid-2" data-reveal-group style="margin-top:14px">
             {% for m in mobile %}
               <div class="tile">
                 <span class="tag tag--green">{{ m.get_channel_display }}</span>

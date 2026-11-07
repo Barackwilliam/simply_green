@@ -117,19 +117,7 @@
 {% if programmes %}
 <section class="section">
   <div class="wrap">
-    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:36px">
-      <div>
-        <span class="eyebrow">On the ground</span>
-        <h2 style="margin:0">Programmes running now</h2>
-      </div>
-      <div style="display:flex;gap:12px;align-items:center">
-        <div class="carousel__nav">
-          <button class="carousel__btn" type="button" data-cprev aria-label="Previous programmes">{% include "partials/icon.html" with name="chevron" %}</button>
-          <button class="carousel__btn" type="button" data-cnext aria-label="Next programmes">{% include "partials/icon.html" with name="chevron" %}</button>
-        </div>
-        <a class="btn btn--blue btn--sm" href="{% url 'site:programmes' %}">All programmes</a>
-      </div>
-    </div>
+    {% include "partials/carousel_head.html" with eyebrow="On the ground" title="Programmes running now" label="programmes" all_url="/programmes/" all_label="All programmes" %}
     <div class="carousel" data-carousel>
       <div class="carousel__viewport" tabindex="0" role="region" aria-label="Programmes">
         {% for p in programmes %}
@@ -175,19 +163,7 @@
 {% if posts %}
 <section class="section section--wash">
   <div class="wrap">
-    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:36px">
-      <div>
-        <span class="eyebrow">Latest</span>
-        <h2 style="margin:0">News and stories</h2>
-      </div>
-      <div style="display:flex;gap:12px;align-items:center">
-        <div class="carousel__nav">
-          <button class="carousel__btn" type="button" data-cprev aria-label="Previous articles">{% include "partials/icon.html" with name="chevron" %}</button>
-          <button class="carousel__btn" type="button" data-cnext aria-label="Next articles">{% include "partials/icon.html" with name="chevron" %}</button>
-        </div>
-        <a class="btn btn--blue btn--sm" href="{% url 'site:news' %}">All news</a>
-      </div>
-    </div>
+    {% include "partials/carousel_head.html" with eyebrow="Latest" title="News and stories" label="articles" all_url="/news/" all_label="All news" %}
     <div class="carousel" data-carousel>
       <div class="carousel__viewport" tabindex="0" role="region" aria-label="News and stories">
         {% for post in posts %}

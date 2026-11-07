@@ -296,7 +296,11 @@
 
   /* -------------------------------------------------------- reveal on scroll */
 
-  var revealables = document.querySelectorAll("[data-reveal]");
+  // [data-reveal] is one element. [data-reveal-group] is a grid or a row
+  // whose children should arrive one after another — which is most of
+  // what is on this site, and tagging every card by hand across twenty
+  // templates would have been twenty chances to forget.
+  var revealables = document.querySelectorAll("[data-reveal], [data-reveal-group]");
   if (!revealables.length) return;
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

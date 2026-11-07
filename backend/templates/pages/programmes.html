@@ -22,7 +22,7 @@
     {% endif %}
 
     {% if programmes %}
-      <div class="grid grid-3">
+      <div class="grid grid-3" data-reveal-group>
         {% for p in programmes %}{% include "partials/programme_card.html" with programme=p hl="h2" %}{% endfor %}
       </div>
     {% else %}

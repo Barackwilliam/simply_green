@@ -6,7 +6,7 @@
 <section class="section">
   <div class="wrap">
     {% if videos %}
-      <div class="grid grid-3">
+      <div class="grid grid-3" data-reveal-group>
         {% for v in videos %}
           <article class="card">
             <a href="{{ v.video_url|default:v.video_file.url }}" target="_blank" rel="noreferrer noopener" class="card__media" style="position:relative;display:block;background:#16211c">

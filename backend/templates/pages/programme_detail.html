@@ -30,14 +30,14 @@
 
 <section class="section">
   <div class="wrap">
-    <div class="grid grid--main" style="gap:48px;align-items:start">
+    <div class="grid grid--main" data-reveal style="gap:48px;align-items:start">
       <div>
         <p class="lead" style="color:var(--ink);font-size:1.18rem">{{ programme.summary }}</p>
         {% if programme.body %}<div class="prose">{{ programme.body|safe }}</div>{% endif %}
 
         {% if programme.images.all %}
           <h2 style="margin-top:48px">From the field</h2>
-          <div class="grid grid-3">
+          <div class="grid grid-3" data-reveal-group>
             {% for img in programme.images.all %}
               <figure style="margin:0">
                 {% picture img.image alt=img.alt_text|default:programme.title sizes="card" style="border-radius:var(--r);aspect-ratio:4/3;object-fit:cover;width:100%" %}

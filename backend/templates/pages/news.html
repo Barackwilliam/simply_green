@@ -15,7 +15,7 @@
       </div>
     {% endif %}
     {% if posts %}
-      <div class="grid grid-3">{% for post in posts %}{% include "partials/post_card.html" with hl="h2" %}{% endfor %}</div>
+      <div class="grid grid-3" data-reveal-group>{% for post in posts %}{% include "partials/post_card.html" with hl="h2" %}{% endfor %}</div>
     {% else %}
       <div class="empty"><strong>Nothing published yet</strong>Articles written in the admin will appear here.</div>
     {% endif %}

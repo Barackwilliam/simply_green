@@ -5,7 +5,7 @@
 {% include "partials/pagehead.html" with variant="text" title="Become a volunteer" lead="Give the time you have. We will find work that fits it." static_image="img/about.webp" eyebrow="Volunteer" %}
 <section class="section">
   <div class="wrap">
-    <div class="grid grid--aside" style="gap:48px;align-items:start">
+    <div class="grid grid--aside" data-reveal style="gap:48px;align-items:start">
       <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         {% include "partials/form.html" %}

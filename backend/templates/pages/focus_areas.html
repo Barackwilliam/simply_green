@@ -8,7 +8,7 @@
 <section class="section">
   <div class="wrap">
     {% if areas %}
-      <div class="grid grid-3">
+      <div class="grid grid-3" data-reveal-group>
         {% for a in areas %}
           <a class="card" href="{{ a.get_absolute_url }}">
             <div class="card__body">
