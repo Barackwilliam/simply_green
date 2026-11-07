@@ -60,7 +60,7 @@
     </div>
     <div class="vgrid">
       {% for v in values %}
-        <div data-reveal style="--d:{{ forloop.counter0 }}0ms;display:flex">
+        <div data-reveal="pop" style="--d:{{ forloop.counter0 }}0ms;display:flex">
           <div class="vcard vcard--{% cycle 'green' 'blue' 'gold' 'deep' %}">
             <span class="vcard__n" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
             <span class="vcard__icon">{% include "partials/icon.html" with name=v.icon %}</span>

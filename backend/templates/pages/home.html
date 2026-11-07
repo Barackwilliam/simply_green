@@ -68,14 +68,14 @@
 {% if focus_areas %}
 <section class="section section--wash">
   <div class="wrap">
-    <div class="center" data-reveal style="margin-bottom:40px">
+    <div class="center" data-reveal="mask" style="margin-bottom:40px">
       <span class="eyebrow">What we work on</span>
       <h2>Seven focus areas, one goal</h2>
       <p class="lead">Our work spans conservation, climate and livelihoods — because environmental problems in Tanzania do not arrive one at a time.</p>
     </div>
     <div class="fgrid">
       {% for area in focus_areas %}
-        <div data-reveal style="--d:{{ forloop.counter0 }}0ms;display:flex">
+        <div data-reveal="pop" style="--d:{{ forloop.counter0 }}0ms;display:flex">
           <a class="fcard fcard--{% cycle 'blue' 'green' 'gold' 'deep' %}" href="{{ area.get_absolute_url }}" style="flex:1">
             <span class="fcard__n" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
             <span class="fcard__icon">{% include "partials/icon.html" with name=area.icon %}</span>
@@ -102,7 +102,7 @@
       <div class="grid grid-3">
         {% for v in values|slice:":3" %}
           <div class="band__col" data-reveal style="--d:{{ forloop.counter0 }}20ms">
-            {% include "partials/icon.html" with name=v.icon %}
+            <span class="band__icon">{% include "partials/icon.html" with name=v.icon %}</span>
             <h3>{{ v.title }}</h3>
             <p>{{ v.description|truncatewords:28 }}</p>
           </div>

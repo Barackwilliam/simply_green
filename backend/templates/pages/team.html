@@ -24,7 +24,7 @@
       </div>
       <div class="pgrid" style="margin-bottom:52px">
         {% for m in g.people %}
-          <article class="person" data-reveal style="--d:{{ forloop.counter0 }}0ms">
+          <article class="person" data-reveal="pop" style="--d:{{ forloop.counter0 }}0ms">
             {% if m.photo %}
               {% picture m.photo alt=m.full_name sizes="quarter" %}
             {% else %}

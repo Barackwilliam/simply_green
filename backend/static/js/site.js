@@ -92,7 +92,11 @@
     var dots = root.querySelectorAll("[data-dot]");
     var prev = root.querySelector("[data-prev]");
     var next = root.querySelector("[data-next]");
-    var DELAY = 6500;
+    // Eight seconds, not six and a half. The headline, the sentence under
+    // it and the two buttons take about five seconds to read, and a slide
+    // that changes while someone is still on the last line is the thing
+    // that makes a carousel tiring rather than inviting.
+    var DELAY = 8000;
     var index = 0;
     var timer = null;
     var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
