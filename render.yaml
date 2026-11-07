@@ -23,15 +23,18 @@ services:
     rootDir: backend
 
     # The free plan has no shell, so the first admin account and the content
-    # draft are created during the build. Both steps are idempotent:
-    # `ensure_superuser` never touches an account that already exists, and
-    # `seed_content` only fills in what is missing unless passed --force.
+    # draft are created during the build. Every step is idempotent:
+    # `ensure_superuser` never touches an account that already exists,
+    # `seed_content` only fills in what is missing unless passed --force,
+    # and `seed_sample_content --if-enabled` does nothing at all unless
+    # SAMPLE_CONTENT is set (see below).
     buildCommand: >-
       pip install --no-cache-dir -r requirements.txt &&
       python manage.py collectstatic --noinput &&
       python manage.py migrate --noinput &&
       python manage.py ensure_superuser &&
-      python manage.py seed_content
+      python manage.py seed_content &&
+      python manage.py seed_sample_content --if-enabled
     startCommand: >-
       gunicorn config.wsgi:application
       --bind 0.0.0.0:$PORT
@@ -55,6 +58,20 @@ services:
         value: INFO
       - key: SECURE_SSL_REDIRECT
         value: "True"
+
+      # --- Placeholder content for design review -----------------------
+      # Impact figures, team, news, events, the gallery and the resource
+      # centre render nothing while their tables are empty, which makes the
+      # design impossible to show. Set this to "on" and redeploy to fill
+      # them with clearly provisional content; the footer says so for as
+      # long as it is loaded. Set it to "off" and redeploy to take it all
+      # out again — only the rows the command created, nothing the client
+      # has since added. Unset, nothing happens either way.
+      #
+      # TURN THIS OFF BEFORE LAUNCH. While it is on the site carries
+      # invented impact figures and names of people who do not exist.
+      - key: SAMPLE_CONTENT
+        value: "on"
 
       # A leading dot matches every subdomain, which covers this service's own
       # onrender.com address. Add the custom domain here once it is connected.

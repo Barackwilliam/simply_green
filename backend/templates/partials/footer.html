@@ -74,6 +74,19 @@
       </div>
     </div>
 
+    {% if showing_sample_content %}
+      {% comment %}
+        Shown only while seed_sample_content is loaded. The figures, names
+        and articles it creates are invented, and nobody reading the site
+        should take them for the organisation's own record.
+      {% endcomment %}
+      <p class="footer__sample">
+        <strong>Preview build.</strong> Some figures, names, articles and
+        photographs on this site are placeholders for layout review. They are
+        not {{ site.organisation_name }}'s own records.
+      </p>
+    {% endif %}
+
     <div class="footer__bottom">
       <span>&copy; {{ current_year }} {{ site.organisation_name }}. All rights reserved.</span>
       <span><a href="{% url 'site:privacy' %}">Privacy Policy</a></span>

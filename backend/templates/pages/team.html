@@ -28,7 +28,7 @@
             {% if m.photo %}
               <img src="{{ m.photo.url }}" alt="{{ m.full_name }}" loading="lazy">
             {% else %}
-              <span class="person__initial" aria-hidden="true">{{ m.full_name|slice:":1" }}</span>
+              <span class="person__initial person__initial--{% cycle 'a' 'b' 'c' 'd' %}" aria-hidden="true">{{ m.initials }}</span>
             {% endif %}
             <div class="person__body">
               <span class="person__role">{{ m.role }}</span>

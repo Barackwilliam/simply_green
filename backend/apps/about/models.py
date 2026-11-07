@@ -87,6 +87,18 @@ class TeamMember(PublishableModel):
     def __str__(self):
         return f"{self.full_name} — {self.role}"
 
+    @property
+    def initials(self):
+        """Up to two letters, for the card shown when there is no photo.
+
+        Titles are dropped — "Dr. Hamisi Juma" should read HJ, not DH.
+        """
+        skip = {"dr", "dr.", "prof", "prof.", "mr", "mr.", "mrs", "mrs.",
+                "ms", "ms.", "eng", "eng.", "hon", "hon."}
+        parts = [w for w in self.full_name.split() if w.lower() not in skip]
+        letters = [w[0] for w in parts if w[:1].isalpha()]
+        return "".join(letters[:2]).upper()
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.full_name)[:200]

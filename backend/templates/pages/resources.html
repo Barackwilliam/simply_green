@@ -33,7 +33,7 @@
               <h3>{{ p.title }}</h3>
               {% if p.summary %}<p>{{ p.summary|truncatewords:22 }}</p>{% endif %}
               <div class="card__meta" style="flex-direction:row;justify-content:space-between;align-items:center">
-                <span>{{ p.file_size_label }}{% if p.page_count %} · {{ p.page_count }} pages{% endif %}</span>
+                <span>{{ p.file_size_label }}{% if p.file_size_label and p.page_count %} · {% endif %}{% if p.page_count %}{{ p.page_count }} pages{% endif %}</span>
                 {% if p.download_url %}
                   <a class="btn btn--green btn--sm" href="{% url 'site:publication_download' p.slug %}">
                     {% include "partials/icon.html" with name="download" %} Download
