@@ -9,7 +9,8 @@ says which it is, without ever printing the password.
     python manage.py checkdb
 """
 
-from urllib.parse import unquote, urlsplit
+import getpass
+from urllib.parse import quote, unquote, urlsplit, urlunsplit
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -34,6 +35,40 @@ class Command(BaseCommand):
             action="store_true",
             help="Only inspect the url; do not try to open a connection.",
         )
+        parser.add_argument(
+            "--ask",
+            action="store_true",
+            help=(
+                "Ignore the password in .env, prompt for one, and try that "
+                "instead. Settles whether the password is wrong or .env is "
+                "mangling it."
+            ),
+        )
+
+    def _connect(self, url):
+        """Open one connection outside Django's configured alias."""
+        import dj_database_url
+        from django.db.utils import ConnectionHandler
+
+        # ConnectionHandler insists on a "default" alias, and the ssl
+        # requirement has to match the project's own setting or a local
+        # Postgres with no TLS is refused for the wrong reason.
+        config = dj_database_url.parse(
+            url, ssl_require=getattr(settings, "DATABASE_SSL_REQUIRE", True)
+        )
+        handler = ConnectionHandler({"default": config})
+        try:
+            with handler["default"].cursor() as cursor:
+                cursor.execute("select 1")
+            return True
+        except Exception as exc:
+            self.stdout.write(BAD + f"{exc.__class__.__name__}: {exc}".strip())
+            return False
+        finally:
+            try:
+                handler.close_all()
+            except Exception:
+                pass
 
     def handle(self, *args, **options):
         raw = (getattr(settings, "DATABASE_URL", "") or "").strip()
@@ -59,7 +94,14 @@ class Command(BaseCommand):
         self.stdout.write(f"  port      {port}")
         self.stdout.write(f"  user      {user}")
         self.stdout.write(f"  database  {dbname}")
+        raw_password = parts.password or ""
         self.stdout.write(f"  password  {len(password)} characters")
+        if raw_password != password:
+            self.stdout.write(
+                "            (percent-decoded on the way through — if the "
+                "real\n             password contains a literal %, it must "
+                "be written %25)"
+            )
 
         pooled = "pooler.supabase.com" in host
         direct = host.startswith("db.") and host.endswith(".supabase.co")
@@ -116,7 +158,13 @@ class Command(BaseCommand):
             )
             self.stdout.write(BAD + "the password has broken the url apart")
         else:
-            hit = [c for c in BREAKS if c in password]
+            # Only a flaw when the password was written raw. If decoding
+            # changed it, these characters are already escaped and the url
+            # is correct — flagging that was a false alarm on a working
+            # connection.
+            hit = [] if raw_password != password else [
+                c for c in BREAKS if c in password
+            ]
             if hit:
                 shown = " ".join(repr(c) for c in hit)
                 problems.append(
@@ -125,8 +173,26 @@ class Command(BaseCommand):
                     "       receives only the part before it. See below."
                 )
                 self.stdout.write(BAD + "password contains characters a url splits on")
+            elif raw_password != password:
+                self.stdout.write(OK + "password is percent-encoded")
             else:
                 self.stdout.write(OK + "password needs no escaping")
+
+        if password != password.strip():
+            problems.append(
+                "The password has a space or a line break at one end.\n"
+                "       Check for a trailing space after the url in .env, or\n"
+                "       a line that wrapped when it was pasted."
+            )
+            self.stdout.write(BAD + "password has whitespace at one end")
+
+        if "YOUR-PASSWORD" in raw.upper() or "[" in (raw_password or ""):
+            problems.append(
+                "The url still contains Supabase's placeholder. The page\n"
+                "       shows [YOUR-PASSWORD] where the real one goes; it is\n"
+                "       not filled in for you."
+            )
+            self.stdout.write(BAD + "placeholder left in the url")
 
         if port == 6543:
             self.stdout.write(
@@ -140,6 +206,52 @@ class Command(BaseCommand):
             problems.append("No database name after the host. It should be /postgres.")
             self.stdout.write(BAD + "no database name")
 
+        # --- try a password typed in, bypassing .env entirely -------------
+        # The one test that separates "the password is wrong" from ".env is
+        # mangling a password that is right". Typed in, encoded here, and
+        # never written anywhere.
+        if options["ask"]:
+            self.stdout.write(self.style.MIGRATE_HEADING("\nTrying a typed password\n"))
+            typed = getpass.getpass("  Database password (hidden): ")
+            if not typed:
+                self.stdout.write(BAD + "nothing entered")
+                return
+            if typed != typed.strip():
+                self.stdout.write(
+                    WARN + "what you typed has a space at one end; "
+                    "trying it as typed"
+                )
+            netloc = (
+                f"{quote(user, safe='')}:{quote(typed, safe='')}"
+                f"@{host}{f':{port}' if port else ''}"
+            )
+            probe = urlunsplit((parts.scheme, netloc, parts.path, "", ""))
+            if self._connect(probe):
+                self.stdout.write(self.style.SUCCESS(
+                    "\n  That password works.\n\n"
+                    "  So the password is right and .env is the problem. Put\n"
+                    "  this exact line in backend/.env, on one line, with no\n"
+                    "  quotes around it and no space before or after the =:\n"
+                ))
+                masked = probe.replace(quote(typed, safe=""), "<password>")
+                self.stdout.write(f"    DATABASE_URL={masked}\n")
+                self.stdout.write(
+                    "  with <password> replaced by the percent-encoded form:\n"
+                    f"    {quote(typed, safe='')}\n"
+                )
+            else:
+                self.stdout.write(self.style.ERROR(
+                    "\n  That password is refused too, so it is not .env.\n\n"
+                    "  The database password is not your Supabase account\n"
+                    "  password, and it is only shown once when the project is\n"
+                    "  created. Reset it: Project Settings -> Database ->\n"
+                    "  Database password -> Reset database password.\n\n"
+                    "  Check too that the project is not paused — a free\n"
+                    "  project sleeps after a week unused, and the dashboard\n"
+                    "  shows a Restore button when it has.\n"
+                ))
+            return
+
         # --- try it ------------------------------------------------------
         if not options["no_connect"]:
             self.stdout.write(self.style.MIGRATE_HEADING("\nConnecting\n"))
@@ -151,7 +263,17 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS("\nThe connection works.\n"))
                 return
             except Exception as exc:
-                self.stdout.write(BAD + f"{exc.__class__.__name__}: {exc}".strip())
+                text = f"{exc}".strip()
+                self.stdout.write(BAD + f"{exc.__class__.__name__}: {text}")
+                if pooled and 'user "postgres"' in text:
+                    self.stdout.write(
+                        "\n" + WARN + "The server says user \"postgres\", not the\n"
+                        "       name in the url. That is normal through the\n"
+                        "       pooler — it reads the project reference, routes\n"
+                        "       on it, then authenticates upstream as postgres.\n"
+                        "       So this is not a username problem: the password\n"
+                        "       is being rejected."
+                    )
 
         if problems:
             self.stdout.write(self.style.MIGRATE_HEADING("\nWhat to fix\n"))

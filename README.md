@@ -121,12 +121,29 @@ but need different fixes:
   ```bash
   python -c "import urllib.parse,getpass;print(urllib.parse.quote(getpass.getpass('password: '), safe=''))"
   ```
-- **The password really is wrong.** Reset it under Project Settings →
-  Database and copy the whole connection string again.
+- **The password really is wrong.** Settle it without touching `.env`:
+
+  ```bash
+  python manage.py checkdb --ask
+  ```
+
+  It prompts for a password, encodes it correctly, and tries that. If it
+  connects, the password is fine and `.env` was mangling it — the command
+  prints the exact line to paste. If it is refused too, the password is
+  wrong: it is **not** your Supabase account password, and it is shown only
+  once when the project is created. Reset it under Project Settings →
+  Database → Reset database password. Check also that the project is not
+  paused; a free project sleeps after a week unused.
 
 Two further traps the command also reports: port `6543` is the transaction
 pooler and cannot run migrations, and `db.<ref>.supabase.co` is IPv6-only on
 the free plan, so it will not connect at all from an IPv4-only network.
+
+One more worth knowing: through the pooler, Postgres reports the failure
+against user `postgres`, not the `postgres.<ref>` in your URL. That is
+normal — the pooler reads the project reference, routes on it, then
+authenticates upstream as `postgres`. It is not evidence of a username
+problem.
 
 None of this is needed to work on the site — leave `DATABASE_URL` blank and
 Django uses a local SQLite file.

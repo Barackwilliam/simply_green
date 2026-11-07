@@ -10,6 +10,7 @@ from pathlib import Path
 
 import dj_database_url
 import environ
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -112,15 +113,39 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASE_URL = env("DATABASE_URL", default="")
 
+# Named at module level rather than read inline, so `manage.py checkdb` can
+# probe a connection with the same TLS requirement the project itself uses.
+DATABASE_SSL_REQUIRE = env.bool("DATABASE_SSL_REQUIRE", default=True)
+
 if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(
+    try:
+        _database = dj_database_url.parse(
             DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
-            ssl_require=env.bool("DATABASE_SSL_REQUIRE", default=True),
+            ssl_require=DATABASE_SSL_REQUIRE,
         )
-    }
+    except ValueError as exc:
+        # Supabase's connection-string page shows [YOUR-PASSWORD] where the
+        # real one goes. Left in, the square brackets are read as IPv6 host
+        # syntax and every management command dies at import with
+        # "does not appear to be an IPv4 or IPv6 address", which says
+        # nothing about what is actually wrong.
+        hint = ""
+        if "[" in DATABASE_URL:
+            hint = (
+                " The url contains a square bracket. If that is Supabase's "
+                "[YOUR-PASSWORD] placeholder, replace it with the real "
+                "password; if the password itself contains a bracket, "
+                "percent-encode it."
+            )
+        raise ImproperlyConfigured(
+            f"DATABASE_URL could not be parsed: {exc}.{hint} "
+            "Run `python manage.py checkdb` for a full report, or leave "
+            "DATABASE_URL blank to fall back to local SQLite."
+        ) from exc
+
+    DATABASES = {"default": _database}
 else:
     # Local fallback so the project boots before Supabase credentials exist.
     DATABASES = {
