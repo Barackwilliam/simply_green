@@ -740,3 +740,104 @@ a.card:hover .card__body h3 { color: var(--green-ink); }
 @media (prefers-reduced-motion: reduce) {
   .marquee__track { animation: none; flex-wrap: wrap; justify-content: center; width: auto; }
 }
+
+/* --- Focus area cards --------------------------------------------------
+   Seven identical white boxes said nothing about the work. Each area now
+   carries its own colour, a numeral set large and faint behind it, and
+   fills with that colour on hover — the card itself becomes the signal
+   rather than a frame around some text.
+
+   Colours cycle through the organisation's three, darkened so white type on
+   them clears AA when the fill takes over. */
+
+.fgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+/* Bento: the first area gets the width of two, so the grid has a focal
+   point instead of reading as a spreadsheet. */
+.fgrid > :first-child { grid-column: span 2; }
+@media (max-width: 980px) {
+  .fgrid { grid-template-columns: repeat(2, 1fr); }
+  .fgrid > :first-child { grid-column: span 2; }
+}
+@media (max-width: 620px) {
+  .fgrid { grid-template-columns: 1fr; }
+  .fgrid > :first-child { grid-column: span 1; }
+}
+
+.fcard {
+  --accent: var(--green-ink);
+  --accent-soft: #eef6de;
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; flex-direction: column;
+  min-height: 236px;
+  padding: 30px 28px 26px;
+  border: 1px solid var(--line); border-radius: 18px;
+  background: #fff; color: inherit; text-decoration: none;
+  transition: transform .45s var(--ease), box-shadow .45s var(--ease),
+              border-color .45s, color .4s var(--ease-soft);
+}
+.fcard--blue  { --accent: var(--blue-ink);  --accent-soft: #ddf1fa; }
+.fcard--green { --accent: var(--green-ink); --accent-soft: #eaf4d8; }
+.fcard--gold  { --accent: var(--gold-ink);  --accent-soft: #fdf0d6; }
+.fcard--deep  { --accent: var(--green-deep); --accent-soft: #e5ecdc; }
+
+/* The fill grows from the corner the arrow sits in. */
+.fcard::before {
+  content: ""; position: absolute; z-index: -1;
+  right: -10%; bottom: -10%;
+  width: 150%; aspect-ratio: 1; border-radius: 50%;
+  background: var(--accent);
+  transform: scale(0); transform-origin: bottom right;
+  transition: transform .55s var(--ease);
+}
+.fcard:hover, .fcard:focus-visible {
+  transform: translateY(-8px);
+  border-color: transparent;
+  box-shadow: 0 24px 54px rgba(20,29,23,.2);
+  color: #fff;
+}
+.fcard:hover::before, .fcard:focus-visible::before { transform: scale(1); }
+
+.fcard__n {
+  position: absolute; top: 10px; right: 20px;
+  font-size: 5.2rem; font-weight: 800; line-height: 1;
+  color: var(--accent); opacity: .09; letter-spacing: -.05em;
+  transition: opacity .4s, color .4s;
+  pointer-events: none;
+}
+.fcard:hover .fcard__n { color: #fff; opacity: .22; }
+
+.fcard__icon {
+  width: 54px; height: 54px; border-radius: 15px; flex: none;
+  display: grid; place-items: center; margin-bottom: 18px;
+  background: var(--accent-soft);
+  transition: background .4s, transform .5s var(--ease);
+}
+.fcard__icon svg { width: 26px; height: 26px; fill: var(--accent); transition: fill .4s; }
+.fcard:hover .fcard__icon { background: rgba(255,255,255,.2); transform: rotate(-8deg) scale(1.08); }
+.fcard:hover .fcard__icon svg { fill: #fff; }
+
+.fcard h3 { font-size: 1.16rem; margin-bottom: 9px; position: relative; }
+.fcard p { font-size: .93rem; color: var(--ink-soft); flex: 1; margin: 0; transition: color .4s; }
+.fcard:hover p { color: rgba(255,255,255,.92); }
+
+.fcard__go {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 18px;
+  font-size: .84rem; font-weight: 800; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--accent);
+  transition: color .4s, gap .3s var(--ease);
+}
+.fcard:hover .fcard__go { color: #fff; gap: 14px; }
+.fcard__go svg { width: 16px; height: 16px; fill: currentColor; }
+
+/* The wide first card can afford a larger title and two columns of text. */
+.fgrid > :first-child .fcard h3 { font-size: 1.5rem; }
+.fgrid > :first-child .fcard p { font-size: .98rem; max-width: 52ch; }
+.fgrid > :first-child .fcard__n { font-size: 7rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fcard::before { transition: none; }
+}

@@ -72,16 +72,17 @@
       <h2>Seven focus areas, one goal</h2>
       <p class="lead">Our work spans conservation, climate and livelihoods — because environmental problems in Tanzania do not arrive one at a time.</p>
     </div>
-    <div class="grid grid-3">
+    <div class="fgrid">
       {% for area in focus_areas %}
-        <a class="card" href="{{ area.get_absolute_url }}"
-           data-reveal style="--d:{{ forloop.counter0 }}0ms">
-          <div class="card__body">
-            <div class="tile__icon">{% include "partials/icon.html" with name=area.icon %}</div>
+        <div data-reveal style="--d:{{ forloop.counter0 }}0ms;display:flex">
+          <a class="fcard fcard--{% cycle 'blue' 'green' 'gold' 'deep' %}" href="{{ area.get_absolute_url }}" style="flex:1">
+            <span class="fcard__n" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+            <span class="fcard__icon">{% include "partials/icon.html" with name=area.icon %}</span>
             <h3>{{ area.title }}</h3>
-            <p>{{ area.summary|truncatewords:28 }}</p>
-          </div>
-        </a>
+            <p>{{ area.summary|truncatewords:26 }}</p>
+            <span class="fcard__go">Learn more {% include "partials/icon.html" with name="arrow" %}</span>
+          </a>
+        </div>
       {% endfor %}
     </div>
   </div>
