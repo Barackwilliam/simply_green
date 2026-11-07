@@ -219,16 +219,27 @@ SUPABASE_S3_SECRET_ACCESS_KEY = env("SUPABASE_S3_SECRET_ACCESS_KEY", default="")
 # Storage is only switched over when the credentials to reach it are actually
 # present. A half-configured bucket would otherwise take the whole site down
 # at boot, which is a worse failure than serving uploads from local disk.
-if USE_SUPABASE_STORAGE and not (
-    SUPABASE_PROJECT_REF
-    and SUPABASE_S3_ACCESS_KEY_ID
-    and SUPABASE_S3_SECRET_ACCESS_KEY
-):
+#
+# Which ones are missing is recorded rather than summarised: "the S3 keys
+# are not all set" sent someone to add the two keys when the one actually
+# missing was the project reference, which is not called a key anywhere in
+# the Supabase dashboard.
+SUPABASE_STORAGE_MISSING = [
+    name for name, value in (
+        ("SUPABASE_PROJECT_REF", SUPABASE_PROJECT_REF),
+        ("SUPABASE_S3_ACCESS_KEY_ID", SUPABASE_S3_ACCESS_KEY_ID),
+        ("SUPABASE_S3_SECRET_ACCESS_KEY", SUPABASE_S3_SECRET_ACCESS_KEY),
+    ) if not value
+]
+
+if USE_SUPABASE_STORAGE and SUPABASE_STORAGE_MISSING:
     warnings.warn(
-        "USE_SUPABASE_STORAGE is on but SUPABASE_PROJECT_REF and the S3 keys "
-        "are not all set. Falling back to local file storage — uploads will "
-        "not survive a restart. Add the S3 access keys from Supabase "
-        "Project Settings -> Storage.",
+        "USE_SUPABASE_STORAGE is on but "
+        + ", ".join(SUPABASE_STORAGE_MISSING)
+        + " "
+        + ("is" if len(SUPABASE_STORAGE_MISSING) == 1 else "are")
+        + " not set. Falling back to local file storage — uploads will not "
+        "survive a deploy. Run `python manage.py checkmedia` for the detail.",
         RuntimeWarning,
         stacklevel=2,
     )

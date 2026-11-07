@@ -171,6 +171,11 @@ def dashboard_callback(request, context):
     ephemeral_media = not (
         dj_settings.USE_SUPABASE_STORAGE or dj_settings.DEBUG
     )
+    # Naming the variable that is actually missing, rather than saying
+    # "the keys". Two of the three are called keys in the Supabase
+    # dashboard and the third is not, which is how a setup that looks
+    # finished ends up half done.
+    media_missing = list(getattr(dj_settings, "SUPABASE_STORAGE_MISSING", []))
 
     # --- photographs a wide frame will crop badly -------------------------
     upright = ImageRendition.objects.filter(width__lt=F("height")).count()
@@ -226,6 +231,7 @@ def dashboard_callback(request, context):
             "setup_done": len(checks) - len(outstanding),
             "setup_total": len(checks),
             "ephemeral_media": ephemeral_media,
+            "media_missing": media_missing,
             "upright_images": upright,
             "upright_url": _admin_url("core_imagerendition"),
             "quick_actions": actions,

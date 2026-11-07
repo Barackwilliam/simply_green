@@ -46,12 +46,19 @@
         <strong>Photographs are not being stored safely.</strong>
         Uploads are going to the server's own disk, which is rebuilt every
         time the site is deployed — so every picture, including ones added
-        here, disappears and the pages that used them break. Add the three
-        Supabase Storage keys to the service's environment
-        (<code>SUPABASE_PROJECT_REF</code>,
-        <code>SUPABASE_S3_ACCESS_KEY_ID</code>,
-        <code>SUPABASE_S3_SECRET_ACCESS_KEY</code>) from
-        Project&nbsp;Settings → Storage → S3 access keys, then deploy again.
+        here, disappears and the pages that used them break.
+        {% if media_missing %}
+          Set {% if media_missing|length == 1 %}this variable{% else %}these
+          variables{% endif %} on the service and deploy again:
+          <span class="sg-alarm__vars">
+            {% for name in media_missing %}<code>{{ name }}</code>{% endfor %}
+          </span>
+          The two keys come from Project&nbsp;Settings → Storage → S3 access
+          keys; the project reference is the string in your Supabase
+          project's own url.
+        {% else %}
+          Set <code>USE_SUPABASE_STORAGE</code> to <code>True</code>.
+        {% endif %}
       </div>
     </section>
   {% endif %}
