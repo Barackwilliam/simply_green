@@ -1,8 +1,16 @@
 {% load static %}{% load media %}
 {% comment %}
-Home page slideshow. Each slide is a record in the admin, so the organisation
-controls what the site leads with. With one slide it is simply a hero; the
-controls only appear when there is something to move between.
+Home page slideshow. Each slide is a record in the admin, so the
+organisation controls what the site leads with. With one slide it is
+simply a hero; the controls only appear when there is something to move
+between.
+
+Photograph and panel, not text over a photograph. The organisation's
+pictures are taken on a phone held upright, and a full-bleed banner threw
+away two thirds of each one while making the words hard to read over
+whatever was behind them. Here the photograph is shown whole and the
+words sit on solid colour: stacked on a phone, side by side from 900px
+where a half-width 4:3 frame is a hero-sized picture in its own right.
 {% endcomment %}
 
 <section class="hero" data-slider aria-roledescription="carousel" aria-label="Featured">
@@ -12,43 +20,42 @@ controls only appear when there is something to move between.
                role="group" aria-roledescription="slide"
                aria-label="{{ forloop.counter }} of {{ slides|length }}"
                {% if not forloop.first %}aria-hidden="true"{% endif %}>
-        {% comment %}
-          Only the first slide loads with the page. A hidden slide still
-          counts as in the viewport, so loading="lazy" did not stop the
-          other two downloading before the page had painted; the slideshow
-          script fetches them once the page is idle, one slide ahead of
-          need. The first is a full <picture> so a phone takes the 420px
-          WebP rather than the desktop master.
-        {% endcomment %}
-        {% picture slide.image alt=slide.image_alt sizes="full" priority=forloop.first deferred=forloop.first|yesno:",True" %}
-        <div class="hero__scrim"></div>
-        <div class="hero__inner">
-          <div class="wrap">
-            <div class="hero__text">
-              {% if slide.eyebrow %}<span class="hero__badge">{{ slide.eyebrow }}</span>{% endif %}
-              {% comment %}
-                One h1 per page. The slideshow had three — one per slide —
-                which tells a search engine the page is about three
-                different things. The first slide carries the heading; the
-                rest are paragraphs that look identical.
-              {% endcomment %}
-              {% if forloop.first %}
-                <h1 class="hero__title">{{ slide.headline }}</h1>
-              {% else %}
-                <p class="hero__title" role="heading" aria-level="2">{{ slide.headline }}</p>
-              {% endif %}
-              {% if slide.subheadline %}<p>{{ slide.subheadline }}</p>{% endif %}
-              {% if slide.primary_label or slide.secondary_label %}
-                <div class="hero__actions">
-                  {% if slide.primary_label %}
-                    <a class="btn btn--green" href="{{ slide.primary_url|default:'#' }}">{{ slide.primary_label }}</a>
-                  {% endif %}
-                  {% if slide.secondary_label %}
-                    <a class="btn btn--outline" href="{{ slide.secondary_url|default:'#' }}">{{ slide.secondary_label }}</a>
-                  {% endif %}
-                </div>
-              {% endif %}
-            </div>
+
+        <figure class="hero__shot">
+          {% comment %}
+            Only the first slide loads with the page. A hidden slide still
+            counts as in the viewport, so loading="lazy" did not stop the
+            others downloading before the page had painted; the script
+            fetches them once the page is idle, one slide ahead of need.
+          {% endcomment %}
+          {% picture slide.image alt=slide.image_alt sizes="(max-width: 900px) 100vw, 52vw" priority=forloop.first deferred=forloop.first|yesno:",True" %}
+        </figure>
+
+        <div class="hero__panel">
+          <div class="hero__text">
+            {% if slide.eyebrow %}<span class="hero__badge">{{ slide.eyebrow }}</span>{% endif %}
+            {% comment %}
+              One h1 per page. The slideshow had three — one per slide —
+              which tells a search engine the page is about three
+              different things. The first carries the heading; the rest
+              are paragraphs that look identical.
+            {% endcomment %}
+            {% if forloop.first %}
+              <h1 class="hero__title">{{ slide.headline }}</h1>
+            {% else %}
+              <p class="hero__title" role="heading" aria-level="2">{{ slide.headline }}</p>
+            {% endif %}
+            {% if slide.subheadline %}<p class="hero__lead">{{ slide.subheadline }}</p>{% endif %}
+            {% if slide.primary_label or slide.secondary_label %}
+              <div class="hero__actions">
+                {% if slide.primary_label %}
+                  <a class="btn btn--green" href="{{ slide.primary_url|default:'#' }}">{{ slide.primary_label }}</a>
+                {% endif %}
+                {% if slide.secondary_label %}
+                  <a class="btn btn--outline" href="{{ slide.secondary_url|default:'#' }}">{{ slide.secondary_label }}</a>
+                {% endif %}
+              </div>
+            {% endif %}
           </div>
         </div>
       </article>
@@ -57,26 +64,27 @@ controls only appear when there is something to move between.
 
   {% if slides|length > 1 %}
     <div class="hero__controls">
-      <div class="wrap">
-        <div class="hero__controls-inner">
-          <button class="hero__arrow" type="button" data-prev aria-label="Previous slide">
-            {% include "partials/icon.html" with name="chevron" %}
-          </button>
-          <ol class="hero__dots" role="tablist" aria-label="Choose slide">
-            {% for slide in slides %}
-              <li>
-                <button type="button" role="tab" data-dot="{{ forloop.counter0 }}"
-                        aria-label="Slide {{ forloop.counter }}"
-                        {% if forloop.first %}aria-selected="true"{% else %}aria-selected="false"{% endif %}>
-                  <span class="hero__dot-fill"></span>
-                </button>
-              </li>
-            {% endfor %}
-          </ol>
-          <button class="hero__arrow" type="button" data-next aria-label="Next slide">
-            {% include "partials/icon.html" with name="chevron" %}
-          </button>
-        </div>
+      <div class="hero__controls-inner">
+        <button class="hero__arrow" type="button" data-prev aria-label="Previous slide">
+          {% include "partials/icon.html" with name="chevron" %}
+        </button>
+        <ol class="hero__dots" role="tablist" aria-label="Choose slide">
+          {% for slide in slides %}
+            <li>
+              <button type="button" role="tab" data-dot="{{ forloop.counter0 }}"
+                      aria-label="Slide {{ forloop.counter }}"
+                      {% if forloop.first %}aria-selected="true"{% else %}aria-selected="false"{% endif %}>
+                <span class="hero__dot-fill"></span>
+              </button>
+            </li>
+          {% endfor %}
+        </ol>
+        <button class="hero__arrow" type="button" data-next aria-label="Next slide">
+          {% include "partials/icon.html" with name="chevron" %}
+        </button>
+        <span class="hero__count" aria-hidden="true">
+          <b data-slide-now>1</b> / {{ slides|length }}
+        </span>
       </div>
     </div>
   {% endif %}

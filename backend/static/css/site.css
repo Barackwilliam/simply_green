@@ -379,77 +379,97 @@ picture { display: contents; }
 .sidenav__foot { padding: 18px 20px; border-top: 1px solid var(--line); flex: none; }
 .sidenav__foot .btn { width: 100%; }
 
-/* --- Hero slideshow ----------------------------------------------------
-   Slides crossfade rather than slide sideways: a hard horizontal move of a
-   full-bleed photograph reads as a jolt, a dissolve reads as a change of
-   subject. The active frame drifts slowly inwards, which keeps a still
-   photograph feeling alive without asking anything of the reader.
+/* --- Hero: photograph and panel ----------------------------------------
+   The banner used to be words over a full-bleed photograph. Two problems
+   with that here: the organisation's pictures are taken on a phone held
+   upright, so a wide frame threw away two thirds of each one, and white
+   text over whatever happened to be behind it needed a scrim heavy enough
+   to turn the photograph to mud.
 
-   Everything here is decoration. With motion reduced or JavaScript off the
-   first slide simply stays put, fully legible. */
+   So: the photograph is shown whole, and the words sit on solid colour.
+   Stacked on a phone. Side by side from 900px, where half of a wide
+   screen at 4:3 is a hero-sized picture in its own right.
 
-.hero { position: relative; background: var(--green-deep); overflow: hidden; }
-.hero__track { position: relative; height: clamp(580px, 74vh, 760px); }
+   Slides crossfade rather than move sideways: a dissolve reads as a change
+   of subject, a hard horizontal shove reads as a jolt. Everything here is
+   decoration — with motion reduced or JavaScript off the first slide
+   simply stays put, fully legible. */
 
-/* Slower than it was, and moving less. A hero that zooms 10% in nine
-   seconds and changes every six and a half is doing something at every
-   moment a visitor is trying to read it. The crossfade is longer, the
-   drift is a third of what it was and spread over the whole slide, and
-   the interval is eight seconds — long enough to finish the sentence. */
+.hero {
+  position: relative;
+  background: var(--green-deep);
+  overflow: hidden;
+}
+.hero__track { position: relative; display: grid; }
+
+/* Slides stack on top of each other in one grid cell, so the hero is as
+   tall as the tallest and never jumps as it changes. */
 .hero__slide {
-  position: absolute; inset: 0;
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: 1fr;
   opacity: 0; visibility: hidden;
   transition: opacity 1.5s var(--ease-soft), visibility 1.5s;
 }
 .hero__slide.is-active { opacity: 1; visibility: visible; }
-.hero__slide img {
+
+.hero__shot {
+  position: relative; margin: 0; overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: #22300f;
+}
+/* Between a phone and the side-by-side breakpoint the stacked layout ran
+   to 1035px — a 4:3 photograph plus a full panel is more than a tablet
+   screen. A wider frame there keeps the whole banner in view. */
+@media (min-width: 620px) and (max-width: 899px) {
+  .hero__shot { aspect-ratio: 16 / 9; }
+}
+.hero__shot img {
   width: 100%; height: 100%; object-fit: cover;
-  object-position: center 38%;
   transform: scale(1.02);
 }
-.hero__slide.is-active img { animation: kenburns 11s linear both; }
+.hero__slide.is-active .hero__shot img {
+  animation: kenburns 11s linear both;
+}
 @keyframes kenburns { from { transform: scale(1.035); } to { transform: scale(1); } }
 
-.hero__scrim {
-  position: absolute; inset: 0;
+.hero__panel {
+  position: relative; isolation: isolate;
+  display: flex; align-items: center;
+  /* The bottom padding clears the controls, which are positioned over
+     this panel. Without it the buttons and the arrows sat on top of each
+     other on a narrow screen. */
+  padding: 30px 22px 86px;
+  color: #fff;
   background:
-    linear-gradient(90deg, rgba(10,17,11,.94) 0%, rgba(10,17,11,.82) 36%,
-                    rgba(10,17,11,.44) 62%, rgba(10,17,11,.1) 86%, transparent 100%),
-    linear-gradient(180deg, rgba(10,17,11,.46) 0%, transparent 28%, rgba(10,17,11,.55) 100%);
+    radial-gradient(90% 120% at 0% 0%, #445d20 0%, rgba(68,93,32,0) 62%),
+    linear-gradient(160deg, var(--green-deep) 0%, #223009 100%);
 }
+.hero__text { max-width: 46ch; }
 
-.hero__inner {
-  position: absolute; inset: 0; display: flex; align-items: center;
-  padding-top: 30px; padding-bottom: 150px;
-}
-/* Wide enough that the headline sets in three lines rather than four.
-   At the larger display size 700px pushed every headline onto an extra
-   line, which cost the hero its breathing room. */
-.hero__text { max-width: 780px; color: #fff; }
 .hero__title {
-  font-size: clamp(2.3rem, 5vw, 4.1rem);
-  font-weight: 900; line-height: 1.03; letter-spacing: -.04em;
-  margin: 0 0 .44em; text-wrap: balance;
-  color: #fff; text-shadow: 0 2px 30px rgba(0,0,0,.4);
+  font-size: clamp(1.75rem, 6.4vw, 2.3rem);
+  font-weight: 900; line-height: 1.04; letter-spacing: -.035em;
+  margin: 0 0 .5em; text-wrap: balance; color: #fff;
 }
-.hero__text p {
-  color: #e8efe1; font-size: clamp(1.04rem, 1.5vw, 1.2rem);
-  font-weight: 350; line-height: 1.6; max-width: 52ch;
-  text-shadow: 0 1px 16px rgba(0,0,0,.35);
+.hero__lead {
+  font-size: clamp(1rem, 3.6vw, 1.08rem);
+  font-weight: 350; line-height: 1.55;
+  color: #cfdcc2; margin: 0;
 }
 
 /* Each slide's words arrive in sequence as it becomes active. */
 .hero__slide.is-active .hero__badge { animation: rise .8s var(--ease) .1s both; }
 .hero__slide.is-active .hero__title { animation: rise .95s var(--ease) .2s both; }
-.hero__slide.is-active .hero__text p { animation: rise .95s var(--ease) .34s both; }
+.hero__slide.is-active .hero__lead { animation: rise .95s var(--ease) .34s both; }
 .hero__slide.is-active .hero__actions { animation: rise .95s var(--ease) .46s both; }
 
 .hero__badge {
   display: inline-flex; align-items: center; gap: 9px;
-  padding: 8px 18px; margin-bottom: 20px;
-  border: 1px solid rgba(255,255,255,.3); border-radius: 999px;
-  background: rgba(255,255,255,.1); backdrop-filter: blur(6px);
-  font-size: .74rem; font-weight: 800; letter-spacing: .14em;
+  padding: 7px 16px; margin-bottom: 18px;
+  border: 1px solid rgba(255,255,255,.26); border-radius: 999px;
+  background: rgba(255,255,255,.07);
+  font-size: .7rem; font-weight: 800; letter-spacing: .15em;
   text-transform: uppercase; color: var(--green);
 }
 .hero__badge::before {
@@ -458,34 +478,67 @@ picture { display: contents; }
   animation: pulse 2.4s ease-out infinite;
 }
 @keyframes pulse { to { box-shadow: 0 0 0 10px rgba(153,190,61,0); } }
-.hero__actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 30px; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+/* Both calls to action fit on one line on a 360px phone. Stacked, they
+   added 60px to a panel that is already the tallest thing on the page. */
+@media (max-width: 560px) {
+  .hero__actions .btn { padding: 12px 18px; font-size: .88rem; }
+}
 
-/* --- Slideshow controls ------------------------------------------------ */
+@media (min-width: 900px) {
+  .hero__slide { grid-template-columns: 52fr 48fr; align-items: stretch; }
+  /* The figure takes its height from the grid row — the taller of this
+     minimum and whatever the words need — and the photograph fills it.
+     Left in normal flow with height:100% of an auto-height parent, the
+     image fell back to its intrinsic height instead: a 1350x1800 upright
+     photograph in a 749px column is 998px tall, and it was dragging the
+     whole banner down with it. */
+  .hero__shot { aspect-ratio: auto; min-height: clamp(440px, 48vw, 560px); }
+  .hero__shot img { position: absolute; inset: 0; }
+  .hero__panel { padding: 46px clamp(34px, 3.6vw, 60px) 132px; }
+  /* Every slide shares one grid cell, so the hero is as tall as the
+     wordiest of them and never jumps as it changes. That makes the type
+     size a height decision: at 3.1rem the longest headline ran to four
+     lines and pushed the banner to 998px, most of a laptop screen. */
+  .hero__title { font-size: clamp(1.95rem, 2.45vw, 2.6rem); max-width: 15ch; }
+  .hero__lead { font-size: 1.04rem; max-width: 36ch; }
+  .hero__text { max-width: none; }
+}
 
-.hero__controls { position: absolute; left: 0; right: 0; bottom: 92px; z-index: 4; }
-.hero__controls-inner { display: flex; align-items: center; gap: 18px; }
+/* --- Slideshow controls ------------------------------------------------
+   Inside the panel now rather than floating over the photograph: they
+   belong with the words they change, and over a picture they always sat
+   on whatever part of it happened to be underneath. */
+
+.hero__controls {
+  position: absolute; z-index: 4;
+  left: 22px; right: 22px; bottom: 20px;
+}
+.hero__controls-inner {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
 
 .hero__arrow {
-  width: 46px; height: 46px; flex: none; border: 0; cursor: pointer;
-  border-radius: 50%; background: rgba(255,255,255,.14);
-  backdrop-filter: blur(8px); color: #fff;
-  display: grid; place-items: center;
+  width: 42px; height: 42px; flex: none; border: 0; cursor: pointer;
+  border-radius: 50%; background: rgba(255,255,255,.12);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+  color: #fff; display: grid; place-items: center;
   transition: background .25s, transform .25s var(--ease);
 }
-.hero__arrow:hover { background: rgba(255,255,255,.26); transform: scale(1.08); }
-.hero__arrow svg { width: 20px; height: 20px; fill: currentColor; }
+.hero__arrow:hover { background: rgba(255,255,255,.24); transform: scale(1.08); }
+.hero__arrow svg { width: 18px; height: 18px; fill: currentColor; }
 .hero__arrow[data-prev] svg { transform: rotate(90deg); }
 .hero__arrow[data-next] svg { transform: rotate(-90deg); }
 
-.hero__dots { display: flex; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.hero__dots { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .hero__dots button {
   position: relative; overflow: hidden;
-  width: 46px; height: 5px; padding: 0; border: 0; cursor: pointer;
-  border-radius: 999px; background: rgba(255,255,255,.3);
+  width: 30px; height: 4px; padding: 0; border: 0; cursor: pointer;
+  border-radius: 999px; background: rgba(255,255,255,.26);
   transition: width .35s var(--ease), background .25s;
 }
-.hero__dots button:hover { background: rgba(255,255,255,.5); }
-.hero__dots button[aria-selected="true"] { width: 78px; background: rgba(255,255,255,.3); }
+.hero__dots button:hover { background: rgba(255,255,255,.45); }
+.hero__dots button[aria-selected="true"] { width: 60px; background: rgba(255,255,255,.26); }
 .hero__dot-fill {
   position: absolute; inset: 0; width: 0;
   background: var(--green); border-radius: 999px;
@@ -493,36 +546,43 @@ picture { display: contents; }
 /* The fill doubles as the autoplay timer, so the reader can see when the
    next slide is due instead of being surprised by it. */
 .hero__dots button[aria-selected="true"] .hero__dot-fill {
-  animation: dotfill var(--hero-delay, 6500ms) linear both;
+  animation: dotfill var(--hero-delay, 8000ms) linear both;
 }
 .is-paused .hero__dots button[aria-selected="true"] .hero__dot-fill { animation-play-state: paused; }
 @keyframes dotfill { from { width: 0; } to { width: 100%; } }
 
-@media (max-width: 820px) {
-  .hero__track { height: auto; min-height: 520px; }
-  .hero__slide { position: relative; display: none; }
-  .hero__slide.is-active { display: block; }
-  .hero__slide img { position: absolute; inset: 0; }
-  .hero__inner { position: relative; padding: 44px 0 128px; }
-  .hero__scrim {
-    background: linear-gradient(180deg, rgba(12,20,14,.55) 0%, rgba(12,20,14,.86) 56%, rgba(12,20,14,.94) 100%);
-  }
-  .hero__text { max-width: none; }
-  .hero__title { font-size: clamp(2rem, 8.4vw, 2.6rem); }
-  .hero__controls { bottom: 74px; }
-  .hero__controls-inner { gap: 12px; }
-  .hero__dots button { width: 34px; }
-  .hero__dots button[aria-selected="true"] { width: 56px; }
+.hero__count {
+  margin-left: auto;
+  font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+  color: rgba(255,255,255,.45); font-variant-numeric: tabular-nums;
+}
+.hero__count b { color: #fff; font-weight: 800; }
+
+@media (min-width: 900px) {
+  /* Above the pillar cards, which ride up over the foot of the banner
+     and were covering the arrows. */
+  .hero__controls { left: auto; right: clamp(34px, 3.6vw, 60px); bottom: 74px; width: auto; }
+}
+@media (max-width: 420px) {
+  .hero__controls { left: 18px; right: 18px; bottom: 16px; }
+  .hero__arrow { width: 38px; height: 38px; }
+  .hero__count { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__slide.is-active img { animation: none; transform: none; }
+  .hero__slide.is-active .hero__shot img { animation: none; transform: none; }
   .hero__dots button[aria-selected="true"] .hero__dot-fill { animation: none; width: 100%; }
 }
 
 /* --- Pillar cards ------------------------------------------------------ */
 
 .pillars { position: relative; z-index: 5; margin-top: -54px; }
+@media (max-width: 899px) {
+  /* Stacked, the cards would sit on top of the slideshow controls at the
+     foot of the panel. Nothing to ride over here anyway — the panel is
+     already solid colour. */
+  .pillars { margin-top: 0; padding-top: 34px; }
+}
 .pillars__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
 .pillar {
   position: relative; overflow: hidden;
@@ -550,7 +610,10 @@ picture { display: contents; }
 .pillar .btn { align-self: flex-start; margin-top: 12px; }
 
 @media (max-width: 900px) {
-  .pillars { margin-top: -34px; }
+  /* No negative margin on a narrow screen: the cards would ride up onto
+     the slideshow controls at the foot of the panel, and there is nothing
+     to ride over anyway — the panel above is already solid colour. */
+  .pillars { margin-top: 0; padding-top: 30px; }
   .pillars__grid { grid-template-columns: 1fr; }
 }
 

@@ -90,6 +90,7 @@
     if (slides.length < 2) return;
 
     var dots = root.querySelectorAll("[data-dot]");
+    var counter = root.querySelector("[data-slide-now]");
     var prev = root.querySelector("[data-prev]");
     var next = root.querySelector("[data-next]");
     // Eight seconds, not six and a half. The headline, the sentence under
@@ -139,6 +140,7 @@
         slide.classList.toggle("is-active", on);
         slide.setAttribute("aria-hidden", String(!on));
       });
+      if (counter) counter.textContent = String(index + 1);
       dots.forEach(function (dot, i) {
         dot.setAttribute("aria-selected", String(i === index));
         // Restart the timer bar rather than letting it continue from
