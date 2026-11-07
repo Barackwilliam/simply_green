@@ -4,7 +4,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:get_involved' %}">Get Involved</a> / Donate</p>
+    {% include "partials/crumbs.html" %}
     <h1>Support our work</h1>
     <p>A donation puts tools, training and trees into the hands of the communities doing the work.</p>
   </div>
@@ -22,7 +22,7 @@
         {% endif %}
 
         {% if banks %}
-          <h3 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Bank transfer</h3>
+          <h2 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Bank transfer</h2>
           {% for m in banks %}
             <div class="tile" style="margin-top:14px">
               <strong style="display:block;font-size:1.05rem;margin-bottom:12px">{{ m.label }}</strong>
@@ -40,7 +40,7 @@
         {% endif %}
 
         {% if mobile %}
-          <h3 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Mobile money</h3>
+          <h2 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Mobile money</h2>
           <div class="grid grid-2" style="margin-top:14px">
             {% for m in mobile %}
               <div class="tile">

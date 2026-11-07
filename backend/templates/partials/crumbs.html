@@ -1,0 +1,26 @@
+{% comment %}
+  The visible trail and the BreadcrumbList a search engine reads, written
+  from the same list so they cannot drift apart. Pass `final` when the last
+  crumb's name is not in the url — an article title rather than its slug.
+
+      {% include "partials/crumbs.html" with final=post.title %}
+{% endcomment %}
+{% load site_extras %}
+{% crumb_trail request.path final as items %}
+{% if items %}
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      {% for c in items %}
+        <li>
+          {% if c.linked %}<a href="{{ c.url }}">{{ c.name }}</a>
+          {% else %}<span aria-current="page">{{ c.name }}</span>{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+  {% for c in items %}{"@type":"ListItem","position":{{ forloop.counter }},"name":"{{ c.name|escapejs }}","item":"{{ site_base_url }}{{ c.url }}"}{% if not forloop.last %},{% endif %}{% endfor %}
+  ]}
+  </script>
+{% endif %}

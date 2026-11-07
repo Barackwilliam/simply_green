@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load media %}
 {% block title %}{{ album.title }} — {{ site.organisation_name }}{% endblock %}
-{% block description %}{{ album.description|default:album.title|truncatechars:158 }}{% endblock %}
+{% block description %}{% if album.description %}{{ album.description|truncatechars:120 }} {% endif %}Photographs from {{ album.title }}{% if album.location %} in {{ album.location }}{% endif %}{% if album.date %}, {{ album.date|date:"F Y" }}{% endif %} — {{ site.organisation_name }}.{% endblock %}
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:gallery' %}">&larr; All albums</a></p>
+    {% include "partials/crumbs.html" with final=album.title %}
     <h1>{{ album.title }}</h1>
     {% if album.description %}<p>{{ album.description }}</p>{% endif %}
     <p style="font-size:.9rem;margin-top:8px">
@@ -18,8 +18,7 @@
       <div class="grid grid-3">
         {% for p in album.photos.all %}
           <figure style="margin:0">
-            <img src="{{ p.image.url }}" alt="{{ p.alt_text|default:album.title }}" loading="lazy"
-                 style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius)">
+            {% picture p.image alt=p.alt_text|default:album.title sizes="card" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r)" %}
             {% if p.caption %}<figcaption style="font-size:.85rem;color:var(--muted);margin-top:8px">{{ p.caption }}{% if p.credit %} <span style="opacity:.7">— {{ p.credit }}</span>{% endif %}</figcaption>{% endif %}
           </figure>
         {% endfor %}

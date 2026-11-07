@@ -4,7 +4,7 @@
     {% if post.featured_image %}
       {% picture post.featured_image alt=post.featured_image_alt|default:post.title sizes=card_sizes|default:"card" %}
     {% else %}
-      <img src="{% static 'img/planning.webp' %}" alt="" loading="lazy" decoding="async">
+      <img src="{% static 'img/planning.webp' %}" alt="" width="900" height="675" loading="lazy" decoding="async">
     {% endif %}
     <div class="card__over">
       <span class="tag tag--blue">{{ post.get_kind_display }}</span>
@@ -13,7 +13,7 @@
     <span class="card__badge" aria-hidden="true">{% include "partials/icon.html" with name="arrow" %}</span>
   </div>
   <div class="card__body">
-    <h3>{{ post.title }}</h3>
+    <{{ hl|default:"h3" }}>{{ post.title }}</{{ hl|default:"h3" }}>
     <p>{{ post.excerpt|default:post.body|striptags|truncatewords:22 }}</p>
     <div class="card__meta">
       <span>{% include "partials/icon.html" with name="calendar" %}{{ post.published_at|date:"j F Y" }}{% if post.reading_minutes %} · {{ post.reading_minutes }} min read{% endif %}</span>

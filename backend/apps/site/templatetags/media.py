@@ -141,3 +141,26 @@ def focal_style(image):
     if not row:
         return ""
     return mark_safe(f"object-position:{row.focal_x}% {row.focal_y}%")
+
+
+@register.simple_tag(takes_context=True)
+def share_url(context, image=None):
+    """An absolute url for a share card.
+
+    The detail templates were building this as `{{ site_base_url }}{{
+    image.url }}`, which is right on this machine and wrong in production:
+    with Supabase storage `image.url` is already absolute, so the result
+    was the site's own domain glued to the front of a supabase.co url.
+    Falls back to the site-wide card when a page has no picture of its own.
+    """
+    request = context.get("request")
+    if image:
+        try:
+            url = image.url
+        except Exception:
+            url = ""
+        if url.startswith(("http://", "https://")):
+            return url
+        if url and request is not None:
+            return request.build_absolute_uri(url)
+    return context.get("share_image", "")

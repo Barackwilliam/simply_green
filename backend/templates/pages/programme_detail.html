@@ -1,9 +1,11 @@
-{% extends "base.html" %}{% load static %}
+{% extends "base.html" %}{% load static %}{% load media %}
 {% block title %}{{ programme.meta_title|default:programme.title }} — {{ site.organisation_name }}{% endblock %}
 {% block description %}{{ programme.meta_description|default:programme.summary|truncatechars:158 }}{% endblock %}
 {% block og_title %}{{ programme.title }}{% endblock %}
 {% block og_type %}article{% endblock %}
-{% block og_image %}{% if programme.featured_image %}<meta property="og:image" content="{{ site_base_url }}{{ programme.featured_image.url }}">{% endif %}{% endblock %}
+{% block og_image %}<meta property="og:image" content="{% share_url programme.featured_image %}">
+<meta property="og:image:alt" content="{{ programme.title }}">{% endblock %}
+{% block twitter_image %}{% share_url programme.featured_image %}{% endblock %}
 {% block robots %}{% if programme.noindex %}<meta name="robots" content="noindex,follow">{% endif %}{% endblock %}
 
 {% block extra_head %}
@@ -20,7 +22,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / <a href="{% url 'site:programmes' %}">Programmes</a> / {{ programme.title }}</p>
+    {% include "partials/crumbs.html" with final=programme.title %}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
       <span class="tag tag--green">{{ programme.get_status_display }}</span>
       {% for a in programme.focus_areas.all %}<span class="tag tag--grey">{{ a.title }}</span>{% endfor %}
@@ -32,8 +34,7 @@
 
 {% if programme.featured_image %}
 <div class="wrap" style="margin-top:-28px;position:relative;z-index:2">
-  <img src="{{ programme.featured_image.url }}" alt="{{ programme.title }}"
-       style="border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-height:460px;object-fit:cover">
+  {% picture programme.featured_image alt=programme.title sizes="(max-width: 1220px) 100vw, 1180px" priority=True style="border-radius:var(--r);box-shadow:var(--sh-3);width:100%;max-height:460px;object-fit:cover" %}
 </div>
 {% endif %}
 
@@ -49,7 +50,7 @@
           <div class="grid grid-3">
             {% for img in programme.images.all %}
               <figure style="margin:0">
-                <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:programme.title }}" loading="lazy" style="border-radius:var(--radius);aspect-ratio:4/3;object-fit:cover;width:100%">
+                {% picture img.image alt=img.alt_text|default:programme.title sizes="card" style="border-radius:var(--r);aspect-ratio:4/3;object-fit:cover;width:100%" %}
                 {% if img.caption %}<figcaption style="font-size:.84rem;color:var(--muted);margin-top:8px">{{ img.caption }}</figcaption>{% endif %}
               </figure>
             {% endfor %}
@@ -59,7 +60,7 @@
 
       <aside>
         <div class="tile" style="margin-bottom:18px">
-          <h3 style="font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Details</h3>
+          <h2 style="font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Details</h2>
           <dl style="margin:0;font-size:.92rem">
             {% if programme.location %}<dt style="color:var(--muted);margin-top:12px">Where</dt><dd style="margin:2px 0 0;font-weight:600">{{ programme.location }}</dd>{% endif %}
             {% if programme.beneficiaries %}<dt style="color:var(--muted);margin-top:12px">Who it reaches</dt><dd style="margin:2px 0 0;font-weight:600">{{ programme.beneficiaries }}</dd>{% endif %}
@@ -70,7 +71,7 @@
 
         {% if programme.outcomes.all %}
           <div class="tile" style="background:#e9f3d6;border-color:#c6dfa0;margin-bottom:18px">
-            <h3 style="font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green-deep)">Results so far</h3>
+            <h2 style="font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green-deep)">Results so far</h2>
             {% for o in programme.outcomes.all %}
               <div style="margin-top:14px">
                 <div style="font-size:1.9rem;font-weight:800;color:var(--green-ink);line-height:1">{{ o.value }}</div>
@@ -81,7 +82,7 @@
         {% endif %}
 
         <div class="tile" style="background:var(--green-deep);border:0">
-          <h3 style="color:#fff">Support this work</h3>
+          <h2 style="color:#fff">Support this work</h2>
           <p style="color:#cdd9c6;font-size:.92rem">Funding and volunteers keep this programme in the field.</p>
           <a class="btn btn--green btn--sm" href="{% url 'site:donate' %}" style="margin-top:8px">Donate</a>
           <a class="btn btn--outline btn--sm" href="{% url 'site:partner' %}" style="margin-top:8px">Partner with us</a>

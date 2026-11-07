@@ -77,3 +77,7 @@ SITEMAPS = {
     "events": EventSitemap,
     "albums": AlbumSitemap,
 }
+
+# Publications are deliberately absent: they have no page of their own,
+# only a download endpoint, and listing a file redirect as a url gives a
+# crawler nothing to index.

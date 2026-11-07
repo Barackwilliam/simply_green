@@ -26,7 +26,17 @@ controls only appear when there is something to move between.
           <div class="wrap">
             <div class="hero__text">
               {% if slide.eyebrow %}<span class="hero__badge">{{ slide.eyebrow }}</span>{% endif %}
-              <h1>{{ slide.headline }}</h1>
+              {% comment %}
+                One h1 per page. The slideshow had three — one per slide —
+                which tells a search engine the page is about three
+                different things. The first slide carries the heading; the
+                rest are paragraphs that look identical.
+              {% endcomment %}
+              {% if forloop.first %}
+                <h1 class="hero__title">{{ slide.headline }}</h1>
+              {% else %}
+                <p class="hero__title" role="heading" aria-level="2">{{ slide.headline }}</p>
+              {% endif %}
               {% if slide.subheadline %}<p>{{ slide.subheadline }}</p>{% endif %}
               {% if slide.primary_label or slide.secondary_label %}
                 <div class="hero__actions">

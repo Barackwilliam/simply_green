@@ -4,7 +4,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:gallery' %}">Gallery</a> / Videos</p>
+    {% include "partials/crumbs.html" %}
     <h1>Videos</h1>
     <p>Film from the field.</p>
   </div>
@@ -25,7 +25,7 @@
               {% if v.duration_label %}<span class="tag tag--onimg" style="position:absolute;right:12px;bottom:12px">{{ v.duration_label }}</span>{% endif %}
             </a>
             <div class="card__body">
-              <h3>{{ v.title }}</h3>
+              <h2>{{ v.title }}</h2>
               {% if v.description %}<p>{{ v.description|truncatewords:20 }}</p>{% endif %}
               <div class="card__meta"><span>{{ v.get_source_display }}{% if v.date %} · {{ v.date|date:"j F Y" }}{% endif %}</span></div>
             </div>

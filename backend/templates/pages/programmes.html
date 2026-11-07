@@ -5,7 +5,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Programmes</p>
+    {% include "partials/crumbs.html" %}
     <h1>Programmes</h1>
     <p>What we are running now, and what we have delivered.</p>
   </div>
@@ -29,7 +29,7 @@
 
     {% if programmes %}
       <div class="grid grid-3">
-        {% for p in programmes %}{% include "partials/programme_card.html" with programme=p %}{% endfor %}
+        {% for p in programmes %}{% include "partials/programme_card.html" with programme=p hl="h2" %}{% endfor %}
       </div>
     {% else %}
       <div class="empty"><strong>No programmes match</strong>Try a different filter, or view all programmes.</div>

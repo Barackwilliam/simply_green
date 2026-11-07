@@ -5,7 +5,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / <a href="{% url 'site:about' %}">About Us</a> / Our Team</p>
+    {% include "partials/crumbs.html" %}
     <h1>Our team</h1>
     <p>The people who turn plans into work on the ground.</p>
   </div>

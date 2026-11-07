@@ -3,7 +3,7 @@
   <div class="card__media">
     {% if event.featured_image %}
       {% picture event.featured_image alt=event.title sizes=card_sizes|default:"card" %}
-    {% else %}<img src="{% static 'img/band.webp' %}" alt="" loading="lazy" decoding="async">{% endif %}
+    {% else %}<img src="{% static 'img/band.webp' %}" alt="" width="1600" height="800" loading="lazy" decoding="async">{% endif %}
     <div class="card__over">
       <span class="tag tag--{% if event.status == 'upcoming' %}green{% else %}grey{% endif %}">{{ event.get_status_display }}</span>
       {% if event.is_online %}<span class="tag tag--onimg">Online</span>{% endif %}
@@ -11,7 +11,7 @@
     <span class="card__badge" aria-hidden="true">{% include "partials/icon.html" with name="arrow" %}</span>
   </div>
   <div class="card__body">
-    <h3>{{ event.title }}</h3>
+    <{{ hl|default:"h3" }}>{{ event.title }}</{{ hl|default:"h3" }}>
     {% if event.summary %}<p>{{ event.summary|truncatewords:20 }}</p>{% endif %}
     <div class="card__meta">
       <span>{% include "partials/icon.html" with name="calendar" %}{{ event.start_datetime|date:"j F Y, H:i" }}</span>

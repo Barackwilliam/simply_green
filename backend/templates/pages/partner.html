@@ -4,7 +4,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:get_involved' %}">Get Involved</a> / Partner</p>
+    {% include "partials/crumbs.html" %}
     <h1>Partner with us</h1>
     <p>We work at the frontline, and we account for every shilling that gets us there.</p>
   </div>
@@ -25,7 +25,7 @@
                 {% include "partials/icon.html" with name=r.icon %}
               </div>
               <div>
-                <h3 style="font-size:.98rem;margin-bottom:5px">{{ r.title }}</h3>
+                <h2 style="font-size:.98rem;margin-bottom:5px">{{ r.title }}</h2>
                 <p style="font-size:.9rem;margin:0">{{ r.description|truncatewords:28 }}</p>
               </div>
             </div>

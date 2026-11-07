@@ -5,7 +5,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Focus Areas</p>
+    {% include "partials/crumbs.html" %}
     <h1>Focus areas</h1>
     <p>Our work spans conservation, climate and livelihoods — because environmental problems in Tanzania do not arrive one at a time.</p>
   </div>
@@ -19,7 +19,7 @@
           <a class="card" href="{{ a.get_absolute_url }}">
             <div class="card__body">
               <div class="tile__icon">{% include "partials/icon.html" with name=a.icon %}</div>
-              <h3>{{ a.title }}</h3>
+              <h2>{{ a.title }}</h2>
               <p>{{ a.summary }}</p>
             </div>
           </a>

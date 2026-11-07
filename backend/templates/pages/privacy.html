@@ -3,7 +3,7 @@
 {% block description %}How {{ site.organisation_name }} collects, uses and protects the information you share through this website.{% endblock %}
 {% block content %}
 <section class="pagehead">
-  <div class="wrap"><p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Privacy</p><h1>Privacy policy</h1></div>
+  <div class="wrap">{% include "partials/crumbs.html" %}<h1>Privacy policy</h1></div>
 </section>
 <section class="section">
   <div class="wrap" style="max-width:780px">

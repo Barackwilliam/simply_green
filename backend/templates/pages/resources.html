@@ -5,7 +5,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Resource Centre</p>
+    {% include "partials/crumbs.html" %}
     <h1>Publications and reports</h1>
     <p>Our reporting, research and the documents that hold us to account.</p>
   </div>
@@ -30,7 +30,7 @@
                 {% if p.year %}<strong style="color:var(--muted);font-size:.9rem">{{ p.year }}</strong>{% endif %}
               </div>
               <div class="tile__icon">{% include "partials/icon.html" with name="file" %}</div>
-              <h3>{{ p.title }}</h3>
+              <h2>{{ p.title }}</h2>
               {% if p.summary %}<p>{{ p.summary|truncatewords:22 }}</p>{% endif %}
               <div class="card__meta" style="flex-direction:row;justify-content:space-between;align-items:center">
                 <span>{{ p.file_size_label }}{% if p.file_size_label and p.page_count %} · {% endif %}{% if p.page_count %}{{ p.page_count }} pages{% endif %}</span>

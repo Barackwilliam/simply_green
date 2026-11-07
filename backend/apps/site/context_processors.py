@@ -47,6 +47,28 @@ def _showing_sample_content():
     return flag
 
 
+def _share_image(request, settings_obj):
+    """The picture that shows when a page is shared, as an absolute url.
+
+    Facebook, WhatsApp, LinkedIn and X all refuse a relative one, and the
+    organisation had not set a default, so every share was a bare link.
+    Falls back to the site logo, then to a bundled image, so there is
+    always something.
+    """
+    from django.templatetags.static import static
+
+    candidate = ""
+    if getattr(settings_obj, "default_og_image", None):
+        candidate = settings_obj.default_og_image.url
+    else:
+        # Not the logo: a share card is 1200x630, and a 577x187 logo in
+        # that slot is a letterboxed smear in every WhatsApp preview.
+        candidate = static("img/share-card.jpg")
+    if candidate.startswith(("http://", "https://")):
+        return candidate
+    return request.build_absolute_uri(candidate)
+
+
 def site_context(request):
     settings_obj = SiteSettings.load()
     return {
@@ -58,4 +80,5 @@ def site_context(request):
         "site_base_url": f"{request.scheme}://{request.get_host()}",
         "showing_sample_content": _showing_sample_content(),
         "media_origin": MEDIA_ORIGIN,
+        "share_image": _share_image(request, settings_obj),
     }

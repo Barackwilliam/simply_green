@@ -18,7 +18,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:events' %}">&larr; All events</a></p>
+    {% include "partials/crumbs.html" with final=event.title %}
     <span class="tag tag--green">{{ event.get_status_display }}</span>
     <h1 style="margin-top:14px">{{ event.title }}</h1>
     <p>
@@ -36,7 +36,7 @@
         {% if event.body %}<div class="prose">{{ event.body|safe }}</div>{% endif %}
         {% if event.address %}
           <div class="tile" style="margin-top:28px">
-            <h3 style="font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Address</h3>
+            <h2 style="font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Address</h2>
             <p style="margin:0">{{ event.address|linebreaksbr }}</p>
           </div>
         {% endif %}
@@ -50,7 +50,7 @@
       <aside>
         {% if event.registration_enabled and event.registration_open %}
           <div class="tile">
-            <h3>Register to attend</h3>
+            <h2>Register to attend</h2>
             <p style="font-size:.92rem">Reserve your place. We will email you the details.</p>
             <form method="post" novalidate style="margin-top:16px">
               {% csrf_token %}
@@ -60,13 +60,13 @@
           </div>
         {% elif event.registration_enabled %}
           <div class="tile">
-            <h3>Registration is closed</h3>
+            <h2>Registration is closed</h2>
             <p style="margin:0">This event is full, past, or the deadline has passed. Get in touch if you would still like to take part.</p>
           </div>
         {% endif %}
         {% if event.is_online and event.online_url %}
           <div class="tile" style="background:var(--green-deep);border:0;margin-top:18px">
-            <h3 style="color:#fff">Join online</h3>
+            <h2 style="color:#fff">Join online</h2>
             <a class="btn btn--green btn--sm" href="{{ event.online_url }}" target="_blank" rel="noreferrer noopener">Open the link</a>
           </div>
         {% endif %}

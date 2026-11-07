@@ -16,10 +16,20 @@
 <meta property="og:title" content="{% block og_title %}{{ site.organisation_name }}{% endblock %}">
 <meta property="og:description" content="{% block og_description %}{{ site.default_meta_description }}{% endblock %}">
 <meta property="og:url" content="{{ canonical_url }}">
-{% block og_image %}{% if site.default_og_image %}<meta property="og:image" content="{{ site.default_og_image.url }}">{% endif %}{% endblock %}
-<meta name="twitter:card" content="summary_large_image">
+<meta property="og:locale" content="en_GB">
+{% block og_image %}<meta property="og:image" content="{{ share_image }}">
+<meta property="og:image:alt" content="{% block og_image_alt %}{{ site.organisation_name }}{% endblock %}">{% endblock %}
 
-{% load static %}
+{% comment %} X reads og: for most things but not for the image on every
+   card type, and it is the one tag whose absence turns a shared link into
+   plain text. Stated explicitly rather than left to inference. {% endcomment %}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% block twitter_title %}{{ site.organisation_name }}{% endblock %}">
+<meta name="twitter:description" content="{% block twitter_description %}{{ site.default_meta_description }}{% endblock %}">
+<meta name="twitter:image" content="{% block twitter_image %}{{ share_image }}{% endblock %}">
+<meta name="theme-color" content="#33461a">
+
+{% load static %}{% load media %}
 {% comment %} One variable font file, preloaded, with its @font-face inline
    rather than in a stylesheet of its own: a separate file for twenty lines
    of CSS is a whole render-blocking round trip before the first word can
@@ -36,22 +46,59 @@ U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 </style>
 <link rel="stylesheet" href="{% static 'css/site.css' %}">
 
+{% comment %}
+  Who the organisation is, in the form a search engine reads. sameAs is
+  what links this entity to its social accounts, which is how a knowledge
+  panel gets built; without it each account is a separate stranger.
+{% endcomment %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "NGO",
+  "@id": "{{ site_base_url }}/#organisation",
   "name": "{{ site.organisation_name|escapejs }}",
-  "url": "{{ site_base_url }}",
-  {% if site.logo %}"logo": "{{ site_base_url }}{{ site.logo.url }}",{% endif %}
+  {% if site.acronym %}"alternateName": "{{ site.acronym|escapejs }}",{% endif %}
+  "url": "{{ site_base_url }}/",
+  {% if site.logo %}"logo": {
+    "@type": "ImageObject",
+    "url": "{% share_url site.logo %}"
+  },{% endif %}
+  "image": "{{ share_image }}",
   "description": "{{ site.default_meta_description|escapejs }}",
   {% if site.email %}"email": "{{ site.email|escapejs }}",{% endif %}
   {% if site.phone %}"telephone": "{{ site.phone|escapejs }}",{% endif %}
+  {% if site.registration_number %}"identifier": "{{ site.registration_number|escapejs }}",{% endif %}
+  "areaServed": {"@type": "Country", "name": "{{ site.country|default:"Tanzania"|escapejs }}"},
+  "knowsAbout": [
+    "Environmental conservation", "Climate action", "Waste management",
+    "Community empowerment", "Sustainable livelihoods", "Mangrove restoration"
+  ],
+  {% if social_links %}"sameAs": [{% for link in social_links %}"{{ link.url|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],{% endif %}
+  {% if site.email or site.phone %}"contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "general enquiries",
+    {% if site.email %}"email": "{{ site.email|escapejs }}",{% endif %}
+    {% if site.phone %}"telephone": "{{ site.phone|escapejs }}",{% endif %}
+    "areaServed": "TZ",
+    "availableLanguage": ["en", "sw"]
+  },{% endif %}
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "{{ site.address|escapejs }}",
     "addressLocality": "{{ site.city|escapejs }}",
     "addressCountry": "{{ site.country|escapejs }}"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "{{ site_base_url }}/#website",
+  "url": "{{ site_base_url }}/",
+  "name": "{{ site.organisation_name|escapejs }}",
+  "inLanguage": "en",
+  "publisher": {"@id": "{{ site_base_url }}/#organisation"}
 }
 </script>
 {% block extra_head %}{% endblock %}

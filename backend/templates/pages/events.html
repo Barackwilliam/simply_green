@@ -4,7 +4,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Events</p>
+    {% include "partials/crumbs.html" %}
     <h1>Events</h1>
     <p>Clean-ups, trainings and community sessions — come and take part.</p>
   </div>

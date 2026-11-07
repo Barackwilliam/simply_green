@@ -77,6 +77,10 @@ img { max-width: 100%; height: auto; display: block; }
    layout means every rule written for a bare <img> keeps working when the
    markup gains a wrapper. */
 picture { display: contents; }
+/* Component headings are written as :is(h2, h3): which level a card's
+   title takes depends on what is above it in the document, not on how it
+   looks. On a listing page the cards are the top level and take h2; on the
+   home page they sit under a section heading and take h3. */
 /* Note for anyone adding styles below: because <picture> is in the markup,
    a child combinator written as `.thing > img` will not reach the image.
    Use a descendant selector. */
@@ -375,12 +379,17 @@ picture { display: contents; }
   padding-top: 30px; padding-bottom: 150px;
 }
 .hero__text { max-width: 700px; color: #fff; }
-.hero__text h1 { color: #fff; text-shadow: 0 2px 30px rgba(0,0,0,.34); }
+.hero__title {
+  font-size: clamp(2.2rem, 4.6vw, 3.7rem);
+  font-weight: 800; line-height: 1.12; letter-spacing: -.025em;
+  margin: 0 0 .5em; text-wrap: balance;
+  color: #fff; text-shadow: 0 2px 30px rgba(0,0,0,.34);
+}
 .hero__text p { color: #e6eede; font-size: 1.14rem; max-width: 54ch; }
 
 /* Each slide's words arrive in sequence as it becomes active. */
 .hero__slide.is-active .hero__badge { animation: rise .7s var(--ease) both; }
-.hero__slide.is-active h1 { animation: rise .8s var(--ease) .1s both; }
+.hero__slide.is-active .hero__title { animation: rise .8s var(--ease) .1s both; }
 .hero__slide.is-active .hero__text p { animation: rise .8s var(--ease) .2s both; }
 .hero__slide.is-active .hero__actions { animation: rise .8s var(--ease) .3s both; }
 
@@ -448,7 +457,7 @@ picture { display: contents; }
     background: linear-gradient(180deg, rgba(12,20,14,.55) 0%, rgba(12,20,14,.86) 56%, rgba(12,20,14,.94) 100%);
   }
   .hero__text { max-width: none; }
-  .hero__text h1 { font-size: clamp(2rem, 8.4vw, 2.6rem); }
+  .hero__title { font-size: clamp(2rem, 8.4vw, 2.6rem); }
   .hero__controls { bottom: 74px; }
   .hero__controls-inner { gap: 12px; }
   .hero__dots button { width: 34px; }
@@ -485,7 +494,7 @@ picture { display: contents; }
   transition: transform .4s var(--ease);
 }
 .pillar:hover .pillar__icon { transform: translateY(-4px) scale(1.08); }
-.pillar h3 { color: #fff; font-size: 1.24rem; margin-bottom: 10px; }
+.pillar :is(h2, h3) { color: #fff; font-size: 1.24rem; margin-bottom: 10px; }
 .pillar p { color: rgba(255,255,255,.94); font-size: .95rem; flex: 1; }
 .pillar .btn { align-self: flex-start; margin-top: 12px; }
 
@@ -600,19 +609,19 @@ a.card:hover .card__badge, a.card:focus-visible .card__badge {
 }
 
 .card__body { padding: 24px; display: flex; flex-direction: column; flex: 1; }
-.card__body h3 {
+.card__body :is(h2, h3) {
   position: relative; display: inline-block; align-self: flex-start;
   font-size: 1.12rem; margin-bottom: 10px;
   transition: color .25s;
 }
-.card__body h3::after {
+.card__body :is(h2, h3)::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px;
   background: var(--green-ink);
   transform: scaleX(0); transform-origin: left;
   transition: transform .45s var(--ease);
 }
-a.card:hover .card__body h3 { color: var(--green-ink); }
-a.card:hover .card__body h3::after { transform: scaleX(1); }
+a.card:hover .card__body :is(h2, h3) { color: var(--green-ink); }
+a.card:hover .card__body :is(h2, h3)::after { transform: scaleX(1); }
 .card__body p { font-size: .93rem; color: var(--ink-soft); flex: 1; }
 .card__meta {
   margin-top: 18px; padding-top: 15px; border-top: 1px solid var(--line);
@@ -650,7 +659,7 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
 }
 .tile:hover .tile__icon { transform: rotate(-6deg) scale(1.06); }
 .tile__icon svg { width: 25px; height: 25px; fill: var(--green-ink); }
-.tile h3 { font-size: 1.06rem; }
+.tile :is(h2, h3) { font-size: 1.06rem; }
 .tile p { font-size: .93rem; color: var(--ink-soft); margin: 0; }
 
 /* --- Page header ------------------------------------------------------- */
@@ -668,9 +677,25 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
 .pagehead .wrap { position: relative; z-index: 1; }
 .pagehead h1 { color: #fff; margin-bottom: 14px; }
 .pagehead p { color: #c8d7bc; font-size: 1.08rem; max-width: 65ch; margin: 0; }
+/* An ordered list now rather than a sentence, because the trail is also
+   emitted as a BreadcrumbList and the two are built from one source. */
 .crumbs { font-size: .82rem; color: #9db190; margin-bottom: 16px; }
-.crumbs a { color: #c9dcba; text-decoration: none; }
-.crumbs a:hover { color: #fff; }
+.crumbs ol {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0;
+}
+.crumbs li { display: flex; align-items: center; }
+.crumbs li + li::before {
+  content: ""; width: 5px; height: 5px; margin: 0 10px; flex: none;
+  border-top: 1px solid currentColor; border-right: 1px solid currentColor;
+  transform: rotate(45deg); opacity: .55;
+}
+.crumbs a {
+  color: #c9dcba; text-decoration: none;
+  transition: color .2s;
+}
+.crumbs a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.crumbs [aria-current="page"] { color: #e7efe0; }
 
 /* --- Rich text --------------------------------------------------------- */
 
@@ -1015,7 +1040,7 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
 .fcard:hover .fcard__icon { background: rgba(255,255,255,.2); transform: rotate(-8deg) scale(1.08); }
 .fcard:hover .fcard__icon svg { fill: #fff; }
 
-.fcard h3 { font-size: 1.16rem; margin-bottom: 9px; position: relative; }
+.fcard :is(h2, h3) { font-size: 1.16rem; margin-bottom: 9px; position: relative; }
 .fcard p { font-size: .93rem; color: var(--ink-soft); flex: 1; margin: 0; transition: color .4s; }
 .fcard:hover p { color: rgba(255,255,255,.92); }
 
@@ -1029,7 +1054,7 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
 .fcard__go svg { width: 16px; height: 16px; fill: currentColor; }
 
 /* The wide first card can afford a larger title and two columns of text. */
-.fgrid > :first-child .fcard h3 { font-size: 1.5rem; }
+.fgrid > :first-child .fcard :is(h2, h3) { font-size: 1.5rem; }
 .fgrid > :first-child .fcard p { font-size: .98rem; max-width: 52ch; }
 .fgrid > :first-child .fcard__n { font-size: 7rem; }
 
@@ -1114,12 +1139,12 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
 }
 .vcard:hover .vcard__n { opacity: .15; transform: translateY(3px); }
 
-.vcard h3 { font-size: 1.14rem; margin-bottom: 10px; }
+.vcard :is(h2, h3) { font-size: 1.14rem; margin-bottom: 10px; }
 .vcard p { margin: 0; font-size: .95rem; color: var(--ink-soft); }
 
 /* Vision and mission carry one sentence each and get the room to say it. */
 .vcard--wide { padding: 40px 36px 36px; }
-.vcard--wide h3 { font-size: 1.5rem; }
+.vcard--wide :is(h2, h3) { font-size: 1.5rem; }
 .vcard--wide p { font-size: 1.04rem; max-width: 46ch; }
 .vcard--wide .vcard__icon { width: 66px; height: 66px; }
 .vcard--wide .vcard__icon svg { width: 30px; height: 30px; }
@@ -1162,7 +1187,7 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
 .rsn:hover .rsn__icon { background: var(--green); transform: rotate(-8deg); }
 .rsn:hover .rsn__icon svg { fill: var(--green-deep); }
 
-.rsn h3 { font-size: 1.02rem; margin-bottom: 6px; color: #fff; }
+.rsn :is(h2, h3) { font-size: 1.02rem; margin-bottom: 6px; color: #fff; }
 .rsn p { margin: 0; font-size: .9rem; color: #cdd9c6; }
 .rsn__n {
   margin-left: auto; flex: none; align-self: flex-start;

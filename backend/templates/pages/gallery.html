@@ -4,7 +4,7 @@
 {% block content %}
 <section class="pagehead">
   <div class="wrap">
-    <p class="crumbs"><a href="{% url 'site:home' %}">Home</a> / Gallery</p>
+    {% include "partials/crumbs.html" %}
     <h1>Photos</h1>
     <p>The work, as it happens.</p>
     <a class="btn btn--outline btn--sm" href="{% url 'site:videos' %}" style="margin-top:14px">Watch videos instead</a>

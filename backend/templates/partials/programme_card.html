@@ -8,7 +8,7 @@
     {% if programme.featured_image %}
       {% picture programme.featured_image alt=programme.title sizes=card_sizes|default:"card" %}
     {% else %}
-      <img src="{% static 'img/sacks.webp' %}" alt="" loading="lazy" decoding="async">
+      <img src="{% static 'img/sacks.webp' %}" alt="" width="900" height="675" loading="lazy" decoding="async">
     {% endif %}
     <div class="card__over">
       <span class="tag tag--{% if programme.status == 'ongoing' %}green{% else %}grey{% endif %}">{{ programme.get_status_display }}</span>
@@ -17,7 +17,7 @@
     <span class="card__badge" aria-hidden="true">{% include "partials/icon.html" with name="arrow" %}</span>
   </div>
   <div class="card__body">
-    <h3>{{ programme.title }}</h3>
+    <{{ hl|default:"h3" }}>{{ programme.title }}</{{ hl|default:"h3" }}>
     <p>{{ programme.summary|truncatewords:24 }}</p>
     <div class="card__meta">
       {% if programme.location %}<span>{% include "partials/icon.html" with name="pin" %}{{ programme.location }}</span>{% endif %}
