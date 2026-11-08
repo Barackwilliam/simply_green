@@ -827,17 +827,22 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
 
 /* --- curve: the photograph gives way to colour -------------------------- */
 .ph--curve { overflow: hidden; background: var(--green-deep); }
-.ph--curve .ph__shot { position: relative; inset: auto; height: clamp(190px, 30vw, 330px); }
+.ph--curve .ph__shot { position: relative; inset: auto; height: clamp(310px, 72vw, 420px); }
 .ph--curve .ph__veil {
   background: linear-gradient(180deg, rgba(10,17,11,.42), rgba(10,17,11,.1) 46%, rgba(10,17,11,.3));
 }
 .ph--curve .ph__curve {
   position: absolute; left: -6%; right: -6%; bottom: -1px;
-  height: clamp(42px, 7vw, 86px);
+  height: clamp(26px, 6vw, 70px);
   background: var(--green-deep);
   border-radius: 50% 50% 0 0 / 100% 100% 0 0;
 }
-.ph--curve .ph__body { padding: 6px 0 52px; }
+.ph--curve .ph__body { padding: 0 0 30px; }
+.ph--curve .crumbs { margin-bottom: 10px; }
+.ph--curve .ph__eyebrow { margin-bottom: 8px; }
+.ph--curve h1 { margin-bottom: 8px; }
+.ph--curve .ph__lead { font-size: clamp(.94rem, 2.6vw, 1.05rem); }
+@media (min-width: 900px) { .ph--curve .ph__body { padding: 6px 0 44px; } }
 .ph--curve .ph__text { max-width: 60ch; margin: 0 auto; text-align: center; }
 .ph--curve .ph__lead { margin-inline: auto; }
 .ph--curve .eyebrow { justify-content: center; }
