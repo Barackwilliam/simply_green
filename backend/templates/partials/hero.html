@@ -1,16 +1,9 @@
 {% load static %}{% load media %}
 {% comment %}
-Home page slideshow. Each slide is a record in the admin, so the
-organisation controls what the site leads with. With one slide it is
-simply a hero; the controls only appear when there is something to move
-between.
-
-Photograph and panel, not text over a photograph. The organisation's
-pictures are taken on a phone held upright, and a full-bleed banner threw
-away two thirds of each one while making the words hard to read over
-whatever was behind them. Here the photograph is shown whole and the
-words sit on solid colour: stacked on a phone, side by side from 900px
-where a half-width 4:3 frame is a hero-sized picture in its own right.
+Home page slideshow. Each slide is a record in the admin. A full-width
+photograph with a solid colour card overlapping its foot; the card holds
+the words, so nothing is ever set over the picture. The controls sit
+below the card, on white.
 {% endcomment %}
 
 <section class="hero" data-slider aria-roledescription="carousel" aria-label="Featured">
@@ -28,35 +21,32 @@ where a half-width 4:3 frame is a hero-sized picture in its own right.
             others downloading before the page had painted; the script
             fetches them once the page is idle, one slide ahead of need.
           {% endcomment %}
-          {% picture slide.image alt=slide.image_alt sizes="(max-width: 900px) 100vw, 52vw" priority=forloop.first deferred=forloop.first|yesno:",True" fallback="img/hero.webp" %}
+          {% picture slide.image alt=slide.image_alt sizes="100vw" priority=forloop.first deferred=forloop.first|yesno:",True" fallback="img/hero.webp" %}
         </figure>
 
-        <div class="hero__panel">
-          <div class="hero__text">
-            {% if slide.eyebrow %}<span class="hero__badge">{{ slide.eyebrow }}</span>{% endif %}
-            {% comment %}
-              One h1 per page. The slideshow had three — one per slide —
-              which tells a search engine the page is about three
-              different things. The first carries the heading; the rest
-              are paragraphs that look identical.
-            {% endcomment %}
-            {% if forloop.first %}
-              <h1 class="hero__title">{{ slide.headline }}</h1>
-            {% else %}
-              <p class="hero__title" role="heading" aria-level="2">{{ slide.headline }}</p>
-            {% endif %}
-            {% if slide.subheadline %}<p class="hero__lead">{{ slide.subheadline }}</p>{% endif %}
-            {% if slide.primary_label or slide.secondary_label %}
-              <div class="hero__actions">
-                {% if slide.primary_label %}
-                  <a class="btn btn--green" href="{{ slide.primary_url|default:'#' }}">{{ slide.primary_label }}</a>
-                {% endif %}
-                {% if slide.secondary_label %}
-                  <a class="btn btn--outline" href="{{ slide.secondary_url|default:'#' }}">{{ slide.secondary_label }}</a>
-                {% endif %}
-              </div>
-            {% endif %}
-          </div>
+        <div class="hero__card">
+          {% include "partials/icon.html" with name="leaf" class="hero__icon" %}
+          {% if slide.eyebrow %}<span class="hero__badge">{{ slide.eyebrow }}</span>{% endif %}
+          {% comment %}
+            One h1 per page: the first slide carries it, the rest are
+            paragraphs that look identical.
+          {% endcomment %}
+          {% if forloop.first %}
+            <h1 class="hero__title">{{ slide.headline }}</h1>
+          {% else %}
+            <p class="hero__title" role="heading" aria-level="2">{{ slide.headline }}</p>
+          {% endif %}
+          {% if slide.subheadline %}<p class="hero__lead">{{ slide.subheadline }}</p>{% endif %}
+          {% if slide.primary_label or slide.secondary_label %}
+            <div class="hero__actions">
+              {% if slide.primary_label %}
+                <a class="btn btn--light" href="{{ slide.primary_url|default:'#' }}">{{ slide.primary_label }}</a>
+              {% endif %}
+              {% if slide.secondary_label %}
+                <a class="btn btn--outline" href="{{ slide.secondary_url|default:'#' }}">{{ slide.secondary_label }}</a>
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
       </article>
     {% endfor %}

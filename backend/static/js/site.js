@@ -93,11 +93,8 @@
     var counter = root.querySelector("[data-slide-now]");
     var prev = root.querySelector("[data-prev]");
     var next = root.querySelector("[data-next]");
-    // Eight seconds, not six and a half. The headline, the sentence under
-    // it and the two buttons take about five seconds to read, and a slide
-    // that changes while someone is still on the last line is the thing
-    // that makes a carousel tiring rather than inviting.
-    var DELAY = 8000;
+    // Three seconds per slide, as the client asked.
+    var DELAY = 3000;
     var index = 0;
     var timer = null;
     var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
