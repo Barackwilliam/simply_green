@@ -24,6 +24,7 @@ from apps.about.models import CoreValue, Objective, PartnerReason, TeamMember
 from apps.core.models import HeroSlide, ImpactStat, Partner
 from apps.engage.models import DonationMethod, NewsletterSubscriber
 from apps.gallery.models import Album, Photo, Video
+from apps.site.story import SDGS, journey
 from apps.news.models import Category, Event, Post
 from apps.programmes.models import FocusArea, Programme
 from apps.resources.models import Publication
@@ -69,6 +70,7 @@ def home(request):
         "partners": Partner.objects.published().exclude(logo=""),
         "values": CoreValue.objects.published()[:6],
         "field_photos": _field_photos(24),
+        "journey": journey(),
     })
 
 
@@ -94,6 +96,8 @@ def about(request):
         "values": CoreValue.objects.published(),
         "objectives": Objective.objects.published(),
         "reasons": PartnerReason.objects.published(),
+        "journey": journey(),
+        "sdgs": SDGS,
     })
 
 
