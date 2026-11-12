@@ -9,6 +9,7 @@ from pathlib import Path
 
 from django.conf import settings as django_settings
 from django.core.files import File
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -390,10 +391,31 @@ class Command(BaseCommand):
                 "on every deploy without undoing an editor's changes."
             ),
         )
+        parser.add_argument(
+            "--skip-albums",
+            action="store_true",
+            help="Do not run import_albums afterwards.",
+        )
 
-    @transaction.atomic
     def handle(self, *args, **options):
         self.force = options["force"]
+        self._load()
+
+        # The client's photo albums. Called from here because this command
+        # is in the build command Render actually runs, which is the one
+        # saved in its dashboard, not the one in render.yaml, and adding
+        # `import_albums` to the file alone never reached production.
+        #
+        # After the transaction above, not inside it: the import saves
+        # photographs from several threads, each with its own connection,
+        # and none of them could see an album created in a transaction
+        # that has not committed yet.
+        if not options["skip_albums"]:
+            self.stdout.write("Photo albums:")
+            call_command("import_albums", stdout=self.stdout)
+
+    @transaction.atomic
+    def _load(self):
         self._site_settings()
         self._core_values()
         self._objectives()
