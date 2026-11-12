@@ -19,6 +19,10 @@
           <div class="tile" style="display:flex;gap:14px"><div class="tile__icon" style="flex:none;margin:0">{% include "partials/icon.html" with name="pin" %}</div>
             <div><strong style="font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Office</strong><p style="margin:4px 0 0">{{ site.address|linebreaksbr }}</p></div></div>
         {% endif %}
+        {% if site.postal_address %}
+          <div class="tile" style="display:flex;gap:14px"><div class="tile__icon" style="flex:none;margin:0">{% include "partials/icon.html" with name="mail" %}</div>
+            <div><strong style="font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Postal address</strong><p style="margin:4px 0 0">{{ site.postal_address }}</p></div></div>
+        {% endif %}
         {% if site.phone %}
           <div class="tile" style="display:flex;gap:14px"><div class="tile__icon" style="flex:none;margin:0">{% include "partials/icon.html" with name="phone" %}</div>
             <div><strong style="font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Phone</strong><p style="margin:4px 0 0"><a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></p></div></div>
