@@ -50,25 +50,36 @@
 <div class="scrim" data-open="false" data-scrim hidden></div>
 
 <nav class="sidenav" id="sidenav" data-open="false" aria-label="Mobile" aria-hidden="true">
+  {% comment %}
+    The head is a photograph from the field under a deep-green wash, with
+    the logo on a white tile so it reads on any picture.
+  {% endcomment %}
   <div class="sidenav__head">
-    <a href="{% url 'site:home' %}" aria-label="{{ site.organisation_name }} — home">
-      {% if site.logo %}
-        {% picture site.logo alt=site.organisation_name sizes="200px" priority=True style="height:inherit;width:auto" fallback="img/logo.webp" %}
-      {% else %}
-        <span class="brand__text">Simply Green</span>
-      {% endif %}
-    </a>
-    <button class="sidenav__close" type="button" aria-label="Close menu" data-close>
-      {% include "partials/icon.html" with name="close" %}
-    </button>
+    <img class="sidenav__photo" src="{% static 'img/field/nav.webp' %}" alt="" width="720" height="380" loading="lazy" decoding="async">
+    <div class="sidenav__top">
+      <a class="sidenav__logo" href="{% url 'site:home' %}" aria-label="{{ site.organisation_name }} — home">
+        {% if site.logo %}
+          {% picture site.logo alt=site.organisation_name sizes="200px" style="height:inherit;width:auto" fallback="img/logo.webp" %}
+        {% else %}
+          <span class="brand__text">Simply Green</span>
+        {% endif %}
+      </a>
+      <button class="sidenav__close" type="button" aria-label="Close menu" data-close>
+        {% include "partials/icon.html" with name="close" %}
+      </button>
+    </div>
+    <p class="sidenav__tag">{{ site.tagline|default:"A greener, more resilient Tanzania" }}</p>
   </div>
 
   <div class="sidenav__body">
     <ul>
       {% for item in nav %}
-        <li>
+        <li style="--i:{{ forloop.counter }}">
           <div class="sidenav__row{% if item.active %} sidenav__row--active{% endif %}">
-            <a href="{{ item.url }}">{{ item.label }}</a>
+            <a href="{{ item.url }}"{% if item.active %} aria-current="page"{% endif %}>
+              <span class="sidenav__ico">{% include "partials/icon.html" with name=item.icon %}</span>
+              <span>{{ item.label }}</span>
+            </a>
             {% if item.children %}
               <button class="sidenav__toggle" type="button" aria-expanded="false"
                       aria-label="Show {{ item.label }} links" data-subtoggle>
@@ -88,11 +99,25 @@
     </ul>
   </div>
 
-  {% if site.donate_enabled %}
-    <div class="sidenav__foot">
-      <a class="btn btn--green" href="{% url 'site:donate' %}">
-        {% include "partials/icon.html" with name="heart" %} <span>Donate</span>
+  <div class="sidenav__foot">
+    <div class="sidenav__ctas">
+      {% if site.donate_enabled %}
+        <a class="btn btn--green" href="{% url 'site:donate' %}">
+          {% include "partials/icon.html" with name="heart" %} <span>Donate</span>
+        </a>
+      {% endif %}
+      <a class="btn sidenav__ghost" href="{% url 'site:volunteer' %}">
+        {% include "partials/icon.html" with name="handshake" %} <span>Volunteer</span>
       </a>
     </div>
-  {% endif %}
+    {% if site.email or site.phone or social_links %}
+      <div class="sidenav__reach">
+        {% if site.email %}<a href="mailto:{{ site.email }}" aria-label="Email {{ site.email }}">{% include "partials/icon.html" with name="mail" %}</a>{% endif %}
+        {% if site.phone %}<a href="tel:{{ site.phone|cut:' ' }}" aria-label="Call {{ site.phone }}">{% include "partials/icon.html" with name="phone" %}</a>{% endif %}
+        {% for s in social_links %}
+          <a href="{{ s.url }}" target="_blank" rel="noreferrer noopener" aria-label="{{ s.get_platform_display }}">{% include "partials/icon.html" with name=s.platform %}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
 </nav>

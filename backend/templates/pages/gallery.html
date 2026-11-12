@@ -35,7 +35,7 @@
     </div>
     <div class="photogrid">
       {% for p in field_photos %}
-        <figure class="photogrid__item">
+        <figure class="photogrid__item" data-reveal="pop">
           <a href="{{ p.album.get_absolute_url }}" title="{{ p.album.title }}">
             {% picture p.image alt=p.alt_text|default:p.album.title sizes="quarter" style="width:100%;height:100%;object-fit:cover" fallback="img/hero.webp" %}
           </a>
