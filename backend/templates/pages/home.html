@@ -17,6 +17,10 @@
       {% for area in pillars %}
         <article class="pillar pillar--{% cycle 'blue' 'green' 'gold' %}"
                  data-reveal style="--d:{{ forloop.counter0 }}00ms">
+          {% cycle 'img/field/pillar-1.webp' 'img/field/pillar-2.webp' 'img/field/pillar-3.webp' as pillar_photo silent %}
+          <div class="pillar__photo" aria-hidden="true">
+            <img src="{% static pillar_photo %}" alt="" width="720" height="420" loading="lazy" decoding="async">
+          </div>
           {% include "partials/icon.html" with name=area.icon class="pillar__icon" %}
           <h2>{{ area.title }}</h2>
           <p>{{ area.summary|truncatewords:34 }}</p>
@@ -116,7 +120,11 @@
       {% for area in focus_areas %}
         <div data-reveal="pop" style="--d:{{ forloop.counter0 }}0ms;display:flex">
           <a class="fcard fcard--{% cycle 'blue' 'green' 'gold' 'deep' %}" href="{{ area.get_absolute_url }}" style="flex:1">
-            <span class="fcard__n" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+            {% cycle 'img/field/fa-01.webp' 'img/field/fa-02.webp' 'img/field/fa-03.webp' 'img/field/fa-04.webp' 'img/field/fa-05.webp' 'img/field/fa-06.webp' 'img/field/fa-07.webp' as fa_photo silent %}
+            <span class="fcard__media" aria-hidden="true">
+              <img src="{% static fa_photo %}" alt="" width="720" height="540" loading="lazy" decoding="async">
+              <span class="fcard__n">{{ forloop.counter|stringformat:"02d" }}</span>
+            </span>
             <span class="fcard__icon">{% include "partials/icon.html" with name=area.icon %}</span>
             <h2>{{ area.title }}</h2>
             <p>{{ area.summary|truncatewords:26 }}</p>
@@ -178,6 +186,11 @@
         <h2>Why organisations choose to work with us</h2>
         <p class="lead">We work at the frontline, and we account for every shilling that gets us there.</p>
         <a class="btn btn--green" href="{% url 'site:partner' %}" style="margin-top:12px">Partner with us</a>
+        <div class="collage" data-reveal="pop" aria-hidden="true">
+          <img class="collage__a" src="{% static 'img/field/reason-1.webp' %}" alt="" width="760" height="520" loading="lazy" decoding="async">
+          <img class="collage__b" src="{% static 'img/field/reason-2.webp' %}" alt="" width="760" height="520" loading="lazy" decoding="async">
+          <span class="collage__badge">{% include "partials/icon.html" with name="handshake" %} On the ground since 2023</span>
+        </div>
       </div>
       <div class="grid" style="gap:14px">
         {% for r in reasons %}

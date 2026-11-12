@@ -7,6 +7,20 @@ cannot drift apart, and so the active item is decided once.
 from django.urls import reverse
 
 
+# One icon per top-level item, for the mobile drawer.
+ICONS = {
+    "Home": "leaf",
+    "About Us": "users",
+    "Focus Areas": "sprout",
+    "Programmes": "tree",
+    "Resources": "file",
+    "News": "calendar",
+    "Gallery": "image",
+    "Get Involved": "handshake",
+    "Contact": "mail",
+}
+
+
 def build_nav(path: str):
     """Return the navigation tree, marking the branch the request is in."""
     items = [
@@ -65,6 +79,7 @@ def build_nav(path: str):
     ]
 
     for item in items:
+        item["icon"] = ICONS.get(item["label"], "leaf")
         base = item["url"].split("?")[0].split("#")[0]
         if base == "/":
             item["active"] = path == "/"

@@ -291,6 +291,43 @@
     counters.forEach(function (el) { countObs.observe(el); });
   }
 
+  /* ------------------------------------------------------- card tilt */
+
+  // A slight tilt toward the pointer and a light that follows it. Only for
+  // a mouse or trackpad (a finger has no hover), and never when the
+  // reader has asked for less motion.
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (fine && !still) {
+    document.querySelectorAll(
+      ".card, .pillar, .fcard, .vcard, .photogrid__item > a, .fieldreel__item"
+    ).forEach(function (el) {
+      el.classList.add("tilt");
+      if (getComputedStyle(el).position === "static") el.style.position = "relative";
+      var glow = document.createElement("span");
+      glow.className = "tilt__glow";
+      glow.setAttribute("aria-hidden", "true");
+      el.appendChild(glow);
+      var frame = 0;
+      el.addEventListener("pointermove", function (e) {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(function () {
+          var r = el.getBoundingClientRect();
+          var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+          el.style.setProperty("--mx", x * 100 + "%");
+          el.style.setProperty("--my", y * 100 + "%");
+          el.style.setProperty("--rx", (x - 0.5) * 7 + "deg");
+          el.style.setProperty("--ry", (0.5 - y) * 7 + "deg");
+          el.classList.add("is-tilting");
+        });
+      });
+      el.addEventListener("pointerleave", function () {
+        cancelAnimationFrame(frame);
+        el.classList.remove("is-tilting");
+      });
+    });
+  }
+
   /* -------------------------------------------------------- reveal on scroll */
 
   // [data-reveal] is one element. [data-reveal-group] is a grid or a row
