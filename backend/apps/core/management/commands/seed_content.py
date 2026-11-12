@@ -530,6 +530,78 @@ class Command(BaseCommand):
                 "p_label": "Partner with us", "p_url": "/get-involved/partner/",
                 "s_label": "Support our work", "s_url": "/donate/",
             },
+            # From the client's own event albums (see apps/gallery/albums.json).
+            {
+                "image": "ocean-is-life.jpg",
+                "alt": "Two volunteers and a Simply Green staff member holding "
+                       "'Ocean is life' and 'Keep our ocean clean' signs at the "
+                       "Rainbow Beach clean-up",
+                "eyebrow": "Rainbow Beach clean-up · Mbezi",
+                "headline": "Ocean is life. Keep it clean.",
+                "sub": "Volunteers, partners and neighbours cleared plastic "
+                       "and other waste from Rainbow Beach in Mbezi, Kinondoni.",
+                "p_label": "See the photographs",
+                "p_url": "/gallery/rainbow-beach-clean-up-mbezi/",
+                "s_label": "Volunteer with us", "s_url": "/get-involved/volunteer/",
+            },
+            {
+                "image": "rainbow-beach-group.jpg",
+                "alt": "A large group of volunteers in high-visibility vests "
+                       "in front of the Simply Green beach clean-up banner",
+                "eyebrow": "Community action",
+                "headline": "When a community turns out, a beach comes back",
+                "sub": "Students, residents, partners and local authorities "
+                       "working side by side on the Dar es Salaam coastline.",
+                "p_label": "Get involved", "p_url": "/get-involved/",
+                "s_label": "Our gallery", "s_url": "/gallery/",
+            },
+            {
+                "image": "kawe-beach-cleanup-team.jpg",
+                "alt": "The Simply Green team in front of the Kawe–Kinondoni "
+                       "beach clean-up banner, 15 March 2025",
+                "eyebrow": "Kawe beach clean-up · 15 March 2025",
+                "headline": "Clean beaches, empowered lives",
+                "sub": "A morning on the Kawe shoreline, ending with an audit "
+                       "of everything that was collected.",
+                "p_label": "See the photographs",
+                "p_url": "/gallery/kawe-beach-clean-up/",
+                "s_label": "Support our work", "s_url": "/donate/",
+            },
+            {
+                "image": "waste-audit.jpg",
+                "alt": "Volunteers sorting collected beach waste by type "
+                       "during a waste audit",
+                "eyebrow": "Waste audit",
+                "headline": "Counting what we collect, to stop it at the source",
+                "sub": "Sorting the waste by type shows where it comes from — "
+                       "evidence for producers, councils and communities.",
+                "p_label": "How we work", "p_url": "/focus-areas/",
+                "s_label": "Partner with us", "s_url": "/get-involved/partner/",
+            },
+            {
+                "image": "circular-economy-workshop.jpg",
+                "alt": "A speaker presenting at the Circular Economy "
+                       "Workshop 2024",
+                "eyebrow": "Circular Economy Workshop 2024",
+                "headline": "Designing waste out of the economy",
+                "sub": "Producers, recyclers, government and civil society "
+                       "discussing extended producer responsibility and a "
+                       "circular economy for Tanzania.",
+                "p_label": "See the photographs",
+                "p_url": "/gallery/circular-economy-workshop-2024/",
+                "s_label": "Partner with us", "s_url": "/get-involved/partner/",
+            },
+            {
+                "image": "volunteers-with-sacks.jpg",
+                "alt": "A line of volunteers carrying full sacks of waste "
+                       "along the beach",
+                "eyebrow": "Volunteers",
+                "headline": "Every sack is a stretch of shoreline given back",
+                "sub": "Join the next clean-up: bring water and closed shoes, "
+                       "we bring the gloves and the sacks.",
+                "p_label": "Volunteer with us", "p_url": "/get-involved/volunteer/",
+                "s_label": "Upcoming events", "s_url": "/events/",
+            },
         ]
         for order, entry in enumerate(slides):
             slide, created = self._upsert(
