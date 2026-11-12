@@ -6,16 +6,26 @@
 <section class="section">
   <div class="wrap">
     {% if album.photos.all %}
-      {% include "partials/carousel_head.html" with title="Photographs" label="photographs" %}
-      <div class="carousel" data-carousel data-reveal>
-        <div class="carousel__viewport" tabindex="0" role="region" aria-label="Photographs from {{ album.title }}">
-          {% for p in album.photos.all %}
-            <figure class="carousel__item carousel__item--photo">
-              {% picture p.image alt=p.alt_text|default:album.title sizes="slide" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px" fallback="img/hero.webp" %}
-              {% if p.caption %}<figcaption>{{ p.caption }}{% if p.credit %} <span style="opacity:.7">— {{ p.credit }}</span>{% endif %}</figcaption>{% endif %}
-            </figure>
-          {% endfor %}
+      <div class="crow">
+        <div>
+          <span class="eyebrow">{{ album.photo_count }} photograph{{ album.photo_count|pluralize }}</span>
+          <h2>Photographs</h2>
         </div>
+      </div>
+      {% comment %}
+        Every photograph, as a grid. A carousel showed three at a time,
+        which hid an album of a hundred behind a hundred clicks. Each one
+        opens full size.
+      {% endcomment %}
+      <div class="photogrid">
+        {% for p in album.photos.all %}
+          <figure class="photogrid__item">
+            <a href="{{ p.image.url }}" target="_blank" rel="noopener">
+              {% picture p.image alt=p.alt_text|default:album.title sizes="quarter" style="width:100%;height:100%;object-fit:cover" fallback="img/hero.webp" %}
+            </a>
+            {% if p.caption %}<figcaption>{{ p.caption }}{% if p.credit %} <span style="opacity:.7">— {{ p.credit }}</span>{% endif %}</figcaption>{% endif %}
+          </figure>
+        {% endfor %}
       </div>
     {% else %}
       <div class="empty"><strong>This album has no photographs yet</strong></div>

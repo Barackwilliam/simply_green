@@ -1596,3 +1596,54 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
 @media (prefers-reduced-motion: reduce) {
   .vcard::before, .vcard::after, .person__bio { transition: none; }
 }
+
+
+/* ------------------------------------------------------------ photographs */
+/* Every photograph of an album, and the mix on the gallery page. */
+.photogrid {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+}
+.photogrid__item { margin: 0; }
+.photogrid__item > a {
+  display: block; aspect-ratio: 4 / 3; overflow: hidden;
+  border-radius: 12px; background: var(--wash, #eef2ea);
+}
+.photogrid__item img { transition: transform .4s ease; }
+.photogrid__item > a:hover img,
+.photogrid__item > a:focus-visible img { transform: scale(1.04); }
+.photogrid__item figcaption {
+  font-size: .85rem; color: var(--muted); margin-top: 8px; line-height: 1.45;
+}
+
+/* The home page's endless row of photographs. */
+.fieldstrip .crow { margin-bottom: 22px; }
+.fieldreel { overflow: hidden; }
+.fieldreel__track {
+  display: flex; gap: 14px; width: max-content;
+  animation: fieldreel 90s linear infinite;
+}
+.fieldreel:hover .fieldreel__track,
+.fieldreel:focus-within .fieldreel__track { animation-play-state: paused; }
+.fieldreel__item {
+  position: relative; flex: 0 0 auto;
+  width: 300px; height: 225px;
+  border-radius: 14px; overflow: hidden; display: block;
+}
+.fieldreel__label {
+  position: absolute; inset: auto 0 0 0; padding: 26px 14px 10px;
+  color: #fff; font-size: .8rem; font-weight: 700;
+  background: linear-gradient(transparent, rgba(0,0,0,.7));
+  opacity: 0; transition: opacity .25s ease;
+}
+.fieldreel__item:hover .fieldreel__label,
+.fieldreel__item:focus-visible .fieldreel__label { opacity: 1; }
+@keyframes fieldreel { to { transform: translateX(calc(-50% - 7px)); } }
+@media (max-width: 620px) {
+  .fieldreel__item { width: 220px; height: 165px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fieldreel { overflow-x: auto; }
+  .fieldreel__track { animation: none; }
+  .fieldreel__item[aria-hidden="true"] { display: none; }
+}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load static %}
+{% extends "base.html" %}{% load static %}{% load media %}
 
 {% block title %}{{ site.organisation_name }} — Environment & Climate, Tanzania{% endblock %}
 {% block description %}{{ site.default_meta_description }}{% endblock %}
@@ -52,7 +52,7 @@
       <div data-reveal>
         <img src="{% static 'img/about.webp' %}" width="1000" height="1250" loading="lazy"
              style="border-radius:var(--radius)"
-             alt="Simply Green Organization team clearing plastic waste from a shoreline">
+             alt="Volunteers holding 'Ocean is life' and 'Keep our ocean clean' signs at the Rainbow Beach clean-up">
       </div>
       <div data-reveal style="--d:.12s">
         <span class="eyebrow">Who we are</span>
@@ -63,6 +63,45 @@
     </div>
   </div>
 </section>
+
+{# ------------------------------------------------------- from the field #}
+{% if field_photos %}
+<section class="section section--tight fieldstrip" aria-labelledby="field-title">
+  <div class="wrap">
+    <div class="crow">
+      <div>
+        <span class="eyebrow">From the field</span>
+        <h2 id="field-title">Our work, in pictures</h2>
+      </div>
+      <div class="crow__tools">
+        <a class="btn btn--blue btn--sm" href="{% url 'site:gallery' %}">Open the gallery</a>
+      </div>
+    </div>
+  </div>
+  {% comment %}
+    A slow, endless row of photographs. The list is written twice so the
+    loop has no seam; the copy is hidden from screen readers. It stops on
+    hover and focus, and does not move at all for anyone who has asked
+    their system for reduced motion — they get a row to scroll instead.
+  {% endcomment %}
+  <div class="fieldreel">
+    <div class="fieldreel__track">
+      {% for p in field_photos %}
+        <a class="fieldreel__item" href="{{ p.album.get_absolute_url }}">
+          {% picture p.image alt=p.alt_text|default:p.album.title sizes="320px" style="width:100%;height:100%;object-fit:cover" fallback="img/hero.webp" %}
+          <span class="fieldreel__label">{{ p.album.title }}</span>
+        </a>
+      {% endfor %}
+      {% for p in field_photos %}
+        <a class="fieldreel__item" href="{{ p.album.get_absolute_url }}" aria-hidden="true" tabindex="-1">
+          {% picture p.image alt="" sizes="320px" style="width:100%;height:100%;object-fit:cover" fallback="img/hero.webp" %}
+          <span class="fieldreel__label">{{ p.album.title }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
 
 {# ------------------------------------------------------- focus areas #}
 {% if focus_areas %}

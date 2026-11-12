@@ -23,7 +23,7 @@ from django.views.decorators.http import require_POST
 from apps.about.models import CoreValue, Objective, PartnerReason, TeamMember
 from apps.core.models import HeroSlide, ImpactStat, Partner
 from apps.engage.models import DonationMethod, NewsletterSubscriber
-from apps.gallery.models import Album, Video
+from apps.gallery.models import Album, Photo, Video
 from apps.news.models import Category, Event, Post
 from apps.programmes.models import FocusArea, Programme
 from apps.resources.models import Publication
@@ -68,7 +68,23 @@ def home(request):
         "posts": Post.objects.published()[:3],
         "partners": Partner.objects.published().exclude(logo=""),
         "values": CoreValue.objects.published()[:6],
+        "field_photos": _field_photos(24),
     })
+
+
+def _field_photos(count):
+    """A mix of photographs from every published album.
+
+    Random, so the home page and the gallery show a different handful each
+    visit rather than the first few of one album. The table is a few
+    hundred rows; ORDER BY random() on that costs nothing worth caching.
+    """
+    return list(
+        Photo.objects.filter(album__is_published=True)
+        .exclude(image="")
+        .select_related("album")
+        .order_by("?")[:count]
+    )
 
 
 # --------------------------------------------------------------- about
@@ -222,7 +238,10 @@ def event_detail(request, slug):
 # ------------------------------------------------------------- gallery
 
 def gallery(request):
-    return render(request, "pages/gallery.html", {"albums": Album.objects.published()})
+    return render(request, "pages/gallery.html", {
+        "albums": Album.objects.published(),
+        "field_photos": _field_photos(16),
+    })
 
 
 def album_detail(request, slug):
