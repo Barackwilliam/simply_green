@@ -26,8 +26,11 @@ services:
     # draft are created during the build. Every step is idempotent:
     # `ensure_superuser` never touches an account that already exists,
     # `seed_content` only fills in what is missing unless passed --force,
-    # `import_albums` fetches the client's Google Photos albums into the
-    # gallery the first time and skips what is already stored after that,
+    # and then runs `import_albums`, which fetches the client's Google
+    # Photos albums into the gallery the first time and skips what is
+    # already stored after that. It is called from `seed_content` rather
+    # than listed here because the service's build command lives in the
+    # Render dashboard, and an edit to this file does not change it.
     # `seed_sample_content --if-enabled` does nothing at all unless
     # SAMPLE_CONTENT is set (see below), and `repair_media` reconciles
     # what the database says about images with what storage actually has.
@@ -49,7 +52,6 @@ services:
       python manage.py ensure_superuser &&
       python manage.py seed_content &&
       python manage.py seed_sample_content --if-enabled &&
-      python manage.py import_albums &&
       python manage.py repair_media &&
       python manage.py checkmedia
     startCommand: >-
