@@ -1,17 +1,19 @@
 {% load media %}{% if site.newsletter_enabled %}
 <section class="newsletter">
   <div class="wrap">
-    <div>
-      <h2>Stay with the work</h2>
-      <p>Updates on our programmes, research and events across Tanzania.</p>
+    <div class="nlcard" data-reveal>
+      <div class="nlcard__copy">
+        <h2>Stay with the work</h2>
+        <p>Field stories, programme updates and chances to take part in our clean-ups, workshops and planting days. No spam, unsubscribe any time.</p>
+      </div>
+      <form class="nlcard__form" method="post" action="{% url 'site:newsletter' %}">
+        {% csrf_token %}
+        <div class="honey"><label for="nl_website">Leave empty</label><input id="nl_website" type="text" name="website_url" tabindex="-1" autocomplete="off"></div>
+        <label class="sr-only" for="nl_email" style="position:absolute;left:-9999px">Email address</label>
+        <input id="nl_email" type="email" name="email" required placeholder="Your email address" autocomplete="email">
+        <button class="btn nlcard__btn" type="submit">Subscribe {% include "partials/icon.html" with name="arrow" %}</button>
+      </form>
     </div>
-    <form method="post" action="{% url 'site:newsletter' %}">
-      {% csrf_token %}
-      <div class="honey"><label for="nl_website">Leave empty</label><input id="nl_website" type="text" name="website_url" tabindex="-1" autocomplete="off"></div>
-      <label class="sr-only" for="nl_email" style="position:absolute;left:-9999px">Email address</label>
-      <input id="nl_email" type="email" name="email" required placeholder="your.name@example.com" autocomplete="email">
-      <button class="btn btn--green" type="submit">Subscribe</button>
-    </form>
   </div>
 </section>
 {% endif %}

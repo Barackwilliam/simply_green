@@ -121,6 +121,14 @@ U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 </main>
 
 {% include "partials/footer.html" %}
+{% with wa=site.whatsapp|default:site.phone %}
+<div class="fabs">
+  {% if wa %}
+    <a class="fab fab--wa" href="https://wa.me/{{ wa|cut:' '|cut:'+'|cut:'-' }}" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">{% include "partials/icon.html" with name="whatsapp" %}</a>
+  {% endif %}
+  <button class="fab fab--top" type="button" aria-label="Back to top" data-totop hidden>{% include "partials/icon.html" with name="chevron" %}</button>
+</div>
+{% endwith %}
 <script src="{% static 'js/site.js' %}" defer></script>
 {% block extra_js %}{% endblock %}
 </body>

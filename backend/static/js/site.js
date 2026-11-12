@@ -291,6 +291,16 @@
     counters.forEach(function (el) { countObs.observe(el); });
   }
 
+  /* --------------------------------------------------------- back to top */
+
+  var toTop = document.querySelector("[data-totop]");
+  if (toTop) {
+    var showTop = function () { toTop.hidden = window.scrollY < 700; };
+    window.addEventListener("scroll", showTop, { passive: true });
+    showTop();
+    toTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+  }
+
   /* ------------------------------------------------------- card tilt */
 
   // A slight tilt toward the pointer and a light that follows it. Only for

@@ -20,8 +20,13 @@
           </div>
         {% endif %}
       </div>
-      <img src="{% static 'img/portrait.webp' %}" width="800" height="1000" loading="lazy"
-           style="border-radius:var(--radius)" alt="Simply Green Organization team members at a clean-up">
+      <figure class="qphoto" data-reveal>
+        <img src="{% static 'img/about.webp' %}" width="820" height="1025" loading="lazy" decoding="async"
+             alt="Volunteers holding 'Ocean is life' and 'Keep our ocean clean' signs at the Rainbow Beach clean-up">
+        <blockquote class="qphoto__quote">
+          <p>“{{ site.tagline|default:"A greener, more resilient Tanzania — led by its own communities" }}.”</p>
+        </blockquote>
+      </figure>
     </div>
   </div>
 </section>
@@ -46,6 +51,30 @@
     </div>
   </div>
 </section>
+
+{% if journey %}
+<section class="section" id="journey">
+  <div class="wrap">
+    <div class="center" data-reveal="mask" style="margin-bottom:44px">
+      <span class="eyebrow">Our journey</span>
+      <h2>Our journey so far</h2>
+    </div>
+    <ol class="journey">
+      {% for j in journey %}
+        <li class="journey__item" data-reveal style="--d:{{ forloop.counter0 }}0ms">
+          <span class="journey__dot" aria-hidden="true"></span>
+          <div class="journey__card">
+            <span class="journey__when">{{ j.when }}</span>
+            <h3>{{ j.title }}</h3>
+            <p>{{ j.text }}</p>
+            {% if j.url %}<a class="journey__link" href="{{ j.url }}">See it {% include "partials/icon.html" with name="arrow" %}</a>{% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{% endif %}
 
 {% if values %}
 <section class="section" id="values">
@@ -87,6 +116,31 @@
           </li>
         {% endfor %}
       </ol>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if sdgs %}
+<section class="section" id="sdgs">
+  <div class="wrap">
+    <div class="sdg-intro" data-reveal>
+      <div>
+        <span class="eyebrow">Global goals, local action</span>
+        <h2><span class="sdg-intro__n">{{ sdgs|length }}</span> of the 17 goals</h2>
+      </div>
+      <p class="lead">Local action in Tanzanian communities, schools and markets adds up to progress on the United Nations Sustainable Development Goals.</p>
+    </div>
+    <div class="sdg-grid">
+      {% for g in sdgs %}
+        <article class="sdg" data-reveal="pop" style="--sdg:{{ g.color }};--sdg-ink:{{ g.ink }};--d:{{ forloop.counter0 }}0ms">
+          <div class="sdg__head">
+            <span class="sdg__tile"><b>{{ g.n }}</b><small>{{ g.name }}</small></span>
+            <h3>{{ g.name }}</h3>
+          </div>
+          <p>{{ g.text }}</p>
+        </article>
+      {% endfor %}
     </div>
   </div>
 </section>

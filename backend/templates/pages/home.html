@@ -247,15 +247,48 @@
 </section>
 {% endif %}
 
+{# --------------------------------------------------------- our journey #}
+{% if journey %}
+<section class="section jband">
+  <div class="wrap jband__grid">
+    <div data-reveal>
+      <span class="eyebrow">Our journey</span>
+      <h2>From one registration to a coastline of volunteers</h2>
+      <ol class="jtl">
+        {% for j in journey %}
+          <li style="--i:{{ forloop.counter }}">
+            <span class="jtl__when">{{ j.when }}</span>
+            <span class="jtl__what">{{ j.title }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+      <a class="jband__more" href="{% url 'site:about' %}#journey">Read the full story {% include "partials/icon.html" with name="arrow" %}</a>
+    </div>
+    <div class="orb" data-reveal="pop" aria-hidden="true">
+      <span class="orb__ring"></span>
+      <span class="orb__disc"><img src="{% static 'img/logo.webp' %}" alt="" width="577" height="187" loading="lazy" decoding="async"></span>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 {# ------------------------------------------------------ get involved #}
-<section class="section section--deep">
-  <div class="wrap center" data-reveal>
-    <h2>There is a way in for everyone</h2>
-    <p class="lead">Whether you have an afternoon, a skill or a budget — the work needs you.</p>
-    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px">
-      <a class="btn btn--green" href="{% url 'site:volunteer' %}">Become a volunteer</a>
-      <a class="btn btn--outline" href="{% url 'site:partner' %}">Partner with us</a>
-      <a class="btn btn--outline" href="{% url 'site:donate' %}">Support our work</a>
+<section class="cta-sky">
+  <div class="wrap cta-sky__grid">
+    <div data-reveal>
+      <span class="eyebrow">Get involved</span>
+      <h2>There is a way in for everyone</h2>
+      <p class="lead">Whether you have an afternoon, a skill or a budget, the work needs you, and it keeps Tanzania's coasts, markets and schools healthy for generations to come.</p>
+      <div class="cta-sky__btns">
+        <a class="btn cta-sky__primary" href="{% url 'site:donate' %}">{% include "partials/icon.html" with name="heart" %} Support our work</a>
+        <a class="btn cta-sky__ghost" href="{% url 'site:volunteer' %}">Become a volunteer</a>
+        <a class="btn cta-sky__ghost" href="{% url 'site:partner' %}">Partner with us</a>
+      </div>
+    </div>
+    <div class="polaroids" data-reveal="pop" aria-hidden="true">
+      <figure class="polaroid polaroid--1"><img src="{% static 'img/field/fa-04.webp' %}" alt="" width="720" height="540" loading="lazy" decoding="async"><figcaption>Rainbow Beach</figcaption></figure>
+      <figure class="polaroid polaroid--2"><img src="{% static 'img/field/fa-07.webp' %}" alt="" width="720" height="540" loading="lazy" decoding="async"><figcaption>Waste audit, Kawe</figcaption></figure>
+      <figure class="polaroid polaroid--3"><img src="{% static 'img/field/pillar-2.webp' %}" alt="" width="720" height="420" loading="lazy" decoding="async"><figcaption>Circular Economy Workshop</figcaption></figure>
     </div>
   </div>
 </section>

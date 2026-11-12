@@ -1830,15 +1830,6 @@ a.card:hover .card__meta { border-color: #d6e3bf; }
   .collage__b { height: 150px; }
 }
 
-/* --- Newsletter: over a photograph of a clean-up --------------------- */
-.newsletter {
-  position: relative; isolation: isolate; overflow: hidden;
-  background:
-    linear-gradient(110deg, rgba(51,70,26,.94) 0%, rgba(95,126,36,.86) 55%, rgba(95,126,36,.6) 100%),
-    url("../img/field/newsletter.webp") center 55% / cover no-repeat;
-  padding: 64px 0;
-}
-
 /* --- Cards: a light that follows the pointer, a slight tilt, and a
        sheen across photographs. Set up by site.js on fine pointers. --- */
 .tilt { transform-style: preserve-3d; will-change: transform; }
@@ -1881,4 +1872,236 @@ a.card:hover .card__media::before,
   .hero__dots button { width: 100%; min-width: 0; }
   .hero__dots li:has(button[aria-selected="true"]) { flex-grow: 2.4; max-width: 56px; }
   .hero__dots button[aria-selected="true"] { width: 100%; }
+}
+
+
+/* =====================================================================
+   Journey, quote-on-photo, SDGs, the sky-blue call to action, the
+   newsletter card and the floating buttons.
+   ===================================================================== */
+
+/* --- Home: dark journey band with the logo in a ringed disc ---------- */
+.jband { background: #143a33; color: #d9e8e2; overflow: hidden; }
+.jband h2 { color: #fff; max-width: 18ch; }
+.jband .eyebrow { color: var(--gold); }
+.jband__grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
+@media (max-width: 900px) { .jband__grid { grid-template-columns: 1fr; } }
+
+.jtl { list-style: none; margin: 30px 0 28px; padding: 0 0 0 30px; position: relative; display: grid; gap: 22px; }
+.jtl::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px; background: rgba(252,205,117,.55); }
+.jtl li { position: relative; display: grid; gap: 8px; justify-items: start; }
+.jtl li::before {
+  content: ""; position: absolute; left: -30px; top: 6px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--gold); box-shadow: 0 0 0 6px rgba(252,205,117,.18);
+}
+.jtl__when {
+  display: inline-block; padding: 5px 12px; border-radius: 8px;
+  background: rgba(252,205,117,.14); color: var(--gold);
+  font-weight: 800; font-size: .95rem; letter-spacing: .02em;
+}
+.jtl__what { color: #fff; font-size: 1.08rem; font-weight: 600; }
+.jband__more { display: inline-flex; align-items: center; gap: 10px; color: var(--gold); font-weight: 800; font-size: 1.05rem; text-decoration: none; }
+.jband__more svg { width: 18px; height: 18px; fill: currentColor; transition: transform .3s var(--ease); }
+.jband__more:hover svg { transform: translateX(5px); }
+
+.orb { position: relative; width: min(100%, 420px); aspect-ratio: 1; margin: 0 auto; display: grid; place-items: center; }
+.orb__ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px dashed rgba(252,205,117,.55);
+  animation: orbspin 40s linear infinite;
+}
+.orb__disc {
+  width: 82%; aspect-ratio: 1; border-radius: 50%; background: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 30px 70px rgba(0,0,0,.35), inset 0 0 0 10px #f1f6ea;
+}
+.orb__disc img { width: 74%; height: auto; }
+@keyframes orbspin { to { transform: rotate(360deg); } }
+
+/* --- About: a photograph with a quote card over its foot ------------- */
+.qphoto { position: relative; margin: 0 0 60px; }
+.qphoto img { width: 100%; border-radius: 22px; display: block; box-shadow: var(--sh-2); }
+.qphoto__quote {
+  position: absolute; left: -24px; right: 40px; bottom: -48px; margin: 0;
+  background: #fff; border-radius: 20px; padding: 26px 30px;
+  box-shadow: 0 24px 60px rgba(20,29,23,.18);
+}
+.qphoto__quote p {
+  margin: 0; font-family: Georgia, "Times New Roman", serif; font-style: italic;
+  font-size: 1.45rem; line-height: 1.35; color: var(--ink);
+}
+@media (max-width: 620px) {
+  .qphoto__quote { left: -8px; right: 12px; padding: 20px 22px; }
+  .qphoto__quote p { font-size: 1.2rem; }
+}
+
+/* --- About: the journey as cards on a rail --------------------------- */
+.journey { list-style: none; margin: 0 auto; padding: 0; max-width: 820px; position: relative; display: grid; gap: 22px; }
+.journey::before {
+  content: ""; position: absolute; left: 25px; top: 20px; bottom: 20px; width: 3px;
+  background: linear-gradient(var(--green), var(--blue)); border-radius: 3px; opacity: .45;
+}
+.journey__item { position: relative; display: grid; grid-template-columns: 54px 1fr; gap: 18px; align-items: start; }
+.journey__dot {
+  position: relative; z-index: 1; margin-top: 22px;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #fff; border: 9px solid var(--green-ink);
+  box-shadow: 0 0 0 8px #eef5e2;
+  transition: transform .4s var(--ease);
+}
+.journey__item:hover .journey__dot { transform: scale(1.12); }
+.journey__card {
+  background: #fff; border: 1px solid var(--line); border-radius: 18px;
+  padding: 26px 28px; box-shadow: var(--sh-1);
+  transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.journey__item:hover .journey__card { transform: translateY(-4px); box-shadow: var(--sh-2); }
+.journey__when { display: block; color: var(--green-ink); font-weight: 800; font-size: 1.05rem; letter-spacing: .04em; margin-bottom: 6px; }
+.journey__card h3 { margin: 0 0 8px; font-size: 1.3rem; }
+.journey__card p { margin: 0; color: var(--ink-soft); line-height: 1.7; }
+.journey__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; font-weight: 700; color: var(--blue-ink); text-decoration: none; }
+.journey__link svg { width: 16px; height: 16px; fill: currentColor; }
+@media (max-width: 620px) {
+  .journey::before { left: 17px; }
+  .journey__item { grid-template-columns: 36px 1fr; gap: 12px; }
+  .journey__dot { width: 36px; height: 36px; border-width: 7px; box-shadow: 0 0 0 6px #eef5e2; }
+  .journey__card { padding: 20px; }
+}
+
+/* --- About: Sustainable Development Goals ---------------------------- */
+.sdg-intro {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: end;
+  background: #12382a; color: #d7e6dc; border-radius: 24px; padding: 40px 44px; margin-bottom: 24px;
+  position: relative; overflow: hidden;
+}
+.sdg-intro::after {
+  content: ""; position: absolute; right: -120px; top: -160px; width: 380px; height: 380px; border-radius: 50%;
+  background: conic-gradient(#e5243b, #dda63a, #4c9f38, #c5192d, #ff3a21, #26bde2, #fcc30b, #a21942, #fd6925, #dd1367, #fd9d24, #bf8b2e, #3f7e44, #0a97d9, #56c02b, #00689d, #19486a, #e5243b);
+  -webkit-mask: radial-gradient(circle, transparent 55%, #000 56%); mask: radial-gradient(circle, transparent 55%, #000 56%);
+  opacity: .8; animation: orbspin 60s linear infinite;
+}
+.sdg-intro h2 { color: #fff; margin: 0; font-size: clamp(2rem, 4vw, 2.8rem); }
+.sdg-intro__n { color: var(--gold); }
+.sdg-intro .eyebrow { color: var(--gold); }
+.sdg-intro .lead { color: #c8d9cf; margin: 0; position: relative; z-index: 1; }
+@media (max-width: 800px) { .sdg-intro { grid-template-columns: 1fr; padding: 32px 26px; } }
+
+.sdg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 20px; }
+.sdg {
+  border-radius: 20px; overflow: hidden; background: #fff; border: 1px solid var(--line);
+  box-shadow: var(--sh-1); transition: transform .45s var(--ease), box-shadow .45s var(--ease);
+}
+.sdg:hover { transform: translateY(-6px); box-shadow: var(--sh-3); }
+.sdg__head {
+  position: relative; overflow: hidden;
+  background: var(--sdg); color: var(--sdg-ink);
+  display: flex; align-items: center; gap: 20px; padding: 24px;
+}
+.sdg__head::after {
+  content: ""; position: absolute; right: -50px; top: -50px; width: 150px; height: 150px; border-radius: 50%;
+  border: 22px solid rgba(255,255,255,.18);
+}
+.sdg__tile {
+  flex: none; width: 92px; height: 92px; border-radius: 14px;
+  border: 3px solid rgba(255,255,255,.55); background: var(--sdg);
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  display: flex; flex-direction: column; padding: 8px 9px; gap: 2px;
+  transition: transform .45s var(--ease);
+}
+.sdg:hover .sdg__tile { transform: rotate(-5deg) scale(1.05); }
+.sdg__tile b { font-size: 2rem; line-height: 1; }
+.sdg__tile small { font-size: .58rem; font-weight: 800; text-transform: uppercase; line-height: 1.15; letter-spacing: .02em; }
+.sdg__head h3 { margin: 0; color: inherit; font-size: 1.15rem; text-transform: uppercase; letter-spacing: .03em; position: relative; z-index: 1; }
+.sdg p { margin: 0; padding: 22px 24px 26px; color: var(--ink-soft); line-height: 1.65; }
+
+/* --- Home: sky-blue call to action with polaroid photographs --------- */
+.cta-sky { background: linear-gradient(135deg, #12a3d8, #0c7fb0); color: #fff; padding: 88px 0; overflow: hidden; }
+.cta-sky h2 { color: #fff; font-size: clamp(2rem, 4vw, 2.9rem); }
+.cta-sky .eyebrow { color: #fff4d6; }
+.cta-sky .lead { color: rgba(255,255,255,.94); }
+.cta-sky__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+@media (max-width: 900px) { .cta-sky__grid { grid-template-columns: 1fr; } }
+.cta-sky__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.cta-sky__btns svg { width: 17px; height: 17px; fill: currentColor; }
+.cta-sky__primary { background: var(--gold); color: #3a2a06; box-shadow: 0 12px 26px rgba(0,0,0,.18); }
+.cta-sky__primary:hover { background: #ffd98f; }
+.cta-sky__ghost { background: transparent; color: #fff; box-shadow: inset 0 0 0 2px rgba(255,255,255,.75); }
+.cta-sky__ghost:hover { background: rgba(255,255,255,.12); }
+
+.polaroids { position: relative; height: 440px; }
+.polaroid {
+  position: absolute; margin: 0; width: 58%;
+  background: #fff; padding: 12px 12px 40px; border-radius: 4px;
+  box-shadow: 0 24px 50px rgba(0,30,50,.35);
+  transition: transform .5s var(--ease), z-index 0s;
+}
+.polaroid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.polaroid figcaption {
+  position: absolute; left: 0; right: 0; bottom: 10px; text-align: center;
+  font-family: "Segoe Print", "Bradley Hand", cursive; color: #45503f; font-size: .95rem;
+}
+.polaroid--1 { left: 0; top: 70px; transform: rotate(-6deg); z-index: 2; }
+.polaroid--2 { right: 0; top: 0; transform: rotate(4deg); z-index: 1; }
+.polaroid--3 { left: 26%; bottom: 0; transform: rotate(2deg); z-index: 3; }
+.polaroid:hover { transform: rotate(0deg) scale(1.06); z-index: 5; }
+@media (max-width: 620px) {
+  .polaroids { height: 330px; }
+  .polaroid { width: 64%; padding: 8px 8px 30px; }
+  .polaroid--1 { top: 50px; }
+  .polaroid--3 { left: 18%; }
+}
+
+/* --- Newsletter: a dark card that bridges the page and the footer ---- */
+.newsletter { background: linear-gradient(transparent 0 55%, #1d2a15 55% 100%); padding: 40px 0 0; color: inherit; }
+.newsletter .wrap { display: block; }
+.nlcard {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center;
+  border-radius: 28px; padding: 48px 52px; color: #dbe7e1;
+  background:
+    linear-gradient(110deg, rgba(20,58,51,.97) 0%, rgba(20,58,51,.9) 55%, rgba(20,58,51,.7) 100%),
+    url("../img/field/newsletter.webp") center 55% / cover no-repeat;
+  box-shadow: 0 30px 70px rgba(16,30,20,.3);
+}
+.nlcard::after {
+  content: ""; position: absolute; z-index: -1; right: -90px; top: -110px;
+  width: 320px; height: 320px; border-radius: 50%; border: 48px solid rgba(255,255,255,.06);
+}
+.nlcard h2 { color: #fff; margin: 0 0 10px; font-size: clamp(1.7rem, 3vw, 2.3rem); }
+.nlcard p { margin: 0; color: #c5d6ce; line-height: 1.65; }
+.nlcard__form {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  background: #fff; border-radius: 18px; padding: 8px;
+}
+.nlcard__form input {
+  flex: 1 1 220px; min-width: 0; border: 0; padding: 14px 16px; font: inherit; border-radius: 12px; color: var(--ink);
+}
+.nlcard__btn { flex: 1 1 160px; background: #fcd116; color: #1d2a15; border-radius: 12px; }
+.nlcard__btn:hover { background: #ffe05a; }
+.nlcard__btn svg { width: 16px; height: 16px; fill: currentColor; }
+@media (max-width: 800px) { .nlcard { grid-template-columns: 1fr; padding: 34px 24px; } }
+
+/* --- Floating WhatsApp and back-to-top buttons ----------------------- */
+.fabs { position: fixed; right: 18px; bottom: 18px; z-index: 80; display: grid; gap: 12px; justify-items: center; }
+.fab {
+  width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer;
+  display: grid; place-items: center; color: #fff;
+  box-shadow: 0 12px 28px rgba(0,0,0,.25);
+  transition: transform .3s var(--ease), box-shadow .3s;
+}
+.fab:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 16px 34px rgba(0,0,0,.3); }
+.fab svg { width: 26px; height: 26px; fill: currentColor; }
+.fab--wa { background: #25d366; }
+.fab--wa::before {
+  content: ""; position: absolute; width: 56px; height: 56px; border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(37,211,102,.6); animation: wapulse 2.4s infinite;
+}
+.fab--top { background: #143a33; width: 48px; height: 48px; }
+.fab--top svg { width: 18px; height: 18px; transform: rotate(180deg); }
+.fab[hidden] { display: none; }
+@keyframes wapulse { 70% { box-shadow: 0 0 0 16px rgba(37,211,102,0); } 100% { box-shadow: 0 0 0 0 rgba(37,211,102,0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .orb__ring, .sdg-intro::after, .fab--wa::before { animation: none; }
 }
