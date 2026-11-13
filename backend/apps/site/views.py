@@ -313,6 +313,8 @@ def donate(request):
     methods = DonationMethod.objects.published()
     return render(request, "pages/donate.html", {
         "form": form,
+        "methods": methods,
+        "programmes": Programme.objects.published().filter(status="ongoing"),
         "banks": [m for m in methods if m.channel == "bank"],
         "mobile": [m for m in methods if m.channel != "bank"],
         "has_methods": bool(methods),

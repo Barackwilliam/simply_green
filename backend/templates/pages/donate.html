@@ -1,77 +1,242 @@
-{% extends "base.html" %}{% load static %}
+{% extends "base.html" %}{% load static %}{% load media %}
 {% block title %}Support Our Work — {{ site.organisation_name }}{% endblock %}
 {% block description %}Donate to {{ site.organisation_name }} and fund community-led environmental conservation, climate action and sustainable livelihoods in Tanzania.{% endblock %}
 {% block content %}
-{% include "partials/pagehead.html" with variant="text" title="Support our work" lead="A donation puts tools, training and trees into the hands of the communities doing the work." static_image="img/sacks.webp" eyebrow="Support" %}
 
-<section class="section">
+{% comment %}
+  Giving in three steps on one form: the amount and where it goes, how to
+  send it, and who it is from. The page never takes the money itself: the
+  donor pays through their own bank or mobile money, and the form records
+  the pledge so it can be matched, thanked and receipted. Everything works
+  without JavaScript; the script only adds the live summary, the method
+  switch, the copy buttons and the progress marks.
+{% endcomment %}
+
+<section class="give-top">
   <div class="wrap">
-    <div class="grid grid-2" data-reveal-group style="gap:48px;align-items:start">
-      <div>
-        <span class="eyebrow">How to give</span>
-        <h2>Where to send your gift</h2>
-
-        {% if not has_methods %}
-          <div class="empty" style="margin-top:20px"><strong>Payment details are not published yet</strong>Bank and mobile money details added in the admin will appear here.</div>
-        {% endif %}
-
-        {% if banks %}
-          <h2 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Bank transfer</h2>
-          {% for m in banks %}
-            <div class="tile" style="margin-top:14px">
-              <strong style="display:block;font-size:1.05rem;margin-bottom:12px">{{ m.label }}</strong>
-              <dl style="margin:0;font-size:.93rem;display:grid;grid-template-columns:auto 1fr;gap:6px 18px">
-                {% if m.account_name %}<dt style="color:var(--muted)">Account name</dt><dd style="margin:0;font-weight:600">{{ m.account_name }}</dd>{% endif %}
-                {% if m.account_number %}<dt style="color:var(--muted)">Account number</dt><dd style="margin:0;font-weight:700;font-family:ui-monospace,monospace">{{ m.account_number }}</dd>{% endif %}
-                {% if m.bank_name %}<dt style="color:var(--muted)">Bank</dt><dd style="margin:0;font-weight:600">{{ m.bank_name }}</dd>{% endif %}
-                {% if m.branch %}<dt style="color:var(--muted)">Branch</dt><dd style="margin:0;font-weight:600">{{ m.branch }}</dd>{% endif %}
-                {% if m.swift_code %}<dt style="color:var(--muted)">SWIFT</dt><dd style="margin:0;font-weight:600;font-family:ui-monospace,monospace">{{ m.swift_code }}</dd>{% endif %}
-                {% if m.currency %}<dt style="color:var(--muted)">Currency</dt><dd style="margin:0;font-weight:600">{{ m.currency }}</dd>{% endif %}
-              </dl>
-              {% if m.instructions %}<p style="margin:14px 0 0;font-size:.9rem;border-top:1px solid var(--line);padding-top:12px">{{ m.instructions }}</p>{% endif %}
-            </div>
-          {% endfor %}
-        {% endif %}
-
-        {% if mobile %}
-          <h2 style="margin-top:28px;font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Mobile money</h2>
-          <div class="grid grid-2" data-reveal-group style="margin-top:14px">
-            {% for m in mobile %}
-              <div class="tile">
-                <span class="tag tag--green">{{ m.get_channel_display }}</span>
-                <strong style="display:block;margin-top:10px">{{ m.label }}</strong>
-                {% if m.account_number %}<p style="font-family:ui-monospace,monospace;font-size:1.25rem;font-weight:800;margin:10px 0 4px">{{ m.account_number }}</p>{% endif %}
-                {% if m.account_name %}<p style="margin:0;font-size:.9rem;color:var(--muted)">{{ m.account_name }}</p>{% endif %}
-                {% if m.instructions %}<p style="margin:10px 0 0;font-size:.88rem">{{ m.instructions }}</p>{% endif %}
-              </div>
-            {% endfor %}
-          </div>
-        {% endif %}
-
-        <div class="tile" style="margin-top:24px;background:#ddf1fa;border-color:#a9dcf2;display:flex;gap:14px;align-items:flex-start">
-          <div class="tile__icon" style="flex:none;margin:0;background:#fff">{% include "partials/icon.html" with name="shield" %}</div>
-          <p style="margin:0;font-size:.92rem;color:var(--blue-ink)">
-            Always confirm these account details with us by phone before sending a large gift.
-            We will never email you to say our bank details have changed.
-          </p>
-        </div>
-      </div>
-
-      <div class="tile" style="padding:30px">
-        <span class="eyebrow">Tell us</span>
-        <h2 style="font-size:1.5rem">Let us know your gift is coming</h2>
-        <p style="font-size:.93rem">This helps us match your transfer when it arrives, thank you properly, and send a receipt.</p>
-        <form method="post" novalidate style="margin-top:20px">
-          {% csrf_token %}
-          {% include "partials/form.html" %}
-          <p class="hint" style="margin-bottom:16px">
-            This form records your intention to give. It never asks for a card number,
-            PIN or mobile money password — you pay through your own bank or mobile money app.
-          </p>
-          <button class="btn btn--green" type="submit">Record my pledge</button>
-        </form>
-      </div>
-    </div>
+    <span class="eyebrow">Support our work</span>
+    <h1>Give in three simple steps</h1>
+    <p>Choose how much and where it goes, send it to our account, and tell us so we can thank you and send a receipt.</p>
+    <ol class="give-prog" aria-label="Steps">
+      <li data-prog="1"><i>1</i><span>Amount</span></li>
+      <li data-prog="2"><i>2</i><span>Send</span></li>
+      <li data-prog="3"><i>3</i><span>Confirm</span></li>
+    </ol>
   </div>
 </section>
+
+<section class="give">
+  <form class="wrap give__layout" method="post" novalidate data-give>
+    {% csrf_token %}
+    <div class="give__main">
+
+      {% if form.errors %}
+        <div class="alert alert--err">Please check the highlighted fields below.</div>
+      {% endif %}
+      {% for e in form.non_field_errors %}<div class="alert alert--err">{{ e }}</div>{% endfor %}
+
+      {# ---------------------------------------------------- 1. amount #}
+      <fieldset class="gpanel" id="step-amount">
+        <legend class="gpanel__title"><b>1</b>Choose an amount</legend>
+
+        <div class="gamount{% if form.amount.errors %} field--error{% endif %}">
+          <label for="{{ form.amount.id_for_label }}">{{ form.amount.label }}</label>
+          <div class="gamount__box">
+            <label class="sr-only" for="{{ form.currency.id_for_label }}">Currency</label>
+            {{ form.currency }}
+            {{ form.amount }}
+          </div>
+          <p class="hint">Any amount helps. You can also leave it blank if you prefer not to say.</p>
+          {% for e in form.amount.errors %}<p class="err">{{ e }}</p>{% endfor %}
+        </div>
+
+        <p class="gpanel__sub">Where should it go?</p>
+        <div class="gwhere" role="radiogroup" aria-label="Where should it go?">
+          {% with current=form.designation.value|default:"" %}
+            <label class="gwhere__opt">
+              <input type="radio" name="designation" value="" {% if not current %}checked{% endif %}>
+              <span class="gwhere__card">
+                <img src="{% static 'img/field/fa-04.webp' %}" alt="" width="720" height="540" loading="lazy" decoding="async">
+                <span>Wherever it's needed most</span>
+              </span>
+            </label>
+            {% for p in programmes %}
+              {% cycle 'img/field/fa-03.webp' 'img/field/fa-01.webp' 'img/field/pillar-1.webp' as fallback_img silent %}
+              <label class="gwhere__opt">
+                <input type="radio" name="designation" value="{{ p.title }}" {% if current == p.title %}checked{% endif %}>
+                <span class="gwhere__card">
+                  {% if p.featured_image %}
+                    {% picture p.featured_image alt="" sizes="240px" fallback=fallback_img %}
+                  {% else %}
+                    <img src="{% static fallback_img %}" alt="" width="720" height="540" loading="lazy" decoding="async">
+                  {% endif %}
+                  <span>{{ p.title }}</span>
+                </span>
+              </label>
+            {% endfor %}
+          {% endwith %}
+        </div>
+      </fieldset>
+
+      {# ------------------------------------------------------ 2. send #}
+      <fieldset class="gpanel" id="step-send">
+        <legend class="gpanel__title"><b>2</b>Send your gift</legend>
+
+        {% if methods %}
+          <div class="gmethods" role="radiogroup" aria-label="How you will give">
+            {% with chosen=form.method.value|stringformat:"s" %}
+              {% for m in methods %}
+                <label class="gmethod">
+                  <input type="radio" name="method" value="{{ m.pk }}" data-method="{{ m.pk }}"
+                         {% if chosen == m.pk|stringformat:"s" or not chosen and forloop.first %}checked{% endif %}>
+                  <span>
+                    {% if m.channel == "bank" %}{% include "partials/icon.html" with name="bank" %}{% else %}{% include "partials/icon.html" with name="phone" %}{% endif %}
+                    <strong>{{ m.get_channel_display }}</strong>
+                    <small>{{ m.label }}</small>
+                  </span>
+                </label>
+              {% endfor %}
+            {% endwith %}
+          </div>
+
+          {% for m in methods %}
+            <div class="gdetails" data-details="{{ m.pk }}">
+              {% if m.bank_name or m.channel == "bank" %}
+                <div class="grow"><div><small>{% if m.channel == "bank" %}Bank{% else %}Service{% endif %}</small><strong>{{ m.bank_name|default:m.label }}</strong></div></div>
+              {% endif %}
+              {% if m.account_name %}
+                <div class="grow"><div><small>Account name</small><strong>{{ m.account_name }}</strong></div>
+                  <button class="gcopy" type="button" data-copy="{{ m.account_name }}">Copy</button></div>
+              {% endif %}
+              {% if m.account_number %}
+                <div class="grow"><div><small>{% if m.channel == "bank" %}Account number{% else %}Number{% endif %}</small><strong class="mono">{{ m.account_number }}</strong></div>
+                  <button class="gcopy" type="button" data-copy="{{ m.account_number }}">Copy</button></div>
+              {% endif %}
+              {% if m.branch %}<div class="grow"><div><small>Branch</small><strong>{{ m.branch }}</strong></div></div>{% endif %}
+              {% if m.swift_code %}
+                <div class="grow"><div><small>SWIFT</small><strong class="mono">{{ m.swift_code }}</strong></div>
+                  <button class="gcopy" type="button" data-copy="{{ m.swift_code }}">Copy</button></div>
+              {% endif %}
+              {% if m.currency %}<div class="grow"><div><small>Currency</small><strong>{{ m.currency }}</strong></div></div>{% endif %}
+              {% if m.instructions %}<p class="gdetails__note">{{ m.instructions }}</p>{% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty"><strong>Payment details are being finalised</strong>Get in touch and we will share them with you directly.</div>
+        {% endif %}
+
+        <p class="gsafe">
+          {% include "partials/icon.html" with name="shield" %}
+          <span>Confirm these details with us{% if site.phone %} by phone on <a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a>{% endif %} before sending a large gift. We will never email you to say our account details have changed.</span>
+        </p>
+      </fieldset>
+
+      {# --------------------------------------------------- 3. confirm #}
+      <fieldset class="gpanel" id="step-confirm">
+        <legend class="gpanel__title"><b>3</b>Tell us it's coming</legend>
+        <p class="gpanel__lead">So we can match your transfer when it arrives, thank you properly and send a receipt.</p>
+
+        <div class="ggrid">
+          {% for field in form %}
+            {% if field.name in "full_name email phone organisation" %}
+              <div class="field{% if field.errors %} field--error{% endif %}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="req">*</span>{% endif %}</label>
+                {{ field }}
+                {% for e in field.errors %}<p class="err">{{ e }}</p>{% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="field{% if form.message.errors %} field--error{% endif %}">
+          <label for="{{ form.message.id_for_label }}">Message <span class="hint" style="display:inline">(optional)</span></label>
+          {{ form.message }}
+        </div>
+        <label class="gcheck">{{ form.is_anonymous }} <span>{{ form.is_anonymous.label }}</span></label>
+        <div class="honey">{% for field in form.hidden_fields %}{{ field }}{% endfor %}</div>
+
+        <button class="btn give__submit" type="submit">{% include "partials/icon.html" with name="heart" %} Confirm my pledge</button>
+        <p class="hint" style="margin-top:12px">This form records your intention to give. It never asks for a card number, PIN or mobile money password; you pay through your own bank or mobile money app.</p>
+      </fieldset>
+    </div>
+
+    {# ----------------------------------------------------- summary #}
+    <aside class="gsum" aria-live="polite">
+      <h2>Your gift</h2>
+      <p class="gsum__amount"><span data-sum-cur>TZS</span> <span data-sum-amount>Any amount</span></p>
+      <ul>
+        <li><span>Supports</span><b data-sum-where>Wherever it's needed most</b></li>
+        <li><span>Method</span><b data-sum-method>{% if methods %}{{ methods.0.get_channel_display }}{% else %}To be confirmed{% endif %}</b></li>
+        <li><span>Frequency</span><b>One-off</b></li>
+      </ul>
+      <div class="gsum__ok">
+        {% if site.registration_number %}<span>{% include "partials/icon.html" with name="shield-check" %} Registered NGO · {{ site.registration_number }}</span>{% endif %}
+        <span>{% include "partials/icon.html" with name="file" %} A receipt for every gift</span>
+        <span>{% include "partials/icon.html" with name="globe" %} Reported transparently</span>
+      </div>
+    </aside>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var form = document.querySelector("[data-give]");
+  if (!form) return;
+  var amount = form.querySelector("[name=amount]");
+  var cur = form.querySelector("[name=currency]");
+  var sumAmount = document.querySelector("[data-sum-amount]");
+  var sumCur = document.querySelector("[data-sum-cur]");
+  var sumWhere = document.querySelector("[data-sum-where]");
+  var sumMethod = document.querySelector("[data-sum-method]");
+  var prog = document.querySelectorAll("[data-prog]");
+
+  function fmt(v) {
+    var n = parseFloat(String(v).replace(/[,\s]/g, ""));
+    return isFinite(n) && n > 0 ? n.toLocaleString("en-US", { maximumFractionDigits: 2 }) : "";
+  }
+  function mark(step, state) {
+    prog.forEach(function (li) {
+      if (li.getAttribute("data-prog") === String(step)) li.setAttribute("data-state", state);
+    });
+  }
+  function update() {
+    var a = fmt(amount.value);
+    sumAmount.textContent = a || "Any amount";
+    sumCur.textContent = a ? cur.value : "";
+    var w = form.querySelector("[name=designation]:checked");
+    sumWhere.textContent = w && w.value ? w.value : "Wherever it's needed most";
+    var m = form.querySelector("[name=method]:checked");
+    if (m) {
+      sumMethod.textContent = m.parentNode.querySelector("strong").textContent;
+      document.querySelectorAll("[data-details]").forEach(function (d) {
+        d.hidden = d.getAttribute("data-details") !== m.value;
+      });
+    }
+    var name = form.querySelector("[name=full_name]").value.trim();
+    var email = form.querySelector("[name=email]").value.trim();
+    mark(1, a ? "done" : "on");
+    mark(2, a ? (name || email ? "done" : "on") : "");
+    mark(3, name && email ? "on" : "");
+  }
+  form.addEventListener("input", update);
+  form.addEventListener("change", update);
+
+  // Typing "50000" shows "50,000" once the field is left.
+  amount.addEventListener("blur", function () { var a = fmt(amount.value); if (a) amount.value = a; });
+
+  document.querySelectorAll("[data-copy]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var text = b.getAttribute("data-copy");
+      var done = function () {
+        b.textContent = "Copied";
+        b.classList.add("is-done");
+        setTimeout(function () { b.textContent = "Copy"; b.classList.remove("is-done"); }, 1800);
+      };
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
+    });
+  });
+  update();
+})();
+</script>
 {% endblock %}

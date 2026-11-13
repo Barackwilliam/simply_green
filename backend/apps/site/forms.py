@@ -5,6 +5,8 @@ and from tabbing, which only an automated filler completes. A non-empty value
 is rejected without telling the sender why, so a bot learns nothing.
 """
 
+from decimal import Decimal, InvalidOperation
+
 from django import forms
 
 from apps.engage.models import (
@@ -82,6 +84,35 @@ class NewsletterForm(HoneypotMixin, forms.Form):
 class DonationPledgeForm(HoneypotMixin, forms.ModelForm):
     """Records intent to give. Never asks for a card number, PIN or password."""
 
+    CURRENCIES = [("TZS", "TZS"), ("USD", "USD"), ("EUR", "EUR"), ("GBP", "GBP")]
+
+    # Typed by the donor, so "50,000" and "50 000" have to work: a
+    # DecimalField would reject the separator before clean_amount ran.
+    amount = forms.CharField(
+        required=False,
+        label="Amount you would like to give",
+        widget=forms.TextInput(attrs={
+            "inputmode": "decimal", "autocomplete": "off",
+            "placeholder": "Type any amount",
+        }),
+    )
+    currency = forms.ChoiceField(choices=CURRENCIES, initial="TZS")
+
+    def clean_amount(self):
+        raw = (self.cleaned_data.get("amount") or "").strip()
+        if not raw:
+            return None
+        cleaned = raw.replace(",", "").replace(" ", "").replace("\u00a0", "")
+        try:
+            value = Decimal(cleaned)
+        except InvalidOperation:
+            raise forms.ValidationError("Please type the amount as a number, e.g. 50000.")
+        if value <= 0:
+            raise forms.ValidationError("The amount must be more than zero.")
+        if value >= Decimal("10000000000"):
+            raise forms.ValidationError("That amount is too large to record.")
+        return value.quantize(Decimal("0.01"))
+
     class Meta:
         model = DonationPledge
         fields = [
@@ -91,7 +122,6 @@ class DonationPledgeForm(HoneypotMixin, forms.ModelForm):
         ]
         labels = {
             "full_name": "Your name",
-            "amount": "Amount (leave blank if you prefer not to say)",
             "method": "How you plan to give",
             "designation": "Programme you want to support",
             "is_anonymous": "Keep my gift anonymous in any public acknowledgement",
