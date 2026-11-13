@@ -125,6 +125,7 @@ def team(request):
         "staff_cols": max(1, min(len(staff), 4)),
         "others": others,
         "has_team": people.exists(),
+        "team_count": people.count(),
     })
 
 

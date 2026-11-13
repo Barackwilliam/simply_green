@@ -17,36 +17,16 @@
   </div></section>
 {% else %}
 
-{% if leader %}
-<section class="tm-hero">
-  {% if leader.photo %}
-    <div class="tm-hero__ph">{% picture leader.photo alt=leader.full_name sizes="full" priority=True style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%" fallback="img/portrait.webp" %}</div>
-  {% endif %}
-  <div class="tm-hero__word" aria-hidden="true">Leadership</div>
-  <div class="wrap tm-hero__copy">
-    <span class="tm-kicker">Our team</span>
-    <h1>{{ leader.full_name }}</h1>
-    <span class="tm-pill">{{ leader.role }}</span>
-    {% if leader.bio or leader.short_bio %}
-      <blockquote>{{ leader.bio|striptags|default:leader.short_bio }}</blockquote>
-    {% endif %}
-    {% if leader.email or leader.linkedin %}
-      <div class="tm-links">
-        {% if leader.email %}<a href="mailto:{{ leader.email }}" aria-label="Email {{ leader.full_name }}">{% include "partials/icon.html" with name="mail" %}</a>{% endif %}
-        {% if leader.linkedin %}<a href="{{ leader.linkedin }}" target="_blank" rel="noreferrer noopener" aria-label="{{ leader.full_name }} on LinkedIn">{% include "partials/icon.html" with name="linkedin" %}</a>{% endif %}
-      </div>
-    {% endif %}
-  </div>
-</section>
-{% endif %}
-
-<div class="tm-band" aria-hidden="true"><p>Conservation ✦ Climate action ✦ Community ✦ Livelihoods ✦ Conservation ✦ Climate action ✦ Community ✦ Livelihoods</p></div>
-
 <section class="tm-chart">
   <div class="wrap tm-chart__head" data-reveal>
-    <span class="tm-kicker">How we are organised</span>
-    <h2>Built to <span>deliver.</span></h2>
+    <span class="tm-kicker">Our team</span>
+    <h1>Built to <span>deliver.</span></h1>
     <p>From strategy to the shoreline: who leads, who manages, and who works with communities every day.</p>
+    <ul class="tm-stats">
+      <li><b>{{ team_count }}</b> people</li>
+      {% if leader %}<li><b>{{ management|length|add:1 }}</b> in leadership</li>{% endif %}
+      {% if staff %}<li><b>{{ staff|length }}</b> on the ground</li>{% endif %}
+    </ul>
   </div>
 
   <div class="wrap tm-tree">
@@ -56,6 +36,13 @@
           {% include "partials/team_face.html" with m=leader %}
           <h3>{{ leader.full_name }}</h3>
           <span class="tm-role">{{ leader.role }}</span>
+          {% if leader.bio or leader.short_bio %}<p class="tm-quote">{{ leader.bio|striptags|default:leader.short_bio }}</p>{% endif %}
+          {% if leader.email or leader.linkedin %}
+            <div class="tm-links">
+              {% if leader.email %}<a href="mailto:{{ leader.email }}" aria-label="Email {{ leader.full_name }}">{% include "partials/icon.html" with name="mail" %}</a>{% endif %}
+              {% if leader.linkedin %}<a href="{{ leader.linkedin }}" target="_blank" rel="noreferrer noopener" aria-label="{{ leader.full_name }} on LinkedIn">{% include "partials/icon.html" with name="linkedin" %}</a>{% endif %}
+            </div>
+          {% endif %}
         </div>
       </div>
     {% endif %}
@@ -119,6 +106,20 @@
   </div>
 </section>
 {% endfor %}
+
+<section class="tm-join">
+  <div class="wrap tm-join__in" data-reveal>
+    <div>
+      <span class="tm-kicker">Work with us</span>
+      <h2>Want to be part of the work?</h2>
+      <p>Join a clean-up as a volunteer, or bring your organisation in as a partner.</p>
+    </div>
+    <div class="tm-join__btns">
+      <a class="btn tm-join__primary" href="{% url 'site:volunteer' %}">Become a volunteer</a>
+      <a class="btn tm-join__ghost" href="{% url 'site:partner' %}">Partner with us</a>
+    </div>
+  </div>
+</section>
 
 {% endif %}
 {% endblock %}
