@@ -2438,3 +2438,27 @@ a.card:hover .card__media::before,
   .hteam__faces strong { font-size: .82rem; }
   .hteam__faces small { font-size: .72rem; }
 }
+
+/* --- Team chart, third pass: staff in one connected frame ------------
+   Each card used to carry its own connector, which only the first row
+   could have, and rows took the height of their longest description, so
+   the second row floated loose under a wide gap. Now the staff sit in a
+   single frame that the chart's line runs into, and every card in a row
+   is the same height with "Read more" at its foot. */
+.tm-staff {
+  position: relative; border-radius: 34px; padding: 92px 26px 34px;
+  background: rgba(255,255,255,.6); border: 2px dashed rgba(17,162,215,.35);
+}
+.tm-l3 { gap: 92px 20px; align-items: stretch; }
+.tm-l3 .tm-node { margin-top: 0; display: flex; flex-direction: column; align-items: center; }
+.tm-l3 .tm-node::before { display: none !important; }
+.tm-l3 .tm-node p { align-self: stretch; }
+.tm-l3 .tm-more { margin-top: auto; padding-top: 12px; }
+.tm-node--staff .tm-face { margin-top: -72px; flex: none; }
+.tm-l3--flat { padding-top: 70px; }
+@media (max-width: 900px) {
+  .tm-staff { padding: 76px 12px 24px; border-radius: 26px; }
+  .tm-l3 { gap: 76px 12px; }
+  .tm-l3 .tm-node { margin-top: 0; }
+  .tm-node--staff .tm-face { margin-top: -60px; }
+}
