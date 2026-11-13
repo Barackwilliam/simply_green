@@ -70,6 +70,7 @@
         <ul>
           {% if site.address %}<li>{{ site.address|linebreaksbr }}</li>{% endif %}
           {% if site.phone %}<li><a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></li>{% endif %}
+          {% if site.secondary_phone %}<li><a href="tel:{{ site.secondary_phone|cut:' ' }}">{{ site.secondary_phone }}</a></li>{% endif %}
           {% if site.email %}<li><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>{% endif %}
           {% if site.postal_address %}<li>{{ site.postal_address }}</li>{% endif %}
         </ul>
