@@ -102,12 +102,30 @@ def about(request):
 
 
 def team(request):
-    groups = []
-    for key, label in TeamMember.Group.choices:
-        people = TeamMember.objects.published().filter(group=key)
-        if people:
-            groups.append({"label": label, "people": people})
-    return render(request, "pages/team.html", {"groups": groups})
+    """The leader in the opening, then the structure beneath them.
+
+    Leadership's first member (by display order) is the opening; the rest
+    of leadership is management; staff is the bottom row of the chart.
+    Board, advisors and volunteers, when there are any, follow the chart
+    as their own groups rather than being forced into it.
+    """
+    people = TeamMember.objects.published()
+    leadership = list(people.filter(group=TeamMember.Group.LEADERSHIP))
+    staff = list(people.filter(group=TeamMember.Group.STAFF))
+    others = []
+    for key in (TeamMember.Group.BOARD, TeamMember.Group.ADVISOR, TeamMember.Group.VOLUNTEER):
+        members = list(people.filter(group=key))
+        if members:
+            others.append({"label": TeamMember.Group(key).label, "people": members})
+    return render(request, "pages/team.html", {
+        "leader": leadership[0] if leadership else None,
+        "management": leadership[1:],
+        "staff": staff,
+        # Four to a row at most, so names and roles have room to breathe.
+        "staff_cols": max(1, min(len(staff), 4)),
+        "others": others,
+        "has_team": people.exists(),
+    })
 
 
 # ------------------------------------------------------- focus & work
