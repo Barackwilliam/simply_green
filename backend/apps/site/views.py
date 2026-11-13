@@ -71,6 +71,8 @@ def home(request):
         "values": CoreValue.objects.published()[:6],
         "field_photos": _field_photos(24),
         "journey": journey(),
+        "team_preview": list(TeamMember.objects.published()[:7]),
+        "team_total": TeamMember.objects.published().count(),
     })
 
 

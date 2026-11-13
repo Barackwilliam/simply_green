@@ -176,6 +176,34 @@
 </section>
 {% endif %}
 
+{# ------------------------------------------------------- meet the team #}
+{% if team_preview %}
+<section class="section hteam">
+  <div class="wrap hteam__grid">
+    <div data-reveal>
+      <span class="eyebrow">Our team</span>
+      <h2>The people behind the work</h2>
+      <p class="lead">{{ team_total }} people leading, managing and working with communities every day, from the office in Mikocheni to the shoreline.</p>
+      <a class="btn btn--green" href="{% url 'site:team' %}">Meet the team {% include "partials/icon.html" with name="arrow" %}</a>
+    </div>
+    <ul class="hteam__faces" data-reveal-group>
+      {% for m in team_preview %}
+        <li>
+          <a href="{% url 'site:team' %}" class="hteam__face" title="{{ m.full_name }}, {{ m.role }}">
+            {% if m.photo %}{% picture m.photo alt="" sizes="160px" style="width:100%;height:100%;object-fit:cover;object-position:50% 20%" fallback="img/portrait.webp" %}{% else %}<span class="hteam__ini">{{ m.initials }}</span>{% endif %}
+          </a>
+          <strong>{{ m.full_name }}</strong>
+          <small>{{ m.role }}</small>
+        </li>
+      {% endfor %}
+      {% if team_total > team_preview|length %}
+        <li><a href="{% url 'site:team' %}" class="hteam__face hteam__more">+{{ team_total|add:"-7" }}</a><strong>And more</strong><small>See everyone</small></li>
+      {% endif %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+
 {# ------------------------------------------------------- why partner #}
 {% if reasons %}
 <section class="section section--deep">

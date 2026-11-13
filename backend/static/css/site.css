@@ -2405,3 +2405,36 @@ a.card:hover .card__media::before,
   .tm-node--lead .tm-face { width: 150px; height: 150px; margin-top: -95px; }
   .tm-chart__head { margin-bottom: 140px; }
 }
+
+/* --- Home: meet the team -------------------------------------------- */
+.hteam { background: linear-gradient(180deg, #fff, #f4f7f1); }
+.hteam__grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 56px; align-items: center; }
+.hteam .btn svg { width: 17px; height: 17px; fill: currentColor; transition: transform .3s var(--ease); }
+.hteam .btn:hover svg { transform: translateX(4px); }
+.hteam__faces { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 26px 18px; text-align: center; }
+.hteam__faces li { display: grid; justify-items: center; gap: 4px; }
+.hteam__face {
+  display: grid; place-items: center; overflow: hidden; width: 112px; height: 112px; border-radius: 50%; margin-bottom: 8px;
+  border: 4px solid #fff; box-shadow: 0 0 0 3px var(--green), 0 14px 30px rgba(20,29,23,.16);
+  transition: transform .4s var(--ease), box-shadow .4s var(--ease); text-decoration: none;
+}
+.hteam__faces li:nth-child(3n+2) .hteam__face { box-shadow: 0 0 0 3px var(--blue), 0 14px 30px rgba(20,29,23,.16); }
+.hteam__faces li:nth-child(3n) .hteam__face { box-shadow: 0 0 0 3px var(--gold), 0 14px 30px rgba(20,29,23,.16); }
+.hteam__face:hover { transform: translateY(-6px) scale(1.04); }
+.hteam__ini {
+  width: 100%; height: 100%; display: grid; place-items: center; color: #fff; font-weight: 900; font-size: 1.6rem;
+  background: linear-gradient(135deg, var(--green-ink), var(--blue-ink));
+}
+.hteam__more { color: #fff; font-weight: 900; font-size: 1.6rem; background: linear-gradient(135deg, var(--green-ink), var(--blue-ink)); }
+.hteam__faces { align-items: start; }
+.hteam__faces strong { font-size: .92rem; line-height: 1.25; }
+.hteam__faces small { color: var(--muted); font-size: .78rem; line-height: 1.3; }
+@media (max-width: 900px) {
+  .hteam__grid { grid-template-columns: 1fr; gap: 36px; }
+}
+@media (max-width: 560px) {
+  .hteam__faces { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 10px; }
+  .hteam__face { width: 88px; height: 88px; }
+  .hteam__faces strong { font-size: .82rem; }
+  .hteam__faces small { font-size: .72rem; }
+}
