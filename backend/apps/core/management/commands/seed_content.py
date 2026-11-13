@@ -410,6 +410,8 @@ class Command(BaseCommand):
         # photographs from several threads, each with its own connection,
         # and none of them could see an album created in a transaction
         # that has not committed yet.
+        call_command("seed_team", stdout=self.stdout)
+
         if not options["skip_albums"]:
             self.stdout.write("Photo albums:")
             call_command("import_albums", stdout=self.stdout)

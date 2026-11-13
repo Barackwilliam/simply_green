@@ -3,45 +3,135 @@
 {% block description %}The people behind {{ site.organisation_name }}'s environmental work in Tanzania.{% endblock %}
 
 {% block content %}
-{% include "partials/pagehead.html" with variant="frame" title="Our team" lead="The people who turn plans into work on the ground." static_image="img/about.webp" eyebrow="The people" %}
+{% comment %}
+  The leader in a full-width opening, then the organisation as a chart:
+  leader, management, staff. Other groups (board, advisors, volunteers)
+  follow as plain grids. Everything comes from the admin's team members;
+  the first leadership member by display order is the opening.
+{% endcomment %}
 
-<section class="section">
-  <div class="wrap">
-    {% if not groups %}
-      <div class="empty"><strong>Team members have not been added yet</strong>Once staff and board members are added in the admin, they will appear here.</div>
+{% if not has_team %}
+  {% include "partials/pagehead.html" with variant="frame" title="Our team" lead="The people who turn plans into work on the ground." static_image="img/about.webp" eyebrow="The people" %}
+  <section class="section"><div class="wrap">
+    <div class="empty"><strong>Team members have not been added yet</strong>Once staff and board members are added in the admin, they will appear here.</div>
+  </div></section>
+{% else %}
+
+{% if leader %}
+<section class="tm-hero">
+  {% if leader.photo %}
+    <div class="tm-hero__ph">{% picture leader.photo alt=leader.full_name sizes="full" priority=True style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%" fallback="img/portrait.webp" %}</div>
+  {% endif %}
+  <div class="tm-hero__word" aria-hidden="true">Leadership</div>
+  <div class="wrap tm-hero__copy">
+    <span class="tm-kicker">Our team</span>
+    <h1>{{ leader.full_name }}</h1>
+    <span class="tm-pill">{{ leader.role }}</span>
+    {% if leader.bio or leader.short_bio %}
+      <blockquote>{{ leader.bio|striptags|default:leader.short_bio }}</blockquote>
     {% endif %}
-    {% for g in groups %}
-      <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:26px">
-        <h2 style="margin:0">{{ g.label }}</h2>
-        <span style="flex:1;height:1px;background:var(--line)"></span>
-        <span style="font-size:.82rem;font-weight:800;letter-spacing:.06em;color:var(--muted)">{{ g.people|length }}</span>
+    {% if leader.email or leader.linkedin %}
+      <div class="tm-links">
+        {% if leader.email %}<a href="mailto:{{ leader.email }}" aria-label="Email {{ leader.full_name }}">{% include "partials/icon.html" with name="mail" %}</a>{% endif %}
+        {% if leader.linkedin %}<a href="{{ leader.linkedin }}" target="_blank" rel="noreferrer noopener" aria-label="{{ leader.full_name }} on LinkedIn">{% include "partials/icon.html" with name="linkedin" %}</a>{% endif %}
       </div>
-      <div class="pgrid" style="margin-bottom:52px">
-        {% for m in g.people %}
-          <article class="person" data-reveal="pop" style="--d:{{ forloop.counter0 }}0ms">
-            {% if m.photo %}
-              {% picture m.photo alt=m.full_name sizes="quarter" fallback="img/portrait.webp" %}
-            {% else %}
-              <span class="person__initial person__initial--{% cycle 'a' 'b' 'c' 'd' %}" aria-hidden="true">{{ m.initials }}</span>
-            {% endif %}
-            <div class="person__body">
-              <span class="person__role">{{ m.role }}</span>
-              <h3>{{ m.full_name }}</h3>
-              {% if m.short_bio %}
-                <div class="person__bio"><span>{{ m.short_bio }}</span></div>
-              {% endif %}
-              {% if m.email or m.linkedin or m.x_handle %}
-                <div class="person__links">
-                  {% if m.email %}<a href="mailto:{{ m.email }}" aria-label="Email {{ m.full_name }}">{% include "partials/icon.html" with name="mail" %}</a>{% endif %}
-                  {% if m.linkedin %}<a href="{{ m.linkedin }}" target="_blank" rel="noreferrer noopener" aria-label="{{ m.full_name }} on LinkedIn">{% include "partials/icon.html" with name="linkedin" %}</a>{% endif %}
-                  {% if m.x_handle %}<a href="https://x.com/{{ m.x_handle|cut:'@' }}" target="_blank" rel="noreferrer noopener" aria-label="{{ m.full_name }} on X">{% include "partials/icon.html" with name="x" %}</a>{% endif %}
-                </div>
-              {% endif %}
-            </div>
-          </article>
-        {% endfor %}
-      </div>
-    {% endfor %}
+    {% endif %}
   </div>
 </section>
+{% endif %}
+
+<div class="tm-band" aria-hidden="true"><p>Conservation ✦ Climate action ✦ Community ✦ Livelihoods ✦ Conservation ✦ Climate action ✦ Community ✦ Livelihoods</p></div>
+
+<section class="tm-chart">
+  <div class="wrap tm-chart__head" data-reveal>
+    <span class="tm-kicker">How we are organised</span>
+    <h2>Built to <span>deliver.</span></h2>
+    <p>From strategy to the shoreline: who leads, who manages, and who works with communities every day.</p>
+  </div>
+
+  <div class="wrap tm-tree">
+    {% if leader %}
+      <div class="tm-l1">
+        <div class="tm-node tm-node--lead" data-reveal="pop">
+          {% include "partials/team_face.html" with m=leader %}
+          <h3>{{ leader.full_name }}</h3>
+          <span class="tm-role">{{ leader.role }}</span>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if management %}
+      <div class="tm-v"></div><div class="tm-tier"><b>Management</b></div><div class="tm-v"></div>
+      <div class="tm-l2">
+        {% for m in management %}
+          <div class="tm-node tm-node--mgmt" data-reveal="pop" style="--d:{{ forloop.counter0 }}00ms">
+            {% include "partials/team_face.html" with m=m %}
+            <h3>{{ m.full_name }}</h3>
+            <span class="tm-role">{{ m.role }}</span>
+            {% if m.bio or m.short_bio %}<p>{{ m.bio|striptags|default:m.short_bio }}</p>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if staff %}
+      {% if leader or management %}<div class="tm-v"></div>{% endif %}
+      <div class="tm-tier"><b>Operations &amp; communities</b></div>
+      <div class="tm-v tm-v--short"></div>
+      <div class="tm-staff" style="--cols:{{ staff_cols }}">
+        <div class="tm-h" aria-hidden="true"></div>
+        <div class="tm-l3">
+          {% for m in staff %}
+            <div class="tm-node tm-node--staff{% if forloop.counter > staff_cols %} tm-node--row2{% endif %}" data-reveal="pop" style="--d:{{ forloop.counter0 }}0ms">
+              {% include "partials/team_face.html" with m=m %}
+              <h3>{{ m.full_name }}</h3>
+              <span class="tm-role">{{ m.role }}</span>
+              {% with text=m.bio|striptags|default:m.short_bio %}
+                {% if text|length > 150 %}
+                  <p class="tm-clamp" id="bio-{{ m.pk }}">{{ text }}</p>
+                  <button class="tm-more" type="button" aria-expanded="false" aria-controls="bio-{{ m.pk }}" data-more>Read more <span aria-hidden="true">→</span></button>
+                {% elif text %}
+                  <p>{{ text }}</p>
+                {% endif %}
+              {% endwith %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% for g in others %}
+<section class="section tm-other">
+  <div class="wrap">
+    <h2 class="tm-other__title" data-reveal>{{ g.label }}</h2>
+    <div class="tm-l3 tm-l3--flat">
+      {% for m in g.people %}
+        <div class="tm-node tm-node--staff" data-reveal="pop" style="--d:{{ forloop.counter0 }}0ms">
+          {% include "partials/team_face.html" with m=m %}
+          <h3>{{ m.full_name }}</h3>
+          <span class="tm-role">{{ m.role }}</span>
+          {% if m.bio or m.short_bio %}<p>{{ m.bio|striptags|default:m.short_bio }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endfor %}
+
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll("[data-more]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var p = document.getElementById(b.getAttribute("aria-controls"));
+    var open = p.classList.toggle("is-open");
+    b.setAttribute("aria-expanded", String(open));
+    b.firstChild.textContent = open ? "Show less " : "Read more ";
+  });
+});
+</script>
 {% endblock %}
