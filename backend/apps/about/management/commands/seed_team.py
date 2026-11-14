@@ -40,7 +40,7 @@ TEAM = [
      'julius-eston'),
     ('Kelvin Deodatus Mkatte', 'Media Coordinator', 'staff',
      "Kelvin Deodatus Mkatte is the Media Coordinator at Simply Green Organisation, bringing four years of expertise in digital media and visual storytelling. He leads the organization's social media management, graphic design, and professional video and photography production to amplify environmental conservation campaigns. Additionally, he spearheads the creation of the official company profile, ensuring the organization's mission and impact are powerfully communicated across all platforms.",
-     ''),
+     'kelvin-deodatus-mkatte'),
     ('Athuman Alfred Ndoke', 'Data Coordinator', 'staff',
      'Athuman manages the collection, verification, and analysis of environmental and community impact data at Simply Green Organization, ensuring accurate reporting and evidence-based decision-making across all programs.',
      ''),
@@ -52,7 +52,7 @@ TEAM = [
      'joyce-singu'),
     ('Anitha Lwankomezi', 'Community Outreach Officer', 'staff',
      'Climate Change and Sustainable Development Professional.',
-     ''),
+     'anitha-lwankomezi'),
 ]
 
 
