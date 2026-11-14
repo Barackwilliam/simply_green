@@ -43,7 +43,7 @@ TEAM = [
      'kelvin-deodatus-mkatte'),
     ('Athuman Alfred Ndoke', 'Data Coordinator', 'staff',
      'Athuman manages the collection, verification, and analysis of environmental and community impact data at Simply Green Organization, ensuring accurate reporting and evidence-based decision-making across all programs.',
-     ''),
+     'athuman-alfred-ndoke'),
     ('Andrew Malando William', 'Community Outreach Officer', 'staff',
      'Andrew spearheads community engagement, grassroots mobilization, and environmental awareness campaigns at Simply Green Organization, empowering local communities and youth to lead sustainable conservation efforts.',
      'andrew-malando-william'),
