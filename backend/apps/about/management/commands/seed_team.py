@@ -52,7 +52,7 @@ TEAM = [
      'joyce-singu'),
     ('Anitha Lwankomezi', 'Community Outreach Officer', 'staff',
      'Climate Change and Sustainable Development Professional.',
-     'anitha-lwankomezi'),
+     'anitha-lwankomezi-v2'),
 ]
 
 
