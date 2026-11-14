@@ -2462,3 +2462,11 @@ a.card:hover .card__media::before,
   .tm-l3 .tm-node { margin-top: 0; }
   .tm-node--staff .tm-face { margin-top: -60px; }
 }
+
+/* Pillar cards: more photograph, less colour over it. The fade used to
+   start a third of the way down a 170px strip, so the card's colour hid
+   half the picture. */
+.pillar__photo { height: 230px; }
+.pillar__photo::after { background: linear-gradient(180deg, transparent 72%, var(--pillar-tint, rgba(0,0,0,.35)) 100%); }
+.pillar .pillar__icon { margin-top: -38px; }
+@media (max-width: 620px) { .pillar__photo { height: 240px; } }
