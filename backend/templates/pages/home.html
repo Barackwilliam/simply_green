@@ -17,7 +17,7 @@
       {% for area in pillars %}
         <article class="pillar pillar--{% cycle 'blue' 'green' 'gold' %}"
                  data-reveal style="--d:{{ forloop.counter0 }}00ms">
-          {% cycle 'img/field/pillar-1.webp' 'img/field/pillar-2.webp' 'img/field/pillar-3.webp' as pillar_photo silent %}
+          {% cycle 'img/field/pillar-1.webp' 'img/field/climate-action.webp' 'img/field/pillar-3.webp' as pillar_photo silent %}
           <div class="pillar__photo" aria-hidden="true">
             <img src="{% static pillar_photo %}" alt="" width="720" height="420" loading="lazy" decoding="async">
           </div>
