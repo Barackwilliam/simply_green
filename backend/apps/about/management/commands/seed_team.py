@@ -45,7 +45,7 @@ TEAM = [
      'Athuman manages the collection, verification, and analysis of environmental and community impact data at Simply Green Organization, ensuring accurate reporting and evidence-based decision-making across all programs.',
      ''),
     ('Andrew Malando William', 'Community Outreach Officer', 'staff',
-     '',
+     'Andrew spearheads community engagement, grassroots mobilization, and environmental awareness campaigns at Simply Green Organization, empowering local communities and youth to lead sustainable conservation efforts.',
      'andrew-malando-william'),
     ('Joyce Singu', 'Community Outreach Officer', 'staff',
      'Joyce Singu is the Community Outreach Officer at Simply Green Organization (SGO). As a Community Outreach Officer, my responsibility is to build good relationships between the organization and the community. I communicate with community members, provide education and encourage them to participate in development activities and projects. I also identify community needs and challenges, collect feedback and help find possible solutions. I organize community meetings and awareness campaigns, work with community leaders and prepare reports on activities carried out. Generally, my role is to ensure that community members receive important information, services and opportunities that can improve their lives.',
